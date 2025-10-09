@@ -8,6 +8,9 @@ class Strategy(ABC):
         pass
 
 class NaiveMovingAverageStrategy(Strategy):
+    # Time Complexity: O(window) per tick. Because for each tick, we compute sum(self.__prices[-window:]).
+    # Space Complexity: total O(T). Because self.__prices stores all past prices (as requested) without deletion.
+    
     # intentionally save all data to make inefficiency 
     def __init__(self, window: int = 20):
         self.__window = window
@@ -30,6 +33,9 @@ class NaiveMovingAverageStrategy(Strategy):
         return signals
 
 class WindowedMovingAverageStrategy(Strategy):
+    # Time Complexity: O(1) per tick : Because the moving average is updated incrementally without recalculation of the sum
+    # Space Complexity: O(window) : Because self.__prices is a fixed-size deque with maxlen=window.
+    
     # request 1: maintain a fixed-size buffer, using a queue 
     def __init__(self, window: int = 20):
         self.__window = window
