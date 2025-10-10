@@ -2,7 +2,7 @@ import timeit, cProfile, pstats, io
 import matplotlib.pyplot as plt
 from memory_profiler import memory_usage
 
-def profile_function(func, *args, **kwargs):
+def calculate_profile(func, *args, **kwargs):
     # Time profiling
     timeit_result = timeit.timeit(lambda: func(*args, **kwargs), number=1)
     print("="*40 + " TIMEIT RESULT " + "="*40)
@@ -36,7 +36,7 @@ def update_strategies_profile_info(strategies_info, data_points):
     for strategy_map in strategies_info.values():
         strategy = strategy_map['strategy']
         for tick_size in strategy_map['input_sizes']:
-            profile = profile_function(strategy.generate_signals, data_points, tick_size=tick_size)
+            profile = calculate_profile(strategy.generate_signals, data_points, tick_size=tick_size)
             strategy_map['runtime_summary'].append(profile['timeit'])
             strategy_map['memory_summary'].append(profile['memory_usage'])
 
