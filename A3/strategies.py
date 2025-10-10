@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from collections import deque
 
+
 class Strategy(ABC):
     @abstractmethod
     def generate_signals(self, tick) -> list:
