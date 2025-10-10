@@ -1,4 +1,4 @@
-import timeit, cProfile, pstats
+import timeit, cProfile, pstats, io
 import matplotlib.pyplot as plt
 from memory_profiler import memory_usage
 
@@ -10,12 +10,15 @@ def profile_function(func, *args, **kwargs):
     print(f"Execution time: {timeit_result:.6f} seconds")
     print("="*95)
 
-    # cprofile profiling
-    # cProfile.runctx('func(*args, **kwargs)', globals(), locals(), 'restats')
-    # p = pstats.Stats('restats')
-    # print("="*40 + " CPROFILE RESULT " + "="*40)
-    # p.sort_stats('cumulative').print_stats(10)
-    # print("="*95)
+    #cprofile profiling
+    pr = cProfile.Profile()
+    pr.enable()
+    func(*args, **kwargs)
+    pr.disable()
+    
+    s = io.StringIO()
+    ps = pstats.Stats(pr, stream=s).sort_stats('cumulative')
+    ps.print_stats(10)
 
     # memory profiling
     mem_usage = memory_usage((func, args, kwargs), interval=0.1)
