@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from collections import deque
-from data_loader import load_data # only for test
 
 class Strategy(ABC):
     @abstractmethod
