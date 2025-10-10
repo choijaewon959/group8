@@ -62,4 +62,5 @@ def plot_profile_by_input(strategies):
     plt.suptitle("Profiling Results for All Strategies", fontsize=14)
     plt.tight_layout()
     plt.show()
+    
 
