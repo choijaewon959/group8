@@ -11,11 +11,11 @@ def profile_function(func, *args, **kwargs):
     print("="*95)
 
     # cprofile profiling
-    cProfile.runctx('func(*args, **kwargs)', globals(), locals(), 'restats')
-    p = pstats.Stats('restats')
-    print("="*40 + " CPROFILE RESULT " + "="*40)
-    p.sort_stats('cumulative').print_stats(10)
-    print("="*95)
+    # cProfile.runctx('func(*args, **kwargs)', globals(), locals(), 'restats')
+    # p = pstats.Stats('restats')
+    # print("="*40 + " CPROFILE RESULT " + "="*40)
+    # p.sort_stats('cumulative').print_stats(10)
+    # print("="*95)
 
     # memory profiling
     mem_usage = memory_usage((func, args, kwargs), interval=0.1)
