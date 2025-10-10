@@ -16,20 +16,21 @@ class NaiveMovingAverageStrategy(Strategy):
         self.__window = window
         self.__prices = [] 
 
-    def generate_signals(self, tick) -> list:
-        self.__prices.append(tick.price)
+    def generate_signals(self, datapoints, tick_size=1000) -> list:
         signals = []
+        for tick in datapoints[:tick_size]:  # process only up to tick_size data points
+            self.__prices.append(tick.price)
 
-        if len(self.__prices) >= self.__window:
-            moving_avg = sum(self.__prices[-self.__window:]) / self.__window
-            price = tick.price
+            if len(self.__prices) >= self.__window:
+                moving_avg = sum(self.__prices[-self.__window:]) / self.__window
+                price = tick.price
 
-            if price > moving_avg:
-                signals.append((tick.timestamp, "BUY", tick.symbol, 1, price))
-            elif price < moving_avg:
-                signals.append((tick.timestamp, "SELL", tick.symbol, 1, price))
-            else:
-                signals.append((tick.timestamp, "HOLD", tick.symbol, 1, price))
+                if price > moving_avg:
+                    signals.append((tick.timestamp, "BUY", tick.symbol, 1, price))
+                elif price < moving_avg:
+                    signals.append((tick.timestamp, "SELL", tick.symbol, 1, price))
+                else:
+                    signals.append((tick.timestamp, "HOLD", tick.symbol, 1, price))
         return signals
 
 class WindowedMovingAverageStrategy(Strategy):
@@ -43,26 +44,26 @@ class WindowedMovingAverageStrategy(Strategy):
         self.__sum = 0.0
 
     # request 2: update average incrementally O(1)
-    def generate_signals(self, tick) -> list:
+    def generate_signals(self, datapoints, tick_size=1000) -> list:
         signals = []
+        for tick in datapoints[:tick_size]:
+            if len(self.__prices) == self.__window:
+                oldest = self.__prices[0]
+                self.__sum -= oldest
 
-        if len(self.__prices) == self.__window:
-            oldest = self.__prices[0]
-            self.__sum -= oldest
+            self.__prices.append(tick.price)
+            self.__sum += tick.price
 
-        self.__prices.append(tick.price)
-        self.__sum += tick.price
+            if len(self.__prices) == self.__window:
+                moving_avg = self.__sum / self.__window
+                price = tick.price
 
-        if len(self.__prices) == self.__window:
-            moving_avg = self.__sum / self.__window
-            price = tick.price
-
-            if price > moving_avg:
-                signals.append((tick.timestamp, "BUY", tick.symbol, 1, price))
-            elif price < moving_avg:
-                signals.append((tick.timestamp, "SELL", tick.symbol, 1, price))
-            else:
-                signals.append((tick.timestamp, "HOLD", tick.symbol, 1, price))
+                if price > moving_avg:
+                    signals.append((tick.timestamp, "BUY", tick.symbol, 1, price))
+                elif price < moving_avg:
+                    signals.append((tick.timestamp, "SELL", tick.symbol, 1, price))
+                else:
+                    signals.append((tick.timestamp, "HOLD", tick.symbol, 1, price))
         return signals
     
 
