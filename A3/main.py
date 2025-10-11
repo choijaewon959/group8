@@ -1,6 +1,6 @@
 from data_loader import load_data
 from profiler import update_strategies_profile_info, plot_profile_by_input
-from strategies import NaiveMovingAverageStrategy, WindowedMovingAverageStrategy, NaiveMovingAverageStrategyOpti_memo, NaiveMovingAverageStrategyOpti_Numpy
+from strategies import NaiveMovingAverageStrategy, WindowedMovingAverageStrategy, NaiveMovingAverageStrategyOpti_memo, NaiveMovingAverageStrategyOpti_Numpy, NaiveMovingAverageStrategyOpti_generator
 
 
 def main():
@@ -11,7 +11,7 @@ def main():
     input_sizes = [1000, 10_000, 100_000]
     strategies_info = {
         'naiveMA': {
-            'strategy': NaiveMovingAverageStrategyOpti_Numpy(),
+            'strategy': NaiveMovingAverageStrategyOpti_generator(),
             'runtime_summary': [],
             'memory_summary': [],
             'input_sizes': input_sizes

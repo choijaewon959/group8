@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from collections import deque
 from functools import lru_cache
+from unittest import signals
+
 import numpy as np
 
 
@@ -94,6 +96,34 @@ class NaiveMovingAverageStrategyOpti_Numpy(Strategy):
         signals = [(t, sig, sym, 1, pr) for (t, sig, sym, pr) in zip(ok_timestamps, positions, ok_symbols, ok_prices)]
 
         return signals
+
+class NaiveMovingAverageStrategyOpti_generator(Strategy):
+    def __init__(self, window: int = 20):
+        self.__window = window
+        self.__prices = []
+        self.__sum = 0
+
+    def generate_signals(self, datapoints, tick_size=1000) -> list:
+        signals = []
+
+        for data in datapoints[:tick_size]:
+            price = data.price
+            self.__prices.append(price)
+
+            if len(self.__prices) >= self.__window:
+                moving_avg = self.__prices[-self.__window:] / len(self.__prices)
+
+                if price > moving_avg:
+                    signals.append((data.timestamp, "BUY", data.symbol, 1, price))
+                elif price < moving_avg:
+                    signals.append((data.timestamp, "SELL", data.symbol, 1, price))
+                else:
+                    signals.append((data.timestamp, "HOLD", data.symbol, 1, price))
+
+                yield signals
+
+
+
 
 class WindowedMovingAverageStrategy(Strategy):
     # Time Complexity: O(1) per tick : Because the moving average is updated incrementally without recalculation of the sum
