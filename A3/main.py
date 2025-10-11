@@ -1,7 +1,7 @@
 from itertools import product
 from data_loader import load_data
 from profiler import update_strategies_profile_info, plot_profile_by_input
-from strategies import NaiveMovingAverageStrategy, WindowedMovingAverageStrategy
+from strategies import NaiveMovingAverageStrategy, WindowedMovingAverageStrategy, NaiveMovingAverageStrategyOpti_memo, NaiveMovingAverageStrategyOpti_Numpy
 
 
 def main():
@@ -12,7 +12,7 @@ def main():
     input_sizes = [10, 100, 400]
     strategies_info = {
         'naiveMA': {
-            'strategy': NaiveMovingAverageStrategy(),
+            'strategy': NaiveMovingAverageStrategyOpti_Numpy(),
             'runtime_summary': [],
             'memory_summary': [],
             'input_sizes': input_sizes
