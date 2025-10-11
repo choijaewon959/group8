@@ -28,7 +28,6 @@ def calculate_profile(func, *args, **kwargs):
 
     return {
         'timeit': timeit_result,
-        # 'cprofile': p,
         'memory_usage': max_mem_usage
     }
 
