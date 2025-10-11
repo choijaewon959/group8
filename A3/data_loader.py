@@ -5,7 +5,7 @@ from models import MarketDataPoint
 # Adjust data directory to be one level above 'src'
 def load_data() -> list[MarketDataPoint]:
     data_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "A3/data"))
-    data_path = os.path.join(data_dir, "market_data.csv")
+    data_path = os.path.join(data_dir, "assignment3_market_data.csv")
 
     df = pd.read_csv(data_path)
     market_data_points = [

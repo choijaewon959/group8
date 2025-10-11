@@ -1,4 +1,3 @@
-from itertools import product
 from data_loader import load_data
 from profiler import update_strategies_profile_info, plot_profile_by_input
 from strategies import NaiveMovingAverageStrategy, WindowedMovingAverageStrategy
@@ -9,7 +8,7 @@ def main():
     data_points = load_data() # tick data points
 
     # 2. initialize strategy
-    input_sizes = [10, 100, 400]
+    input_sizes = [1000, 10_000, 100_000]
     strategies_info = {
         'naiveMA': {
             'strategy': NaiveMovingAverageStrategy(),
