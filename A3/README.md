@@ -1,3 +1,11 @@
+# Setup & Installation
+
+Install required Python packages:
+
+```bash
+pip install numpy matplotlib memory_profiler pytest
+```
+
 # FINM325 Group 8: Moving Average Strategies
 
 ## Project Overview
@@ -39,6 +47,8 @@ pytest -v
 ```
 This will discover and run all tests in the `tests/` folder, verifying strategy correctness and performance.
 
+![Test result preview](./result/test-result.png)
+
 ## Strategies
 - **NaiveMovingAverageStrategy**: Simple moving average with full price history.
 - **WindowedMovingAverageStrategy**: Efficient windowed average using deque.
@@ -49,13 +59,15 @@ This will discover and run all tests in the `tests/` folder, verifying strategy 
 - Time and memory usage are measured for each strategy using the utilities in `profiler.py`.
 - Results are visualized and compared for different input sizes.
 
+![Profile result preview](./result/profiling_results.png)
+
 ## Data
 - Place your market data CSV in the `data/` directory as `market_data.csv`.
 - The loader expects columns for timestamp, symbol, and price.
 
 ## Notes
 - All code is compatible with Python 3.8+.
-- For best results, install dependencies listed in your environment (e.g., `numpy`, `pytest`, `matplotlib`, `memory_profiler`).
+- For best results, use a virtual environment and install dependencies as above.
 
 ## Authors
 - Group 8, FINM325
