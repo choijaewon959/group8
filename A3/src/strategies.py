@@ -34,7 +34,7 @@ class NaiveMovingAverageStrategy(Strategy):
         
     def run(self, datapoints, tick_size=1000):
         signals = []
-        for i in range(tick_size):
+        for i in range(min(len(datapoints), tick_size)):
             tick = datapoints[i]
             signals.append(self.generate_signals(tick))
         return signals
@@ -72,7 +72,7 @@ class MovingAverageStrategyMemo_Array(Strategy):
 
     def run(self, datapoints, tick_size=1000):
         signals = []
-        for i in range(tick_size):
+        for i in range(min(len(datapoints), tick_size)):
             tick = datapoints[i]
             signals.append(self.generate_signals(tick))
         return signals
@@ -106,7 +106,7 @@ class MovingAverageStrategyMemo_LRUCache(Strategy):
                 return 0
             return prefix_sum(i - 1) + datapoints[i - 1].price
 
-        for i in range(self.__window, tick_size):
+        for i in range(self.__window, min(len(datapoints), tick_size)):
             psum = prefix_sum(i)
             prev = i - self.__window
             window_sum = psum - prefix_sum(prev)
@@ -146,7 +146,7 @@ class WindowedMovingAverageStrategy(Strategy):
     
     def run(self, datapoints, tick_size):
         signals = []
-        for i in range(tick_size):
+        for i in range(min(len(datapoints), tick_size)):
             tick = datapoints[i]
             signals.append(self.generate_signals(tick))
         return signals
