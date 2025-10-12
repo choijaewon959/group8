@@ -37,10 +37,10 @@ plot_profile_by_input(strategies_info)
 
 ## 4. Narrative: Strategy Comparison & Optimization Impact
 
-<b>Naive Strategy</b></n>
+<b>Naive Strategy</b></br>
 The naive moving average strategy, while simple, is inefficient for large datasets due to repeated window sum calculations and full price history storage. 
 
-<b>Optimized Strategies</b></n>
+<b>Optimized Strategies</b></br>
 Windowed Strategy
 Windowed Strategy, dramatically reduces runtime and memory usages. This strategy only maintains the window-sized prices information and updates new moving average in O(1) time. This strategy shows the best performance considering both runtime and memory usage.
 
