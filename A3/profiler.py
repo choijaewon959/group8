@@ -16,9 +16,20 @@ def calculate_profile(func, *args, **kwargs):
     func(*args, **kwargs)
     pr.disable()
     
-    s = io.StringIO()
-    ps = pstats.Stats(pr, stream=s).sort_stats('cumulative')
-    ps.print_stats(10)
+    stats = pstats.Stats(pr)
+    parsed_stats = []
+    for func_identifier, stat in stats.stats.items():
+        filename, line, func_name = func_identifier
+        ncalls, primitive, tottime, cumtime, callers = stat
+        parsed_stats.append({
+            "function": func_name,
+            "file": filename,
+            "line": line,
+            "ncalls": ncalls,
+            "primitive_calls": primitive,
+            "total_time": tottime,
+            "cumulative_time": cumtime
+        })
 
     # memory profiling
     mem_usage = memory_usage((func, args, kwargs), interval=0.1)
@@ -29,6 +40,7 @@ def calculate_profile(func, *args, **kwargs):
 
     return {
         'timeit': timeit_result_millis,
+        'stats': parsed_stats,
         'memory_usage': max_mem_usage
     }
 
@@ -39,6 +51,7 @@ def update_strategies_profile_info(strategies_info, data_points):
             profile = calculate_profile(strategy.generate_signals, data_points, tick_size=tick_size)
             strategy_map['runtime_summary'].append(profile['timeit'])
             strategy_map['memory_summary'].append(profile['memory_usage'])
+            strategy_map['stats'].append(profile['stats'])
 
 def plot_profile_by_input(strategies):
     _, axes = plt.subplots(1, 2, figsize=(12, 5))

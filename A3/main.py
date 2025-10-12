@@ -14,42 +14,49 @@ def main():
             'strategy': NaiveMovingAverageStrategy(),
             'runtime_summary': [],
             'memory_summary': [],
+            'stats': [],
             'input_sizes': input_sizes
         },
         'windowMA': {
             'strategy': WindowedMovingAverageStrategy(),
             'runtime_summary': [],
             'memory_summary': [],
+            'stats': [],
             'input_sizes': input_sizes
         },
         'naiveMAOptimized_memo': {
             'strategy': NaiveMovingAverageStrategyOpti_memo(),
             'runtime_summary': [],
             'memory_summary': [],
+            'stats': [],
             'input_sizes': input_sizes
         },
         'naiveMAOptimized_memo2': {
             'strategy': NaiveMovingAverageStrategyOptiMemo2(),
             'runtime_summary': [],
             'memory_summary': [],
+            'stats': [],
             'input_sizes': input_sizes
         },
         'naiveMAOptimized_memo3': {
             'strategy': NaiveMovingAverageStrategyOptiMemo3(),
             'runtime_summary': [],
             'memory_summary': [],
+            'stats': [],
             'input_sizes': input_sizes
         },
         'naiveMAOptimized_numpy': {
             'strategy': NaiveMovingAverageStrategyOpti_Numpy(),
             'runtime_summary': [],
             'memory_summary': [],
+            'stats': [],
             'input_sizes': input_sizes
         },
         'naiveMAOptimized_generator': {
             'strategy': NaiveMovingAverageStrategyOpti_generator(),
             'runtime_summary': [],
             'memory_summary': [],
+            'stats': [],
             'input_sizes': input_sizes
         },  
         
@@ -58,6 +65,7 @@ def main():
 
     # 3. profile for each strategy
     update_strategies_profile_info(strategies_info, data_points)
+    print(strategies_info)
     # # 4. output results
     plot_profile_by_input(strategies_info)
 
