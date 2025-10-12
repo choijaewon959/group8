@@ -11,8 +11,8 @@
 | MovingAverageStrategyMemoArray  | O(N)            | O(N)             | ~25                     | ~1.53                     |
 | MovingAverageStrategyMemoLRUCache| O(N)           | O(N)             | ~39                     | ~23.86                      |
 
-*k is size of window.*
-*Values are illustrative; see CSVs in `result/` for actual measurements.*
+*k is size of window.* </br>
+*Values are illustrative; see CSVs in `result/` for actual measurements.*</br>
 *Note that the memory usage reported here is the peak memory used by the function minus the baseline memory before function execution.*
 
 ## 2. Complexity Annotations
