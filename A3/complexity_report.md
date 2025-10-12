@@ -2,6 +2,8 @@
 
 ## 1. Runtime and Memory Metrics
 
+![Profile result preview](./result/profiling_results.png)
+
 | Strategy                        | Time Complexity | Space Complexity | Runtime (ms, 100k ticks) | Memory (MiB, 100k ticks) |
 |---------------------------------|-----------------|------------------|-------------------------|--------------------------|
 | NaiveMovingAverageStrategy      | O(N*k)          | O(N)             | ~1200                   | ~40                      |
