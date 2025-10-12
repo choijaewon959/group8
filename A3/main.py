@@ -12,7 +12,7 @@ def main():
     input_sizes = [10,100,100_000]
     strategies_info = {
         'naiveMA': {
-            'strategy': NaiveMovingAverageStrategyOpti_Numpy(),
+            'strategy': NaiveMovingAverageStrategy(),
             'runtime_summary': [],
             'memory_summary': [],
             'input_sizes': input_sizes
@@ -23,6 +23,13 @@ def main():
             'memory_summary': [],
             'input_sizes': input_sizes
         },
+        'naiveMAOptimized': {
+            'strategy': NaiveMovingAverageStrategyOpti_generator(),
+            'runtime_summary': [],
+            'memory_summary': [],
+            'input_sizes': input_sizes
+        },
+
     }
 
     # 3. profile for each strategy
