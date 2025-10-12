@@ -68,6 +68,66 @@ class NaiveMovingAverageStrategyOpti_memo(Strategy):
                 else:
                     signals.append((tick.timestamp, "HOLD", tick.symbol, 1, price))
         return signals
+    
+class NaiveMovingAverageStrategyOptiMemo2(Strategy):
+    def __init__(self, window:int = 20):
+        self.__window = window
+    
+    def generate_signals(self, datapoints, tick_size=1000) -> list:
+        signals = []
+        window_sum = sum(dp.price for dp in datapoints[:self.__window])  # initial window
+
+        for i in range(self.__window, tick_size):
+            window_sum += datapoints[i].price - datapoints[i - self.__window].price
+            moving_avg = window_sum / self.__window
+            tick = datapoints[i]
+
+            if tick.price > moving_avg:
+                signal = "BUY"
+            elif tick.price < moving_avg:
+                signal = "SELL"
+            else:
+                signal = "HOLD"
+
+            signals.append((tick.timestamp, signal, tick.symbol, 1, tick.price))
+
+        return signals
+
+class NaiveMovingAverageStrategyOptiMemo3(Strategy):
+    def __init__(self, window=20):
+        self.__window = window
+
+    def generate_signals(self, datapoints, tick_size=1000):
+        signals = []
+
+        @lru_cache(maxsize=self.__window*2)
+        def prefix_sum(i):
+            if i == 0:
+                return 0
+            return prefix_sum(i - 1) + datapoints[i - 1].price
+
+        for i in range(self.__window, tick_size):
+            # window sum using cached prefix sums
+            # cached window sum upto index i - cached sum upto i - window
+            psum = prefix_sum(i)
+            prev = i - self.__window
+            window_sum = psum - prefix_sum(prev)
+
+            moving_avg = window_sum / self.__window
+            tick = datapoints[i]
+
+            if tick.price > moving_avg:
+                signal = "BUY"
+            elif tick.price < moving_avg:
+                signal = "SELL"
+            else:
+                signal = "HOLD"
+
+            signals.append((tick.timestamp, signal, tick.symbol, 1, tick.price))
+
+        return signals
+
+
 
 
 class NaiveMovingAverageStrategyOpti_Numpy(Strategy):
