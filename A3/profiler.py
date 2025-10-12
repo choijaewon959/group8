@@ -5,8 +5,9 @@ from memory_profiler import memory_usage
 def calculate_profile(func, *args, **kwargs):
     # Time profiling
     timeit_result = timeit.timeit(lambda: func(*args, **kwargs), number=1)
+    timeit_result_millis = timeit_result * 1000  # Convert to milliseconds
     print("="*40 + " TIMEIT RESULT " + "="*40)
-    print(f"Execution time: {timeit_result:.6f} seconds")
+    print(f"Execution time: {timeit_result_millis:.3f} seconds")
     print("="*95)
 
     #cprofile profiling
@@ -27,7 +28,7 @@ def calculate_profile(func, *args, **kwargs):
     print("="*95)
 
     return {
-        'timeit': timeit_result,
+        'timeit': timeit_result_millis,
         'memory_usage': max_mem_usage
     }
 
@@ -49,8 +50,13 @@ def plot_profile_by_input(strategies):
 
         # Runtime subplot
         axes[0].plot(input_sizes, runtime, marker='o', label=strategy_name)
+        for x, y in zip(input_sizes, runtime):
+            axes[0].text(x, y, f"{y:.2f}", fontsize=8, ha='right', va='bottom')
+
         # Memory subplot
         axes[1].plot(input_sizes, memory_usage, marker='o', label=strategy_name)
+        for x, y in zip(input_sizes, memory_usage):
+            axes[1].text(x, y, f"{y:.2f}", fontsize=8, ha='right', va='bottom')
 
     # Titles and labels
     axes[0].set_title('Runtime Profiling')
