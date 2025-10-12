@@ -1,9 +1,6 @@
 from abc import ABC, abstractmethod
 from collections import deque
 from functools import lru_cache
-from typing import List
-import numpy as np
-
 
 class Strategy(ABC):
     @abstractmethod
@@ -12,8 +9,8 @@ class Strategy(ABC):
 
 class NaiveMovingAverageStrategy(Strategy):
     '''
-        Time Complexity: O(window) per tick. Because for each tick, we compute sum(self.__prices[-window:]).
-        Space Complexity: total O(T). Because self.__prices stores all past prices (as requested) without deletion.
+        Time Complexity: O(k) per tick where k is window size. Because for each tick, we compute sum(self.__prices[-window:]).
+        Space Complexity: total O(N). Because self.__prices stores all past prices without deletion.
     '''
 
     # intentionally save all data to make inefficiency 
@@ -25,6 +22,7 @@ class NaiveMovingAverageStrategy(Strategy):
         self.__prices.append(tick.price)
 
         if len(self.__prices) >= self.__window:
+            # re-calculating moving average for predefined window.
             moving_avg = sum(self.__prices[-self.__window:]) / self.__window
             price = tick.price
 
@@ -46,6 +44,10 @@ class NaiveMovingAverageStrategy(Strategy):
 
     
 class MovingAverageStrategyMemo_Array(Strategy):
+    '''
+        Time Complexity: O(1) per tick. we directly access to prices using index and index - window size.
+        Space Complexity: total O(N). Because self.__prices stores all past prices without deletion.
+    '''
     def __init__(self, window:int = 60):
         self.__window = window
         self.__prices = []
@@ -59,6 +61,7 @@ class MovingAverageStrategyMemo_Array(Strategy):
             self.__window_sum += price
             return 
         
+        # only updating window sum, without re-calculating total sum of elements everytime
         self.__window_sum += self.__prices[-1] - self.__prices[-self.__window]
         moving_avg = self.__window_sum  / self.__window
 
@@ -80,35 +83,18 @@ class MovingAverageStrategyMemo_Array(Strategy):
 
 
 class MovingAverageStrategyMemo_LRUCache(Strategy):
-    __prices = []
-
+    '''
+        Time Complexity: O(1) per tick. we directly access to prices using index and index - window size.
+        Space Complexity: total O(N). Because self.__prices stores all past prices without deletion.
+    '''
     def __init__(self, window=60):
         self.__window = window
-        self.__index = 0
-
-    @classmethod
-    @lru_cache(maxsize=None)
-    def prefix_sum(cls, i):
-        if i <= 0:
-            return 0
-        return cls.prefix_sum(i - 1) + cls.__prices[i - 1]
+        self.__moving_avg = 0.0
 
     def generate_signals(self, tick):
-        price = tick.price
-        self.__prices.append(price)
-
-        if len(self.__prices) < self.__window:
-            return 
-
-        psum = type(self).prefix_sum(self.__index)
-        prev = self.__index - self.__window
-        window_sum = psum - type(self).prefix_sum(prev)
-
-        moving_avg = window_sum / self.__window
-
-        if tick.price > moving_avg:
+        if tick.price > self.__moving_avg:
             signal = 1
-        elif tick.price < moving_avg:
+        elif tick.price < self.__moving_avg:
             signal = -1
         else:
             signal = 0
@@ -117,23 +103,36 @@ class MovingAverageStrategyMemo_LRUCache(Strategy):
 
     def run(self, datapoints, tick_size):
         signals = []
-        for i in range(tick_size):
-            self.__index = i
+
+        # Caching the prefix_sum output based on index variable.
+        @lru_cache(maxsize=None)
+        def prefix_sum(i):
+            if i == 0:
+                return 0
+            return prefix_sum(i - 1) + datapoints[i - 1].price
+
+        for i in range(self.__window, tick_size):
+            psum = prefix_sum(i)
+            prev = i - self.__window
+            window_sum = psum - prefix_sum(prev)
+
+            self.__moving_avg = window_sum / self.__window
             signals.append(self.generate_signals(datapoints[i]))
         return signals
             
 
 class WindowedMovingAverageStrategy(Strategy):
-    # Time Complexity: O(1) per tick : Because the moving average is updated incrementally without recalculation of the sum
-    # Space Complexity: O(window) : Because self.__prices is a fixed-size deque with maxlen=window.
-    
-    # request 1: maintain a fixed-size buffer, using a queue 
+    '''
+        Time Complexity: O(1) per tick : Because the moving average is updated incrementally without recalculation of the sum
+        Space Complexity: O(window) : Because self.__prices is a fixed-size deque with maxlen=window.
+    '''
+    # maintain a fixed-size buffer, using a queue 
     def __init__(self, window: int = 60):
         self.__window = window
         self.__prices = deque(maxlen=window)
         self.__sum = 0.0
 
-    # request 2: update average incrementally O(1)
+    # update average incrementally O(1)
     def generate_signals(self, tick):
         if len(self.__prices) == self.__window:
             oldest = self.__prices[0]

@@ -1,5 +1,6 @@
 from data_loader import load_data
-from profiler import update_strategies_profile_info, plot_profile_by_input
+from profiler import update_strategies_profile_info
+from reporting import plot_profile_by_input
 from strategies import NaiveMovingAverageStrategy, WindowedMovingAverageStrategy,MovingAverageStrategyMemo_Array, MovingAverageStrategyMemo_LRUCache
 
 
@@ -38,18 +39,10 @@ def main():
             'stats': [],
             'input_sizes': input_sizes
         },
-        # 'naiveMAOptimized_numpy': {
-        #     'strategy': NaiveMovingAverageStrategyOpti_Numpy(),
-        #     'runtime_summary': [],
-        #     'memory_summary': [],
-        #     'stats': [],
-        #     'input_sizes': input_sizes
-        # },
     }
 
     # 3. profile for each strategy
     update_strategies_profile_info(strategies_info, data_points)
-    print(strategies_info)
     # # 4. output results
     plot_profile_by_input(strategies_info)
 
