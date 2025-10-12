@@ -78,86 +78,50 @@ class MovingAverageStrategyMemo_Array(Strategy):
             signals.append(self.generate_signals(tick))
         return signals
 
-from functools import lru_cache
 
 class MovingAverageStrategyMemo_LRUCache(Strategy):
-    def __init__(self, window=60):
-        self.window = window
-        self.prices = []  # keep full history
-        self.index = 0
+    __prices = []
 
-    @staticmethod
+    def __init__(self, window=60):
+        self.__window = window
+        self.__index = 0
+
+    @classmethod
     @lru_cache(maxsize=None)
-    def prefix_sum(i, prices_tuple):
+    def prefix_sum(cls, i):
         if i <= 0:
             return 0
-        return MovingAverageStrategyMemo_LRUCache.prefix_sum(i - 1, prices_tuple) + prices_tuple[i - 1]
+        return cls.prefix_sum(i - 1) + cls.__prices[i - 1]
 
     def generate_signals(self, tick):
         price = tick.price
-        self.prices.append(price)
-        self.index += 1
+        self.__prices.append(price)
 
-        if self.index < self.window:
-            return None
+        if len(self.__prices) < self.__window:
+            return 
 
-        prices_tuple = tuple(self.prices)  # make it hashable
-        psum = self.prefix_sum(self.index, prices_tuple)
-        window_sum = psum - self.prefix_sum(self.index - self.window, prices_tuple)
+        psum = type(self).prefix_sum(self.__index)
+        prev = self.__index - self.__window
+        window_sum = psum - type(self).prefix_sum(prev)
 
-        moving_avg = window_sum / self.window
+        moving_avg = window_sum / self.__window
 
-        if price > moving_avg:
-            return 1
-        elif price < moving_avg:
-            return -1
-        return 0 
+        if tick.price > moving_avg:
+            signal = 1
+        elif tick.price < moving_avg:
+            signal = -1
+        else:
+            signal = 0
+
+        return (tick.timestamp, signal, tick.symbol, 1, tick.price)
 
     def run(self, datapoints, tick_size):
-        result = []
+        signals = []
         for i in range(tick_size):
-            signal = self.generate_signals(datapoints[i])
-            result.append(signal)
-        return result
-
-
-# class NaiveMovingAverageStrategyOpti_Numpy(Strategy):
-#     def __init__(self, window: int = 60):
-#         self.__window = window
-
-#     def generate_signals(self, datapoints, tick_size=1000) -> list:
-
-#         m = min(len(datapoints), tick_size)
-#         if m < self.__window:
-#             return []
-
-#         prices = np.array([dp.price for dp in datapoints[:m]], dtype=np.float32)
-#         symbols = np.array([dp.symbol for dp in datapoints[:m]], dtype=object)
-#         timestamps = np.array([dp.timestamp for dp in datapoints[:m]], dtype=object)
-
-#         # using convolution for sliding window
-#         window = self.__window
-#         moving_avg = np.convolve(prices, np.ones(window)/window, mode='valid')
-
-#         # datas will be used to calculate signals
-#         ok_prices = prices[window-1:]
-#         ok_symbols = symbols[window-1:]
-#         ok_timestamps = timestamps[window-1:]
-
-#         # vectorized calculation rather than calculate each tick
-#         # np.sign() function will return -1/0/1 according to calculation result.
-#         # ex) if price - moving_avg > 0 than return 1
-#         positions_num = np.sign(ok_prices - moving_avg).astype(int)
-#         # ,ap numeric positions to strings : Numpy is much faster when using numeric rather than string
-#         mapping = {1: "BUY", -1: "SELL", 0: "HOLD"}
-#         positions = np.vectorize(mapping.get)(positions_num)
-
-#         # Combine all into signals
-#         signals_array = np.column_stack((ok_timestamps, positions, ok_symbols, np.ones_like(ok_prices), ok_prices))
-#         signals = [tuple(row) for row in signals_array]
-
-#         return signals
-
+            self.__index = i
+            signals.append(self.generate_signals(datapoints[i]))
+        return signals
+            
 
 class WindowedMovingAverageStrategy(Strategy):
     # Time Complexity: O(1) per tick : Because the moving average is updated incrementally without recalculation of the sum
