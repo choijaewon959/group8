@@ -19,6 +19,7 @@ class NaiveMovingAverageStrategy(Strategy):
         self.__prices = [] 
 
     def generate_signals(self, tick) -> list:
+        signals=[]
         self.__prices.append(tick.price)
 
         if len(self.__prices) >= self.__window:
@@ -27,22 +28,13 @@ class NaiveMovingAverageStrategy(Strategy):
             price = tick.price
 
             if price > moving_avg:
-                signal = 1
+                signals.append((tick.timestamp, "BUY", tick.symbol, 1, price))
             elif price < moving_avg:
-                signal = -1
+                signals.append((tick.timestamp, "SELL", tick.symbol, 1, price))
             else:
-                signal = 0
-
-            return (tick.timestamp, signal, tick.symbol, 1, price)
-
-    def run(self, datapoints, tick_size=1000):
-        signals = []
-        for i in range(tick_size):
-            tick = datapoints[i]
-            signals.append(self.generate_signals(tick))
+                signals.append((tick.timestamp, "HOLD", tick.symbol, 1, price))
         return signals
 
-    
 class MovingAverageStrategyMemo_Array(Strategy):
     '''
         Time Complexity: O(1) per tick. we directly access to prices using index and index - window size.
@@ -52,6 +44,7 @@ class MovingAverageStrategyMemo_Array(Strategy):
         self.__window = window
         self.__prices = []
         self.__window_sum = 0.0
+        self.__moving_avg = 0.0
     
     def generate_signals(self, tick) -> list:
         price = tick.price 
@@ -78,7 +71,16 @@ class MovingAverageStrategyMemo_Array(Strategy):
         signals = []
         for i in range(tick_size):
             tick = datapoints[i]
-            signals.append(self.generate_signals(tick))
+
+            if tick.price > self.__moving_avg:
+                signal = "BUY"
+            elif tick.price < self.__moving_avg:
+                signal = "SELL"
+            else:
+                signal = "HOLD"
+
+            signals.append((tick.timestamp, signal, tick.symbol, 1, tick.price))
+
         return signals
 
 
@@ -89,7 +91,6 @@ class MovingAverageStrategyMemo_LRUCache(Strategy):
     '''
     def __init__(self, window=60):
         self.__window = window
-        self.__moving_avg = 0.0
 
     def generate_signals(self, tick):
         if tick.price > self.__moving_avg:
@@ -116,27 +117,38 @@ class MovingAverageStrategyMemo_LRUCache(Strategy):
             prev = i - self.__window
             window_sum = psum - prefix_sum(prev)
 
-            self.__moving_avg = window_sum / self.__window
-            signals.append(self.generate_signals(datapoints[i]))
+            moving_avg = window_sum / self.__window
+            tick = datapoints[i]
+
+            if tick.price > moving_avg:
+                signal = "BUY"
+            elif tick.price < moving_avg:
+                signal = "SELL"
+            else:
+                signal = "HOLD"
+
+            signals.append((tick.timestamp, signal, tick.symbol, 1, tick.price))
+
         return signals
-            
+
 
 class WindowedMovingAverageStrategy(Strategy):
-    '''
-        Time Complexity: O(1) per tick : Because the moving average is updated incrementally without recalculation of the sum
-        Space Complexity: O(window) : Because self.__prices is a fixed-size deque with maxlen=window.
-    '''
+    # Time Complexity: O(1) per tick : Because the moving average is updated incrementally without recalculation of the sum
+    # Space Complexity: O(window) : Because self.__prices is a fixed-size deque with maxlen=window.
+    
     # maintain a fixed-size buffer, using a queue 
     def __init__(self, window: int = 60):
         self.__window = window
         self.__prices = deque(maxlen=window)
         self.__sum = 0.0
 
-    # update average incrementally O(1)
-    def generate_signals(self, tick):
-        if len(self.__prices) == self.__window:
-            oldest = self.__prices[0]
-            self.__sum -= oldest
+    # request 2: update average incrementally O(1)
+    def generate_signals(self, datapoints, tick_size=1000) -> list:
+        signals = []
+        for tick in datapoints[:tick_size]:
+            if len(self.__prices) == self.__window:
+                oldest = self.__prices[0]
+                self.__sum -= oldest
 
         self.__prices.append(tick.price)
         self.__sum += tick.price
@@ -146,13 +158,27 @@ class WindowedMovingAverageStrategy(Strategy):
             price = tick.price
 
             if price > moving_avg:
-                signal = 1
+                signals.append((tick.timestamp, "BUY", tick.symbol, 1, price))
             elif price < moving_avg:
-                signal = -1
+                signals.append((tick.timestamp, "SELL", tick.symbol, 1, price))
             else:
-                signal = 0
+                signals.append((tick.timestamp, "HOLD", tick.symbol, 1, price))
+        return signals
+    
 
-            return ((tick.timestamp, signal, tick.symbol, 1, price))
+
+
+class WindowedMovingAverageStrategy_Opt(Strategy):
+    # Time: O(1) per tick (incremental update)
+    # Space: O(window) (deque only)
+    
+    def __init__(self, window: int = 60):
+        self.window = window
+        self.prices = deque(maxlen=window)
+        self.avg = 0.0  # current moving average
+
+    def generate_signals(self, datapoints, tick_size=600):
+        pass
     
     def run(self, datapoints, tick_size):
         signals = []

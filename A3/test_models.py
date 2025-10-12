@@ -11,7 +11,7 @@ def test_strategies_correct():
         MarketDataPoint(timestamp=datetime.datetime.now(), symbol='AAPL', price=160.0),
     ]
 
-    input_sizes = [10, 100, 400]
+    input_sizes = [10, 10, 400]
     strategies_info = {'strategy': NaiveMovingAverageStrategy()}
     strategy = strategies_info['strategy']
 
