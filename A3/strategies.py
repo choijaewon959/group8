@@ -128,40 +128,43 @@ class NaiveMovingAverageStrategyOptiMemo3(Strategy):
         return signals
 
 
-
-
 class NaiveMovingAverageStrategyOpti_Numpy(Strategy):
     def __init__(self, window: int = 20):
         self.__window = window
 
     def generate_signals(self, datapoints, tick_size=1000) -> list:
-        m=min(len(datapoints), tick_size)
+
+        m = min(len(datapoints), tick_size)
         if m < self.__window:
             return []
-        prices = np.empty(m, dtype=np.float32)
-        symbols = np.empty(m, dtype=object)
-        timestamps = np.empty(m, object)
 
-        for i in range(m):
-            prices[i]=datapoints[i].price
-            symbols[i] = datapoints[i].symbol
-            timestamps[i] = datapoints[i].timestamp
+        prices = np.array([dp.price for dp in datapoints[:m]], dtype=np.float32)
+        symbols = np.array([dp.symbol for dp in datapoints[:m]], dtype=object)
+        timestamps = np.array([dp.timestamp for dp in datapoints[:m]], dtype=object)
 
-        cs = np.add.accumulate(prices)
-        prefix = np.zeros_like(cs)
-        prefix[self.__window:] = cs[:-self.__window]
-        moving_avg = (cs - prefix)[self.__window - 1:] / self.__window
+        # using convolution for sliding window
+        window = self.__window
+        moving_avg = np.convolve(prices, np.ones(window)/window, mode='valid')
 
-        ok_prices = prices[self.__window-1:]
-        ok_symbols = symbols[self.__window-1:]
-        ok_timestamps = timestamps[self.__window-1:]
+        # datas will be used to calculate signals
+        ok_prices = prices[window-1:]
+        ok_symbols = symbols[window-1:]
+        ok_timestamps = timestamps[window-1:]
 
-        positions = np.where(ok_prices > moving_avg, "BUY",
-                  np.where(ok_prices < moving_avg, "SELL", "HOLD"))
+        # vectorized calculation rather than calculate each tick
+        # np.sign() function will return -1/0/1 according to calculation result.
+        # ex) if price - moving_avg > 0 than return 1
+        positions_num = np.sign(ok_prices - moving_avg).astype(int)
+        # ,ap numeric positions to strings : Numpy is much faster when using numeric rather than string
+        mapping = {1: "BUY", -1: "SELL", 0: "HOLD"}
+        positions = np.vectorize(mapping.get)(positions_num)
 
-        signals = [(t, sig, sym, 1, pr) for (t, sig, sym, pr) in zip(ok_timestamps, positions, ok_symbols, ok_prices)]
+        # Combine all into signals
+        signals_array = np.column_stack((ok_timestamps, positions, ok_symbols, np.ones_like(ok_prices), ok_prices))
+        signals = [tuple(row) for row in signals_array]
 
         return signals
+
 
 class NaiveMovingAverageStrategyOpti_generator(Strategy):
     def __init__(self, window: int = 20):
