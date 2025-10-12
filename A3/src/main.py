@@ -1,6 +1,6 @@
 from data_loader import load_data
 from profiler import update_strategies_profile_info
-from reporting import plot_profile_by_input
+from reporting import plot_profile_by_input, print_out_result
 from strategies import NaiveMovingAverageStrategy, WindowedMovingAverageStrategy, MovingAverageStrategyMemo_LRUCache, MovingAverageStrategyMemo_Array
 
 
@@ -13,13 +13,6 @@ def main():
     strategies_info = {
         'naiveMA': {
             'strategy': NaiveMovingAverageStrategy(),
-            'runtime_summary': [],
-            'memory_summary': [],
-            'stats': [],
-            'input_sizes': input_sizes
-        },
-        'windowMA': {
-            'strategy': WindowedMovingAverageStrategy(),
             'runtime_summary': [],
             'memory_summary': [],
             'stats': [],
@@ -39,11 +32,21 @@ def main():
             'stats': [],
             'input_sizes': input_sizes
         },
+        'windowMA': {
+            'strategy': WindowedMovingAverageStrategy(),
+            'runtime_summary': [],
+            'memory_summary': [],
+            'stats': [],
+            'input_sizes': input_sizes
+        },
+        
     }
 
     # 3. profile for each strategy
     update_strategies_profile_info(strategies_info, data_points)
-    # # 4. output results
+    # 4. print out results
+    print_out_result(strategies_info)
+    # 5. output results
     plot_profile_by_input(strategies_info)
 
 

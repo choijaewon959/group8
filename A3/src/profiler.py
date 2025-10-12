@@ -19,7 +19,7 @@ def calculate_profile(func, *args, **kwargs):
     parsed_stats = []
     for func_identifier, stat in stats.stats.items():
         filename, line, func_name = func_identifier
-        ncalls, primitive, tottime, cumtime, callers = stat
+        ncalls, primitive, tottime, cumtime, _ = stat
         parsed_stats.append({
             "function": func_name,
             "file": filename,
@@ -31,16 +31,21 @@ def calculate_profile(func, *args, **kwargs):
         })
 
     # memory profiling
+    baseline_memory = memory_usage()[0]
     mem_usage = memory_usage((func, args, kwargs), interval=0.1)
     max_mem_usage = max(mem_usage)
+
+    # note that the memory usage reported here is the peak memory used by the function minus the baseline memory before function execution
     print("="*40 + " MEMORY PROFILER RESULT " + "="*40)
-    print(f"Peak memory usage: {max_mem_usage:.2f} MiB")    
+    print(f"Baseline memory: {baseline_memory:.2f} MiB")
+    print(f"Peak memory usage: {max_mem_usage:.2f} MiB") 
+    print(f"Strategy Peak memory usage: {max_mem_usage - baseline_memory:.2f} MiB") 
     print("="*95)
 
     return {
         'timeit': timeit_result_millis,
         'stats': parsed_stats,
-        'memory_usage': max_mem_usage
+        'memory_usage': max_mem_usage - baseline_memory
     }
 
 def update_strategies_profile_info(strategies_info, data_points):

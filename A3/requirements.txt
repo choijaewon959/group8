@@ -1,1 +1,4 @@
 memory-profiler
+pytest
+matplotlib
+numpy

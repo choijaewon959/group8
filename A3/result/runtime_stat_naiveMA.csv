@@ -1,0 +1,22 @@
+function,file,line,ncalls,primitive_calls,total_time,cumulative_time,input_size
+<method 'append' of 'list' objects>,~,0,2000,2000,0.00014615300000000002,0.00014615300000000002,1000
+<built-in method builtins.len>,~,0,1001,1001,5.9940000000000005e-05,5.9940000000000005e-05,1000
+<built-in method builtins.min>,~,0,1,1,2.08e-07,2.08e-07,1000
+<built-in method builtins.sum>,~,0,1000,1000,0.000236206,0.000236206,1000
+<method 'disable' of '_lsprof.Profiler' objects>,~,0,1,1,7.208e-06,7.208e-06,1000
+run,/Users/jaewonchoi/workspace/uchicago/FINM325/Group8/group8/A3/src/strategies.py,36,1,1,0.00024083800000000003,0.001197125,1000
+generate_signals,/Users/jaewonchoi/workspace/uchicago/FINM325/Group8/group8/A3/src/strategies.py,20,1000,1000,0.00051378,0.000882273,1000
+<method 'append' of 'list' objects>,~,0,20000,20000,0.001642449,0.001642449,10000
+<built-in method builtins.len>,~,0,10001,10001,0.0006377980000000001,0.0006377980000000001,10000
+<built-in method builtins.min>,~,0,1,1,4.5800000000000005e-07,4.5800000000000005e-07,10000
+<built-in method builtins.sum>,~,0,10000,10000,0.002531162,0.002531162,10000
+<method 'disable' of '_lsprof.Profiler' objects>,~,0,1,1,1.5584000000000002e-05,1.5584000000000002e-05,10000
+run,/Users/jaewonchoi/workspace/uchicago/FINM325/Group8/group8/A3/src/strategies.py,36,1,1,0.0027104940000000004,0.012877916000000001,10000
+generate_signals,/Users/jaewonchoi/workspace/uchicago/FINM325/Group8/group8/A3/src/strategies.py,20,10000,10000,0.0053555550000000006,0.009303021,10000
+<method 'append' of 'list' objects>,~,0,200000,200000,0.015728166000000002,0.015728166000000002,100000
+<built-in method builtins.len>,~,0,100001,100001,0.006061512000000001,0.006061512000000001,100000
+<built-in method builtins.min>,~,0,1,1,5.000000000000001e-07,5.000000000000001e-07,100000
+<built-in method builtins.sum>,~,0,100000,100000,0.024385873000000002,0.024385873000000002,100000
+<method 'disable' of '_lsprof.Profiler' objects>,~,0,1,1,1.9666e-05,1.9666e-05,100000
+run,/Users/jaewonchoi/workspace/uchicago/FINM325/Group8/group8/A3/src/strategies.py,36,1,1,0.026816765000000003,0.126118208,100000
+generate_signals,/Users/jaewonchoi/workspace/uchicago/FINM325/Group8/group8/A3/src/strategies.py,20,100000,100000,0.053125392,0.091569839,100000

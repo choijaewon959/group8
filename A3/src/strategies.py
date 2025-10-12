@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from collections import deque
 from functools import lru_cache
 
+
 class Strategy(ABC):
     @abstractmethod
     def generate_signals(self, tick) -> list:
@@ -15,7 +16,7 @@ class NaiveMovingAverageStrategy(Strategy):
     def __init__(self, window: int = 60):
         self.__window = window
         self.__prices = [] 
-        
+    
     def generate_signals(self, tick) -> list:
         self.__prices.append(tick.price)
 
@@ -31,10 +32,10 @@ class NaiveMovingAverageStrategy(Strategy):
             else:
                 signal = 0
             return (tick.timestamp, signal, tick.symbol, 1, price)
-        
+    
     def run(self, datapoints, tick_size=1000):
         signals = []
-        for i in range(tick_size):
+        for i in range(min(len(datapoints), tick_size)):
             tick = datapoints[i]
             signals.append(self.generate_signals(tick))
         return signals
@@ -72,7 +73,7 @@ class MovingAverageStrategyMemo_Array(Strategy):
 
     def run(self, datapoints, tick_size=1000):
         signals = []
-        for i in range(tick_size):
+        for i in range(min(len(datapoints), tick_size)):
             tick = datapoints[i]
             signals.append(self.generate_signals(tick))
         return signals
@@ -106,7 +107,7 @@ class MovingAverageStrategyMemo_LRUCache(Strategy):
                 return 0
             return prefix_sum(i - 1) + datapoints[i - 1].price
 
-        for i in range(self.__window, tick_size):
+        for i in range(self.__window, min(len(datapoints), tick_size)):
             psum = prefix_sum(i)
             prev = i - self.__window
             window_sum = psum - prefix_sum(prev)
@@ -146,7 +147,7 @@ class WindowedMovingAverageStrategy(Strategy):
     
     def run(self, datapoints, tick_size):
         signals = []
-        for i in range(tick_size):
+        for i in range(min(len(datapoints), tick_size)):
             tick = datapoints[i]
             signals.append(self.generate_signals(tick))
         return signals
