@@ -1,6 +1,7 @@
 from data_loader import load_data
-from profiler import update_strategies_profile_info, plot_profile_by_input
-from strategies import NaiveMovingAverageStrategy, WindowedMovingAverageStrategy,MovingAverageStrategyMemo_Array, MovingAverageStrategyMemo_LRUCache
+from profiler import update_strategies_profile_info
+from reporting import plot_profile_by_input
+from strategies import NaiveMovingAverageStrategy, WindowedMovingAverageStrategy, MovingAverageStrategyMemo_LRUCache, MovingAverageStrategyMemo_Array
 
 
 def main():
@@ -24,43 +25,20 @@ def main():
             'stats': [],
             'input_sizes': input_sizes
         },
-        'naiveMAOptimized_memo': {
-            'strategy': NaiveMovingAverageStrategyOpti_memo(),
+        'MAOptimized_memo_LRU_Cache': {
+            'strategy': MovingAverageStrategyMemo_LRUCache(),
             'runtime_summary': [],
             'memory_summary': [],
             'stats': [],
             'input_sizes': input_sizes
         },
-        'naiveMAOptimized_memo2': {
-            'strategy': NaiveMovingAverageStrategyOptiMemo2(),
+        'MAOptimized_memo_Array': {
+            'strategy': MovingAverageStrategyMemo_Array(),
             'runtime_summary': [],
             'memory_summary': [],
             'stats': [],
             'input_sizes': input_sizes
         },
-        'naiveMAOptimized_memo3': {
-            'strategy': NaiveMovingAverageStrategyOptiMemo3(),
-            'runtime_summary': [],
-            'memory_summary': [],
-            'stats': [],
-            'input_sizes': input_sizes
-        },
-        'naiveMAOptimized_numpy': {
-            'strategy': NaiveMovingAverageStrategyOpti_Numpy(),
-            'runtime_summary': [],
-            'memory_summary': [],
-            'stats': [],
-            'input_sizes': input_sizes
-        },
-        'naiveMAOptimized_generator': {
-            'strategy': NaiveMovingAverageStrategyOpti_generator(),
-            'runtime_summary': [],
-            'memory_summary': [],
-            'stats': [],
-            'input_sizes': input_sizes
-        },  
-        
-
     }
 
     # 3. profile for each strategy
