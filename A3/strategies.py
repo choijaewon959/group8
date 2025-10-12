@@ -77,10 +77,15 @@ class MovingAverageStrategyMemo_Array(Strategy):
             elif tick.price < self.__moving_avg:
                 signal = "SELL"
             else:
-                signal = "HOLD"
+                signal = 0
 
-            signals.append((tick.timestamp, signal, tick.symbol, 1, tick.price))
+            return (tick.timestamp, signal, tick.symbol, 1, price)
 
+    def run(self, datapoints, tick_size=1000):
+        signals = []
+        for i in range(tick_size):
+            tick = datapoints[i]
+            signals.append(self.generate_signals(tick))
         return signals
 
 
