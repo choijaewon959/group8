@@ -23,12 +23,25 @@ def main():
             'memory_summary': [],
             'input_sizes': input_sizes
         },
-        'naiveMAOptimized': {
-            'strategy': NaiveMovingAverageStrategyOpti_generator(),
+        'naiveMAOptimized_memo': {
+            'strategy': NaiveMovingAverageStrategyOpti_memo(),
             'runtime_summary': [],
             'memory_summary': [],
             'input_sizes': input_sizes
         },
+        'naiveMAOptimized_numpy': {
+            'strategy': NaiveMovingAverageStrategyOpti_Numpy(),
+            'runtime_summary': [],
+            'memory_summary': [],
+            'input_sizes': input_sizes
+        },
+        'naiveMAOptimized_generator': {
+            'strategy': NaiveMovingAverageStrategyOpti_generator(),
+            'runtime_summary': [],
+            'memory_summary': [],
+            'input_sizes': input_sizes
+        },  
+        
 
     }
 

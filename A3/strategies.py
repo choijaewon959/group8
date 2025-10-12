@@ -39,7 +39,6 @@ class NaiveMovingAverageStrategy(Strategy):
         return signals
 
 class NaiveMovingAverageStrategyOpti_memo(Strategy):
-
     def __init__(self, window: int = 20):
         self.__window = window
         self.__prices = deque(maxlen=self.__window)
@@ -72,7 +71,6 @@ class NaiveMovingAverageStrategyOpti_memo(Strategy):
 
 
 class NaiveMovingAverageStrategyOpti_Numpy(Strategy):
-
     def __init__(self, window: int = 20):
         self.__window = window
 
@@ -109,7 +107,6 @@ class NaiveMovingAverageStrategyOpti_generator(Strategy):
     def __init__(self, window: int = 20):
         self.__window = window
         self.__prices = []
-        self.__sum = 0
 
     def generate_signals(self, datapoints, tick_size=1000) -> list:
         signals = []
