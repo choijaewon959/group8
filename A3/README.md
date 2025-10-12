@@ -3,7 +3,7 @@
 Install required Python packages:
 
 ```bash
-pip install numpy matplotlib memory_profiler pytest
+pip install -r requirements.txt
 ```
 
 # FINM325 Group 8: Moving Average Strategies
