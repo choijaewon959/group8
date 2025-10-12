@@ -34,6 +34,8 @@ def calculate_profile(func, *args, **kwargs):
     baseline_memory = memory_usage()[0]
     mem_usage = memory_usage((func, args, kwargs), interval=0.1)
     max_mem_usage = max(mem_usage)
+
+    # note that the memory usage reported here is the peak memory used by the function minus the baseline memory before function execution
     print("="*40 + " MEMORY PROFILER RESULT " + "="*40)
     print(f"Baseline memory: {baseline_memory:.2f} MiB")
     print(f"Peak memory usage: {max_mem_usage:.2f} MiB") 

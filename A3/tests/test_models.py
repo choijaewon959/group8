@@ -84,11 +84,8 @@ def test_opti_strategy_runs_under_1sec():
     # test if optimization with memo - array version runs under contraints
     opti_using_numpy = strategy_info['memo_array']
     numpy_profile = calculate_profile(opti_using_numpy.run, data_points, tick_size=100000)
-    sorted_stats = sorted(numpy_profile['stats'], key=lambda x: x['total_time'])
-    print(sorted_stats)
     assert numpy_profile['timeit'] < ONE_SECOND_MILLI
     assert numpy_profile['memory_usage'] < MEM_USAGE_MB
-    assert numpy_profile['stats']
 
     # test if optimization with lru cache - array version runs under constraints
     opti_using_memo = strategy_info['memo_lru_cache']

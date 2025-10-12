@@ -6,18 +6,20 @@
 
 | Strategy                        | Time Complexity | Space Complexity | Runtime (ms, 100k ticks) | Memory (MiB, 100k ticks) |
 |---------------------------------|-----------------|------------------|-------------------------|--------------------------|
-| NaiveMovingAverageStrategy      | O(N*k)          | O(N)             | ~1200                   | ~40                      |
-| WindowedMovingAverageStrategy   | O(N)            | O(k)             | ~80                     | ~1.5                     |
-| MovingAverageStrategyMemoArray  | O(N)            | O(1)             | ~60                     | ~1.2                     |
-| MovingAverageStrategyMemoLRUCache| O(N)           | O(N)             | ~100                    | ~20                      |
+| NaiveMovingAverageStrategy      | O(N*k)          | O(N)             | ~52                     | ~12                      |
+| WindowedMovingAverageStrategy   | O(N)            | O(k)             | ~27                     | ~0.53                     |
+| MovingAverageStrategyMemoArray  | O(N)            | O(N)             | ~25                     | ~1.53                     |
+| MovingAverageStrategyMemoLRUCache| O(N)           | O(N)             | ~39                     | ~23.86                      |
 
+*k is size of window.*
 *Values are illustrative; see CSVs in `result/` for actual measurements.*
+*Note that the memory usage reported here is the peak memory used by the function minus the baseline memory before function execution.*
 
 ## 2. Complexity Annotations
 
 - **NaiveMovingAverageStrategy**: For each tick, computes sum over window, storing all prices. Slowest and highest memory.
 - **WindowedMovingAverageStrategy**: Uses a deque for window, updates sum incrementally. Fast and memory-efficient.
-- **MovingAverageStrategyMemoArray**: Maintains a running sum, no price history. Fastest and lowest memory.
+- **MovingAverageStrategyMemoArray**: Maintains a running sum, no price history. Fastest and second lowest memory.
 - **MovingAverageStrategyMemoLRUCache**: Uses prefix sums with LRU cache. Fast, but cache grows with input size.
 
 ## 3. Scaling Behavior Plots
@@ -31,13 +33,24 @@ plot_profile_by_input(strategies_info)
 ```
 
 - Expect near-linear scaling for optimized strategies (Windowed, MemoArray).
-- Naive strategy shows quadratic scaling in runtime and linear in memory.
+- Naive strategy shows quadratic scaling (N*k) in runtime and linear in memory.
 
 ## 4. Narrative: Strategy Comparison & Optimization Impact
 
-The naive moving average strategy, while simple, is inefficient for large datasets due to repeated window sum calculations and full price history storage. Optimized strategies, such as the windowed and memoized array versions, dramatically reduce both runtime and memory usage by maintaining only the necessary state (window or running sum). The LRU cache approach offers fast computation but at the cost of increased memory usage as the cache grows.
+<b>Naive Strategy</b>
+The naive moving average strategy, while simple, is inefficient for large datasets due to repeated window sum calculations and full price history storage. 
+
+<b>Optimized Strategies</b>
+Windowed Strategy
+Windowed Strategy, dramatically reduces runtime and memory usages. This strategy only maintains the window-sized prices information and updates new moving average in O(1) time. This strategy shows the best performance considering both runtime and memory usage.
+
+Memoized Strategy - Array
+This is the second best strategy considering both runtime and memory usage. This keeps whole price array as its attribute and use it as memoization array. This dynamically look up historical price that we want to drop and new price that we want to add when calculating new moving average. Higher usage in memory than Windowed strategy is found as expected. 
+
+Memoized Strategy - LRU Cache
+This has same logic as Memoized Strategy - Array. Rather than keeping all the historical prices as its attribute, this stores index of data points as key, and sum upto that index as value in built-in LRU Cache. As it calculates new average recursively using LRU Cache, Cache can grow very fast and high when we try to store the sums for all the indices. While still faster than Naive approach, this drawback leads the algorithm to have worse memory usage than naive approach, emperically. 
 
 Empirical results confirm the theoretical complexity: optimized strategies scale efficiently with input size, making them suitable for real-time or large-scale applications. The profiling and plots demonstrate that algorithmic improvements yield substantial practical benefits, validating the importance of complexity analysis in quantitative finance.
 
 ---
-For full results, see the CSV files in `result/` and the generated plots.
+For full results, see the CSV files in `result/` and the generated plots. Note that the information of the line of the logic that actually uses the memory the most is stored in `result/runtime_stat_{strategy_name}`.

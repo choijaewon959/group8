@@ -29,7 +29,7 @@ def plot_profile_by_input(strategies):
     # Titles and labels
     axes[0].set_title('Runtime Profiling')
     axes[0].set_xlabel('Input Size')
-    axes[0].set_ylabel('Runtime (s)')
+    axes[0].set_ylabel('Runtime (ms)')
     axes[0].grid(True)
 
     axes[1].set_title('Memory Usage Profiling')
