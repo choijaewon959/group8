@@ -48,7 +48,7 @@ def update_strategies_profile_info(strategies_info, data_points):
     for strategy_map in strategies_info.values():
         strategy = strategy_map['strategy']
         for tick_size in strategy_map['input_sizes']:
-            profile = calculate_profile(strategy.generate_signals, data_points, tick_size=tick_size)
+            profile = calculate_profile(strategy.run, data_points, tick_size=tick_size)
             strategy_map['runtime_summary'].append(profile['timeit'])
             strategy_map['memory_summary'].append(profile['memory_usage'])
             strategy_map['stats'].append(profile['stats'])

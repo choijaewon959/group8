@@ -1,6 +1,6 @@
 from data_loader import load_data
 from profiler import update_strategies_profile_info, plot_profile_by_input
-from strategies import NaiveMovingAverageStrategy, WindowedMovingAverageStrategy,MovingAverageStrategyMemo_Array, MovingAverageStrategyMemo_LRUCache,NaiveMovingAverageStrategyOpti_Numpy
+from strategies import NaiveMovingAverageStrategy, WindowedMovingAverageStrategy,MovingAverageStrategyMemo_Array, MovingAverageStrategyMemo_LRUCache
 
 
 def main():
