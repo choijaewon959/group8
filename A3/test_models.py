@@ -2,7 +2,7 @@ import pytest
 from data_loader import load_data
 import datetime
 from models import MarketDataPoint
-from strategies import NaiveMovingAverageStrategy, WindowedMovingAverageStrategy, NaiveMovingAverageStrategyOpti_generator,  NaiveMovingAverageStrategyOpti_memo, NaiveMovingAverageStrategyOpti_Numpy
+from strategies import NaiveMovingAverageStrategy, WindowedMovingAverageStrategy,  NaiveMovingAverageStrategyOpti_memo, NaiveMovingAverageStrategyOpti_Numpy
 from profiler import calculate_profile
 
 def test_strategies_correct():
@@ -73,8 +73,7 @@ def test_strategies_correct():
 
 def test_opti_strategy_runs_under_1sec():
     data_points = load_data()
-    strategy_info = {'generator': NaiveMovingAverageStrategyOpti_generator(),
-                     'numpy': NaiveMovingAverageStrategyOpti_Numpy(),
+    strategy_info = {'numpy': NaiveMovingAverageStrategyOpti_Numpy(),
                      'memoization': NaiveMovingAverageStrategyOpti_memo(),
                      'deque': WindowedMovingAverageStrategy()}
 
