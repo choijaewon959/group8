@@ -17,11 +17,11 @@ class NaiveMovingAverageStrategy(Strategy):
     # Space Complexity: total O(T). Because self.__prices stores all past prices (as requested) without deletion.
     
     # intentionally save all data to make inefficiency 
-    def __init__(self, window: int = 20):
+    def __init__(self, window: int = 60):
         self.__window = window
         self.__prices = [] 
 
-    def generate_signals(self, datapoints, tick_size=1000) -> list:
+    def generate_signals(self, datapoints, tick_size=600) -> list:
         signals = []
         for tick in datapoints[:tick_size]:  # process only up to tick_size data points
             self.__prices.append(tick.price)
@@ -39,7 +39,7 @@ class NaiveMovingAverageStrategy(Strategy):
         return signals
 
 class NaiveMovingAverageStrategyOpti_memo(Strategy):
-    def __init__(self, window: int = 20):
+    def __init__(self, window: int = 60):
         self.__window = window
         self.__prices = deque(maxlen=self.__window)
 
@@ -48,7 +48,7 @@ class NaiveMovingAverageStrategyOpti_memo(Strategy):
     def computeAveragePrice(self, prices):
         return sum(prices) / len(prices)
 
-    def generate_signals(self, datapoints, tick_size=1000) -> list:
+    def generate_signals(self, datapoints, tick_size=600) -> list:
         signals = []
 
         for tick in datapoints[:tick_size]:  # process only up to tick_size data points
@@ -70,10 +70,10 @@ class NaiveMovingAverageStrategyOpti_memo(Strategy):
         return signals
     
 class NaiveMovingAverageStrategyOptiMemo2(Strategy):
-    def __init__(self, window:int = 20):
+    def __init__(self, window:int = 60):
         self.__window = window
     
-    def generate_signals(self, datapoints, tick_size=1000) -> list:
+    def generate_signals(self, datapoints, tick_size=600) -> list:
         signals = []
         window_sum = sum(dp.price for dp in datapoints[:self.__window])  # initial window
 
@@ -94,10 +94,10 @@ class NaiveMovingAverageStrategyOptiMemo2(Strategy):
         return signals
 
 class NaiveMovingAverageStrategyOptiMemo3(Strategy):
-    def __init__(self, window=20):
+    def __init__(self, window=60):
         self.__window = window
 
-    def generate_signals(self, datapoints, tick_size=1000):
+    def generate_signals(self, datapoints, tick_size=600):
         signals = []
 
         @lru_cache(maxsize=self.__window*2)
@@ -129,10 +129,10 @@ class NaiveMovingAverageStrategyOptiMemo3(Strategy):
 
 
 class NaiveMovingAverageStrategyOpti_Numpy(Strategy):
-    def __init__(self, window: int = 20):
+    def __init__(self, window: int = 60):
         self.__window = window
 
-    def generate_signals(self, datapoints, tick_size=1000) -> list:
+    def generate_signals(self, datapoints, tick_size=600) -> list:
 
         m = min(len(datapoints), tick_size)
         if m < self.__window:
@@ -167,11 +167,11 @@ class NaiveMovingAverageStrategyOpti_Numpy(Strategy):
 
 
 class NaiveMovingAverageStrategyOpti_generator(Strategy):
-    def __init__(self, window: int = 20):
+    def __init__(self, window: int = 60):
         self.__window = window
         self.__prices = []
 
-    def generate_signals(self, datapoints, tick_size=1000) -> list:
+    def generate_signals(self, datapoints, tick_size=600) -> list:
         signals = []
 
         for data in datapoints[:tick_size]:
@@ -198,13 +198,13 @@ class WindowedMovingAverageStrategy(Strategy):
     # Space Complexity: O(window) : Because self.__prices is a fixed-size deque with maxlen=window.
     
     # request 1: maintain a fixed-size buffer, using a queue 
-    def __init__(self, window: int = 20):
+    def __init__(self, window: int = 60):
         self.__window = window
         self.__prices = deque(maxlen=window)
         self.__sum = 0.0
 
     # request 2: update average incrementally O(1)
-    def generate_signals(self, datapoints, tick_size=1000) -> list:
+    def generate_signals(self, datapoints, tick_size=600) -> list:
         signals = []
         for tick in datapoints[:tick_size]:
             if len(self.__prices) == self.__window:
@@ -233,12 +233,12 @@ class WindowedMovingAverageStrategy_Opt(Strategy):
     # Time: O(1) per tick (incremental update)
     # Space: O(window) (deque only)
     
-    def __init__(self, window: int = 20):
+    def __init__(self, window: int = 60):
         self.window = window
         self.prices = deque(maxlen=window)
         self.avg = 0.0  # current moving average
 
-    def generate_signals(self, datapoints, tick_size=1000) -> List:
+    def generate_signals(self, datapoints, tick_size=600) -> List:
         signals = []
 
         for tick in datapoints[:tick_size]:
@@ -266,8 +266,8 @@ class WindowedMovingAverageStrategy_Opt(Strategy):
 ## Execution Sample Test
 # data = load_data()
 # signals = []
-# naiveMA = NaiveMovingAverageStrategy(window = 20)
-# windowMA = WindowedMovingAverageStrategy(window= 20)
+# naiveMA = NaiveMovingAverageStrategy(window = 60)
+# windowMA = WindowedMovingAverageStrategy(window= 60)
 # for tick in data:
 #     signals.append(windowMA.generate_signals(tick))
 # print(signals)
