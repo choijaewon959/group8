@@ -19,7 +19,7 @@ def calculate_profile(func, *args, **kwargs):
     parsed_stats = []
     for func_identifier, stat in stats.stats.items():
         filename, line, func_name = func_identifier
-        ncalls, primitive, tottime, cumtime, callers = stat
+        ncalls, primitive, tottime, cumtime, _ = stat
         parsed_stats.append({
             "function": func_name,
             "file": filename,
