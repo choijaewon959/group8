@@ -6,6 +6,7 @@ from strategies import NaiveMovingAverageStrategy, WindowedMovingAverageStrategy
 
 def main():
     # 1. load data
+    # this will take O(n) time and O(n) space
     data_points = load_data() # tick data points
 
     # 2. initialize strategy
