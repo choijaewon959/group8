@@ -2,7 +2,8 @@ from abc import ABC, abstractmethod
 from collections import deque
 from functools import lru_cache
 from unittest import signals
-
+from typing import List
+from datetime import datetime
 import numpy as np
 
 
@@ -166,6 +167,41 @@ class WindowedMovingAverageStrategy(Strategy):
         return signals
     
 
+
+
+class WindowedMovingAverageStrategy_Opt(Strategy):
+    # Time: O(1) per tick (incremental update)
+    # Space: O(window) (deque only)
+    
+    def __init__(self, window: int = 20):
+        self.window = window
+        self.prices = deque(maxlen=window)
+        self.avg = 0.0  # current moving average
+
+    def generate_signals(self, datapoints, tick_size=1000) -> List:
+        signals = []
+
+        for tick in datapoints[:tick_size]:
+            # Remove oldest price if deque full
+            removed = 0.0
+            if len(self.prices) == self.window:
+                removed = self.prices.popleft()
+            self.prices.append(tick.price)
+
+            # Incremental moving average
+            k = len(self.prices)
+            self.avg = self.avg + (tick.price - removed) / k
+
+            # Generate signal only when window is full
+            if k == self.window:
+                if tick.price > self.avg:
+                    signals.append((tick.timestamp, "BUY", tick.symbol, 1, tick.price))
+                elif tick.price < self.avg:
+                    signals.append((tick.timestamp, "SELL", tick.symbol, 1, tick.price))
+                else:
+                    signals.append((tick.timestamp, "HOLD", tick.symbol, 1, tick.price))
+
+        return signals
 
 ## Execution Sample Test
 # data = load_data()
