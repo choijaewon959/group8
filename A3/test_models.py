@@ -1,15 +1,9 @@
 import pytest
+from data_loader import load_data
 import datetime
 from models import MarketDataPoint
-from strategies import NaiveMovingAverageStrategy, WindowedMovingAverageStrategy
-from pathlib import Path
-import csv
-
-"""
-FIXTURES = Path(__file__).parent
-dUMMY_STRATEGY = "dummyStrategy"
-BAD_STATUS = "BADSTATUS"
-"""
+from strategies import NaiveMovingAverageStrategy, WindowedMovingAverageStrategy, NaiveMovingAverageStrategyOpti_generator,  NaiveMovingAverageStrategyOpti_memo, NaiveMovingAverageStrategyOpti_Numpy
+from profiler import calculate_profile
 
 def test_strategies_correct():
     market_data = [
@@ -76,3 +70,38 @@ def test_strategies_correct():
     strategy = strategies_check_edgecase['Strategy']
     signals = strategy.generate_signals([])
     assert signals == []
+
+def test_opti_strategy_runs_under_1sec():
+    data_points = load_data()
+    strategy_info = {'generator': NaiveMovingAverageStrategyOpti_generator(),
+                     'numpy': NaiveMovingAverageStrategyOpti_Numpy(),
+                     'memoization': NaiveMovingAverageStrategyOpti_memo(),
+                     'deque': WindowedMovingAverageStrategy()}
+
+    #test if optimization with generator runs under 1sec
+    opti_using_generator=strategy_info['generator']
+    generator_profile = calculate_profile(opti_using_generator.generate_signals, data_points, tick_size=100000)
+    assert generator_profile['timeit'] < 1
+    assert generator_profile['memory_usage'] < 150
+
+    # test if optimization with numpy runs under 1sec
+    opti_using_numpy = strategy_info['numpy']
+    numpy_profile = calculate_profile(opti_using_numpy.generate_signals, data_points, tick_size=100000)
+    assert numpy_profile['timeit'] < 1
+    assert numpy_profile['memory_usage'] < 250
+
+    # test if optimization with memoization runs under 1sec
+    opti_using_memo = strategy_info['memoization']
+    memo_profile = calculate_profile(opti_using_memo.generate_signals, data_points, tick_size=100000)
+    assert memo_profile['timeit'] < 1
+    assert memo_profile['memory_usage'] < 250
+
+    # test if optimization with deque runs under 1sec
+    opti_using_deque = strategy_info['deque']
+    deque_profile = calculate_profile(opti_using_deque.generate_signals, data_points, tick_size=100000)
+    assert deque_profile['timeit'] < 1
+    assert deque_profile['memory_usage'] < 250
+
+
+
+

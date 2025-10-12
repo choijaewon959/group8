@@ -8,10 +8,11 @@ def main():
     data_points = load_data() # tick data points
 
     # 2. initialize strategy
-    input_sizes = [1000, 10_000, 100_000]
+    #input_sizes = [1000, 10_000, 100_000]
+    input_sizes = [10,100,100_000]
     strategies_info = {
         'naiveMA': {
-            'strategy': NaiveMovingAverageStrategyOpti_generator(),
+            'strategy': NaiveMovingAverageStrategyOpti_Numpy(),
             'runtime_summary': [],
             'memory_summary': [],
             'input_sizes': input_sizes

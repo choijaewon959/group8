@@ -76,15 +76,22 @@ class NaiveMovingAverageStrategyOpti_Numpy(Strategy):
         self.__window = window
 
     def generate_signals(self, datapoints, tick_size=1000) -> list:
-        prices = np.array([tick.price for tick in datapoints[:tick_size]])
-        symbols = np.array([tick.symbol for tick in datapoints[:tick_size]])
-        timestamps = np.array([tick.timestamp for tick in datapoints[:tick_size]])
-
-        if len(prices) < self.__window:
+        m=min(len(datapoints), tick_size)
+        if m < self.__window:
             return []
+        prices = np.empty(m, dtype=np.float32)
+        symbols = np.empty(m, dtype=object)
+        timestamps = np.empty(m, object)
 
-        kernel = np.ones(self.__window) / self.__window
-        moving_avg = np.convolve(prices, kernel, mode='valid')
+        for i in range(m):
+            prices[i]=datapoints[i].price
+            symbols[i] = datapoints[i].symbol
+            timestamps[i] = datapoints[i].timestamp
+
+        cs = np.add.accumulate(prices)
+        prefix = np.zeros_like(cs)
+        prefix[self.__window:] = cs[:-self.__window]
+        moving_avg = (cs - prefix)[self.__window - 1:] / self.__window
 
         ok_prices = prices[self.__window-1:]
         ok_symbols = symbols[self.__window-1:]
