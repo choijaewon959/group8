@@ -7,7 +7,7 @@ def calculate_profile(func, *args, **kwargs):
     timeit_result = timeit.timeit(lambda: func(*args, **kwargs), number=1)
     timeit_result_millis = timeit_result * 1000  # Convert to milliseconds
     print("="*40 + " TIMEIT RESULT " + "="*40)
-    print(f"Execution time: {timeit_result_millis:.3f} seconds")
+    print(f"Execution time: {timeit_result_millis:.3f} milliseconds")
     print("="*95)
 
     #cprofile profiling
