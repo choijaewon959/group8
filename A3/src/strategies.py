@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from collections import deque
 from functools import lru_cache
 
+
 class Strategy(ABC):
     @abstractmethod
     def generate_signals(self, tick) -> list:
@@ -15,7 +16,7 @@ class NaiveMovingAverageStrategy(Strategy):
     def __init__(self, window: int = 60):
         self.__window = window
         self.__prices = [] 
-        
+    
     def generate_signals(self, tick) -> list:
         self.__prices.append(tick.price)
 
@@ -31,7 +32,7 @@ class NaiveMovingAverageStrategy(Strategy):
             else:
                 signal = 0
             return (tick.timestamp, signal, tick.symbol, 1, price)
-        
+    
     def run(self, datapoints, tick_size=1000):
         signals = []
         for i in range(min(len(datapoints), tick_size)):
