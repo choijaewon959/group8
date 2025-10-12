@@ -79,7 +79,7 @@ class MovingAverageStrategyMemo_Array(Strategy):
             else:
                 signal = 0
 
-            return (tick.timestamp, signal, tick.symbol, 1, price)
+        return (tick.timestamp, signal, tick.symbol, 1, price)
 
     def run(self, datapoints, tick_size=1000):
         signals = []
