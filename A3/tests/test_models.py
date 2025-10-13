@@ -100,5 +100,45 @@ def test_opti_strategy_runs_under_1sec():
     assert deque_profile['memory_usage'] < MEM_USAGE_MiB
 
 
+def test_expected_hotspots():
+    data_points = load_data()
+    strategy_info = {'naive': NaiveMovingAverageStrategy(),
+                     'memo_array': MovingAverageStrategyMemo_Array(),
+                     'memo_lru_cache': MovingAverageStrategyMemo_LRUCache(),
+                     'deque': WindowedMovingAverageStrategy()}
+
+    #function that runs on every tick, expected to be hotspot for all strategies
+    expected_hotspot = "generate_signals"
+
+    non_opti_naive = strategy_info['naive']
+    profile_naive = calculate_profile(non_opti_naive.run, data_points, tick_size=100000)
+    top_funcs_naive = sorted(profile_naive['stats'], key=lambda x: x['cumulative_time'], reverse=True)[:5]
+    top_funcs_naive = [f['function'] for f in top_funcs_naive]
+
+    assert expected_hotspot in top_funcs_naive
+
+    opti_using_memo_array = strategy_info['memo_array']
+    profile_memo_array = calculate_profile(opti_using_memo_array.run, data_points, tick_size=100000)
+    top_funcs_memo_array = sorted(profile_memo_array['stats'], key=lambda x: x['cumulative_time'], reverse=True)[:5]
+    top_funcs_memo_array = [f['function'] for f in top_funcs_memo_array]
+
+    assert expected_hotspot in top_funcs_memo_array
+
+    opti_using_memo_lru_cache = strategy_info['memo_lru_cache']
+    profile_memo_lru_cache = calculate_profile(opti_using_memo_lru_cache.run, data_points, tick_size=100000)
+    top_funcs_memo_lru_cache = sorted(profile_memo_lru_cache['stats'], key=lambda x: x['cumulative_time'],
+                                      reverse=True)[:5]
+    top_funcs_memo_lru_cache = [f['function'] for f in top_funcs_memo_lru_cache]
+
+    assert expected_hotspot in top_funcs_memo_lru_cache
+
+    opti_using_deque = strategy_info['deque']
+    profile_deque = calculate_profile(opti_using_deque.run, data_points, tick_size=100000)
+    top_funcs_deque = sorted(profile_deque['stats'], key=lambda x: x['cumulative_time'],
+                             reverse=True)[:5]
+    top_funcs_deque = [f['function'] for f in top_funcs_deque]
+
+    assert expected_hotspot in top_funcs_deque
+
 
 
