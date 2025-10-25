@@ -115,7 +115,7 @@ def test_get_data_symbol_not_found_json(mock_adapter_json):
 
 
 def test_portfolio_group():
-    group = PortfolioGroup("Tech Stocks")
+    group = PortfolioGroup("Stock")
 
     AAPL_price = 150.0
     GOOG_price = 2500.0
