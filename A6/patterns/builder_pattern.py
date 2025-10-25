@@ -41,7 +41,7 @@ main_builder = PortfolioBuilder("Main Portfolio","doohwan1")\
 
 index_sub = PortfolioBuilder("Index Holdings","doohwan2")\
     .add_position("SPY", 20, 430.50)\
-    .build()  # dictionary form same as json
+    .portfolio  # dictionary form same as json
 
 print(main_builder.portfolio)
 
