@@ -17,7 +17,7 @@ class MarketDataPoint:
 '''
 class MarketDataSource(ABC):
     @abstractmethod
-    def get_data(self):
+    def get_data(self, symbol) -> MarketDataPoint:
         pass
 
     def get_directory_path(self):
@@ -25,27 +25,33 @@ class MarketDataSource(ABC):
     
 
 class BloombergXMLAdapter(MarketDataSource):
-    def get_data(self) -> MarketDataPoint:
+    def get_data(self, symbol) -> MarketDataPoint:
         data_dir = self.get_directory_path()
         data_path = os.path.join(data_dir, "external_data_bloomberg.xml")
-
-        # Parse manually since the XML has only one <instrument> element
+        if not os.path.exists(data_path):
+            raise FileNotFoundError(f"XML file not found: {data_path}")
+        
+        # Parse XML and check if symbol matches
+        # Parse XML and find matching symbol entry
         tree = ET.parse(data_path)
-        root = tree.getroot()  # <instrument>
+        root = tree.getroot()
 
-        symbol = root.findtext("symbol")
-        price = float(root.findtext("price"))
-        timestamp = root.findtext("timestamp")
-
-        return MarketDataPoint(timestamp, symbol, price)
+        # Handle multiple entries - look for the matching symbol
+        for entry in root.findall('.//entry'):
+            xml_symbol = entry.findtext("symbol")
+            if xml_symbol == symbol:
+                xml_price = float(entry.findtext("price"))
+                xml_timestamp = entry.findtext("timestamp")
+                return MarketDataPoint(xml_timestamp, xml_symbol, xml_price)
 
 
 class YahooFinanceAdapter(MarketDataSource):
-    def get_data(self) -> MarketDataPoint:
+    def get_data(self, symbol) -> MarketDataPoint:
         data_dir = self.get_directory_path()
         data_path = os.path.join(data_dir, "external_data_yahoo.json")
 
         df = pd.read_json(data_path, typ="series").to_frame().T
+        df = df[df['ticker'] == symbol]
 
         row = df.iloc[0]   
         return MarketDataPoint(row['timestamp'], row['ticker'], row['last_price'])
@@ -82,12 +88,11 @@ class PortfolioGroup(PortfolioComponent):
         self.name = name
         self.components = []
 
-    def add_component(self, component: PortfolioComponent):
+    def add_component(self, component: Position):
         self.components.append(component)
 
     def get_value(self) -> float:
         return sum(c.get_value() for c in self.components)
-
 
     def get_position(self) -> int:
         return sum(c.get_position() for c in self.components)
