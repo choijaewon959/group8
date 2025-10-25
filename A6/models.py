@@ -1,13 +1,13 @@
-import datetime
 import os
 import xml.etree.ElementTree as ET
 import pandas as pd
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from datetime import datetime
 
 @dataclass(frozen=True)
 class MarketDataPoint:
-    timestamp: datetime.datetime
+    timestamp: datetime
     symbol: str
     price: float
 
@@ -32,7 +32,6 @@ class BloombergXMLAdapter(MarketDataSource):
             raise FileNotFoundError(f"XML file not found: {data_path}")
         
         # Parse XML and check if symbol matches
-        # Parse XML and find matching symbol entry
         tree = ET.parse(data_path)
         root = tree.getroot()
 
@@ -40,8 +39,8 @@ class BloombergXMLAdapter(MarketDataSource):
         for entry in root.findall('.//entry'):
             xml_symbol = entry.findtext("symbol")
             if xml_symbol == symbol:
+                xml_timestamp = datetime.strptime(entry.findtext("timestamp"), "%Y-%m-%dT%H:%M:%S")
                 xml_price = float(entry.findtext("price"))
-                xml_timestamp = entry.findtext("timestamp")
                 return MarketDataPoint(xml_timestamp, xml_symbol, xml_price)
 
 
@@ -50,7 +49,7 @@ class YahooFinanceAdapter(MarketDataSource):
         data_dir = self.get_directory_path()
         data_path = os.path.join(data_dir, "external_data_yahoo.json")
 
-        df = pd.read_json(data_path, typ="series").to_frame().T
+        df = pd.read_json(data_path)
         df = df[df['ticker'] == symbol]
 
         row = df.iloc[0]   
@@ -86,13 +85,13 @@ class Position(PortfolioComponent):
 class PortfolioGroup(PortfolioComponent):
     def __init__(self, name: str):
         self.name = name
-        self.components = []
+        self.positions = []
 
-    def add_component(self, component: Position):
-        self.components.append(component)
+    def add_position(self, position: Position):
+        self.positions.append(position)
 
     def get_value(self) -> float:
-        return sum(c.get_value() for c in self.components)
+        return sum(c.get_value() for c in self.positions)
 
     def get_position(self) -> int:
-        return sum(c.get_position() for c in self.components)
+        return sum(c.get_position() for c in self.positions)
