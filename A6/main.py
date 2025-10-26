@@ -3,14 +3,16 @@ import json
 from analytics import BetaDecorator, DrawdownDecorator, VolatilityDecorator
 from data_loader import CSVAdapter
 from patterns.factory_pattern import InstrumentFactory
+from config.config import Config
 
 SYMBOLS = ["AAPL", "MSFT", "US10Y", "SPY"]
 
 # Load configuration
-base_dir = os.path.dirname(__file__)
-file_path = base_dir + "/config/config.json"
-with open(file_path, "r") as f:
-    config = json.load(f)
+config = Config()
+# base_dir = os.path.dirname(__file__)
+# file_path = base_dir + "/config/config.json"
+# with open(file_path, "r") as f:
+#     config = json.load(f)
 
 # Load toy data using CSVAdapter
 csv_adapter = CSVAdapter()
