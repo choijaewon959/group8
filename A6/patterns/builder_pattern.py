@@ -15,7 +15,7 @@ class PortfolioBuilder:
         self.portfolio = Portfolio(port_name, owner)
 
     def add_position(self, symbol: str, quantity: float, price: float):
-        # currently add with order ??? 
+        # currently add with order, using Bond, ETF, Stock Object?
         # or accumulated it at once?
         self.portfolio.positions.append({"symbol": symbol, "quantity": quantity, "price": price})
         return self
