@@ -4,6 +4,7 @@ import os
 import pandas as pd
 from collections import deque
 import numpy as np
+from observers import *
 
 class Strategy():
     def getData(self):
@@ -43,12 +44,15 @@ class MeanReversionStrategy(Strategy):
             return (tick.symbol, 1, tick.qty, tick.price, tick.name)
         elif tick.price > mean_price * (1 + self.__threshold):
             return (tick.symbol, -1, tick.qty, tick.price, tick.name)
-        else:
+
+        if signal !=0:
+            self._notify(signal, tick.price)
             return (tick.symbol, 0, tick.qty, tick.price, tick.name)
 
 class BreakoutStrategy(Strategy):
 
     def __init__(self):
+        super.__init__()
         self.__data = Strategy()
         self.__data = self.getData()["BreakoutStrategy"]
         self.__threshold = self.__data["threshold"]
@@ -64,13 +68,15 @@ class BreakoutStrategy(Strategy):
         high = np.max(self.__prices)
         low = np.min(self.__prices)
 
-        # breakout logic
         if tick.price > high * (1 + self.__threshold):
-            return (tick.symbol, 1, tick.qty, tick.price, tick.name)
+            signal = 1
         elif tick.price < low * (1 - self.__threshold):
-            return (tick.symbol, -1, tick.qty, tick.price, tick.name)    # short breakout
-        else:
-            return (tick.symbol, 0, tick.qty, tick.price, tick.name)
+            signal = -1
+
+        if signal != 0:
+            self.notify(signal, tick.price)
+
+        return (tick.symbol, signal, tick.qty, tick.price, tick.name)
 
 
 def run(strategy, price_series):
