@@ -53,7 +53,7 @@ class MeanReversionStrategy(Strategy):
 class BreakoutStrategy(Strategy):
 
     def __init__(self, params, publisher):
-        super.__init__(params, publisher)
+        super().__init__(params, publisher)
         self.__threshold = params["threshold"]
         self.__window = params["lookback_window"]
         self.__prices = deque(maxlen=self.__window)
