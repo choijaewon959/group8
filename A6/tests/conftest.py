@@ -1,7 +1,7 @@
 import pytest
 import tempfile
 from unittest.mock import MagicMock
-from models import BloombergXMLAdapter, YahooFinanceAdapter
+from data_loader import BloombergXMLAdapter, YahooFinanceAdapter
 
 @pytest.fixture
 def mock_adapter_XML():
