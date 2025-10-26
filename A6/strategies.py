@@ -19,12 +19,11 @@ class Strategy(ABC):
 class MeanReversionStrategy(Strategy):
 
     def __init__(self, params, publisher):
-        super.__init__(params, publisher)
+        super().__init__(params, publisher)
         self.__threshold = params["threshold"]
         self.__window = params["lookback_window"]
         self.__prices = deque(maxlen=self.__window)
 
-    @abstractmethod
     def generate_signals(self, tick: MarketDataPoint) -> dict:
 
         self.__prices.append(tick.price)
@@ -53,16 +52,16 @@ class MeanReversionStrategy(Strategy):
 class BreakoutStrategy(Strategy):
 
     def __init__(self, params, publisher):
-        super.__init__(params, publisher)
+        super().__init__(params, publisher)
         self.__threshold = params["threshold"]
         self.__window = params["lookback_window"]
         self.__prices = deque(maxlen=self.__window)
 
-    @abstractmethod
     def generate_signals(self, tick: MarketDataPoint) -> dict:
 
         self.__prices.append(tick.price)
-
+        signal = 0
+        
         if len(self.__prices) < self.__window:
             return 0
 
