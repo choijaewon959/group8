@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod, abstractclassmethod
+
 from models import MarketDataPoint
 import os
 import pandas as pd
@@ -6,16 +7,10 @@ from collections import deque
 import numpy as np
 from observers import *
 
-class Strategy():
-    def getData(self):
-
-        data_dir = self.get_directory_path()
-        data_path = os.path.join(data_dir, 'strategy_params.json')
-
-        df = pd.Series(data_path, typ='Series').to_frame().T
-
-        row = df[MeanReversionStrategy]
-        return MarketDataPoint(row['lookback_window'], row['threshold'])
+class Strategy(ABC):
+    def __init__(self, params, publisher):
+        self.params = params
+        self.publisher = publisher
 
     @abstractmethod
     def generate_signals(self):
@@ -23,45 +18,51 @@ class Strategy():
 
 class MeanReversionStrategy(Strategy):
 
-    def __init__(self):
-        self.__data = Strategy()
-        self.__data = self.getData()["MeanReversionStrategy"]
-        self.__threshold = self.__data["threshold"]
-        self.__window = self.__data["lookback_window"]
+    def __init__(self, params, publisher):
+        super.__init__(params, publisher)
+        self.__threshold = params["threshold"]
+        self.__window = params["lookback_window"]
         self.__prices = deque(maxlen=self.__window)
 
     @abstractmethod
-    def generate_signals(self, tick:MarketDataPoint) -> tuple:
+    def generate_signals(self, tick: MarketDataPoint) -> dict:
 
         self.__prices.append(tick.price)
+        signal = 0
 
         if len(self.__prices) < self.__window:
-            return (tick.symbol, 0, tick.qty, tick.price, tick.name)
+            return 0
 
         mean_price = np.mean(self.__prices)
 
         if tick.price < mean_price * (1 - self.__threshold):
-            return (tick.symbol, 1, tick.qty, tick.price, tick.name)
+            signal = 1
         elif tick.price > mean_price * (1 + self.__threshold):
-            return (tick.symbol, -1, tick.qty, tick.price, tick.name)
+            signal = -1
 
         if signal !=0:
-            self._notify(signal, tick.price)
-            return (tick.symbol, 0, tick.qty, tick.price, tick.name)
+            signal_data = {'strategy': "MeanReversionStrategy",
+                           'symbol': tick.symbol,
+                           'signal': signal,
+                           'price': tick.price,
+                           'qty': 1,
+                           }
+            self.publisher.notify(signal_data)
+            return signal_data
 
 class BreakoutStrategy(Strategy):
 
-    def __init__(self):
-        super.__init__()
-        self.__data = Strategy()
-        self.__data = self.getData()["BreakoutStrategy"]
-        self.__threshold = self.__data["threshold"]
-        self.__window = self.__data["lookback_window"]
+    def __init__(self, params, publisher):
+        super.__init__(params, publisher)
+        self.__threshold = params["threshold"]
+        self.__window = params["lookback_window"]
         self.__prices = deque(maxlen=self.__window)
 
     @abstractmethod
-    def generate_signals(self, tick: MarketDataPoint) -> tuple:
+    def generate_signals(self, tick: MarketDataPoint) -> dict:
+
         self.__prices.append(tick.price)
+
         if len(self.__prices) < self.__window:
             return 0
 
@@ -74,14 +75,21 @@ class BreakoutStrategy(Strategy):
             signal = -1
 
         if signal != 0:
-            self.notify(signal, tick.price)
+            signal_data = {'strategy': "MeanReversionStrategy",
+                           'symbol': tick.symbol,
+                           'signal': signal,
+                           'price': tick.price,
+                           'qty': 1,
+                           }
+            self.publisher.notify(signal_data)
 
-        return (tick.symbol, signal, tick.qty, tick.price, tick.name)
+            return signal_data
 
-
+"""
 def run(strategy, price_series):
     print(f"Running the strategy {strategy.name}")
     for i,p in enumerate(price_series):
         s = strategy.generate_signals(p)
         print(f"Tick {i}: price {s.price} and signal {s.signal}")
+"""
 

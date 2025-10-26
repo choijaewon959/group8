@@ -2,25 +2,34 @@ from collections import deque
 import numpy as np
 from strategies import BreakoutStrategy
 
+class Observer():
+    def update(self, signal:dict):
+        pass
+
 class SignalPublisher():
     def __init__(self):
         self.__observers=[]
 
-    def update(self, callblack):
-        self.__observers.append(callblack)
+    def attach(self, observer: Observer):
+        self.__observers.append(observer)
 
-    def _notify(self, signal, price):
-        for callback in self.__observers:
-            callback(signal, price, strategy=self.__class__.__name__)
-
-def broker_listener(signal, price, strategy):
-    side = 1 if signal > 0 else -1
-    print(f"[BROKER] {strategy} -> {side} at price {price}")
-
-def logger_listener(signal, price, strategy):
-    print(f"[LOGGER] {strategy} emits signal {signal} at {price} ")
+    def notify(self, signal: dict):
+        for observer in self.__observers:
+            observer.update(signal)
 
 
+class LoggerObserver(Observer):
+    def update(signal):
+        print(f"[LOGGER] {signal['strategy']} emits signal {signal['signal']} at {signal['price']} on {signal['symbol']}")
+
+class AlertObserver(Observer):
+    def update(signal):
+        if abs(signal['signal']) == 1 and signal.qty > 500:
+            print(f"[ALERT] LARGE TRADE involving {signal['strategy']}: emits {signal.signal} signal for {signal.qty} units at {signal.price} ")
+
+
+
+"""
 observers = SignalPublisher()
 
 observers.attach(broker_listener)
@@ -28,6 +37,7 @@ observers.attach(logger_listener)
 
 breakout = BreakoutStrategy()
 run(breakout, price_series)
+"""
 
 
 
