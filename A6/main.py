@@ -38,3 +38,22 @@ print(decorated())
 market_data = csv_adapter.get_market_data()
 # print(market_data)
 
+
+"""
+from commands import ExecuteOrderCommand, Broker
+from invokers import Invoker
+
+broker = Broker()
+invoker = Invoker
+
+buy = ExecuteOrderCommand(broker, 1, "AAPL", 100, 150)
+sell = ExecuteOrderCommand(broker, -1, "AAPL", 100, 155)
+
+invoker.execute_command(buy)
+invoker.execute_command(sell)
+
+invoker.undo_last()
+
+invoker.redo_last()
+
+"""
