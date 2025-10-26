@@ -1,0 +1,19 @@
+function,file,line,ncalls,primitive_calls,total_time,cumulative_time,input_size
+<method 'append' of 'list' objects>,~,0,2000,2000,0.000154005,0.000154005,1000
+<built-in method builtins.len>,~,0,1001,1001,6.0167e-05,6.0167e-05,1000
+<built-in method builtins.min>,~,0,1,1,2.5000000000000004e-07,2.5000000000000004e-07,1000
+<method 'disable' of '_lsprof.Profiler' objects>,~,0,1,1,7.417e-06,7.417e-06,1000
+run,/Users/jaewonchoi/workspace/uchicago/FINM325/Group8/group8/A3/src/strategies.py,74,1,1,0.00023823500000000003,0.000831792,1000
+generate_signals,/Users/jaewonchoi/workspace/uchicago/FINM325/Group8/group8/A3/src/strategies.py,53,1000,1000,0.000379135,0.0005140990000000001,1000
+<method 'append' of 'list' objects>,~,0,20000,20000,0.0016005070000000001,0.0016005070000000001,10000
+<built-in method builtins.len>,~,0,10001,10001,0.000630303,0.000630303,10000
+<built-in method builtins.min>,~,0,1,1,4.5800000000000005e-07,4.5800000000000005e-07,10000
+<method 'disable' of '_lsprof.Profiler' objects>,~,0,1,1,2.1417000000000002e-05,2.1417000000000002e-05,10000
+run,/Users/jaewonchoi/workspace/uchicago/FINM325/Group8/group8/A3/src/strategies.py,74,1,1,0.002720629,0.008701416,10000
+generate_signals,/Users/jaewonchoi/workspace/uchicago/FINM325/Group8/group8/A3/src/strategies.py,53,10000,10000,0.003749519,0.005176330000000001,10000
+<method 'append' of 'list' objects>,~,0,200000,200000,0.015383698000000001,0.015383698000000001,100000
+<built-in method builtins.len>,~,0,100001,100001,0.005924327,0.005924327,100000
+<built-in method builtins.min>,~,0,1,1,6.67e-07,6.67e-07,100000
+<method 'disable' of '_lsprof.Profiler' objects>,~,0,1,1,1.7459e-05,1.7459e-05,100000
+run,/Users/jaewonchoi/workspace/uchicago/FINM325/Group8/group8/A3/src/strategies.py,74,1,1,0.026646381,0.08493637500000001,100000
+generate_signals,/Users/jaewonchoi/workspace/uchicago/FINM325/Group8/group8/A3/src/strategies.py,53,100000,100000,0.036981302,0.050514848,100000
