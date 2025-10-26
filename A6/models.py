@@ -1,6 +1,3 @@
-import os
-import xml.etree.ElementTree as ET
-import pandas as pd
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime
@@ -13,47 +10,74 @@ class MarketDataPoint:
 
 
 '''
-    Adapter Pattern Implementation
+    Instruments Implementation
 '''
-class MarketDataSource(ABC):
-    @abstractmethod
-    def get_data(self, symbol) -> MarketDataPoint:
+class Instrument(ABC):
+    def __init__(self, symbol: str, instrument_type: str, price: float, sector:str, issuer: str):
+        self.symbol = symbol
+        self.type = instrument_type
+        self.price = price
+        self.sector = sector 
+        self.issuer = issuer
+        
+    @abstractmethod 
+    def get_info(self) -> dict:
         pass
 
-    def get_directory_path(self):
-        return os.path.abspath(os.path.join(os.path.dirname(__file__), "./", "data"))
+
+class Stock(Instrument):
+    def __init__(self, symbol: str, price: float, sector: str, issuer: str):
+        super().__init__(symbol, "Stock", price, sector, issuer) 
+        
+    def get_info(self) -> dict:
+        return {
+            'symbol': self.symbol,
+            'type': self.type,
+            'price': self.price,
+            'sector': self.sector,
+            'issuer': self.issuer,
+        }
     
 
-class BloombergXMLAdapter(MarketDataSource):
-    def get_data(self, symbol) -> MarketDataPoint:
-        data_dir = self.get_directory_path()
-        data_path = os.path.join(data_dir, "external_data_bloomberg.xml")
-        if not os.path.exists(data_path):
-            raise FileNotFoundError(f"XML file not found: {data_path}")
-        
-        # Parse XML and check if symbol matches
-        tree = ET.parse(data_path)
-        root = tree.getroot()
+class Bond(Instrument):
+    def __init__(self,  
+                 symbol: str = 'US10Y',  
+                 sector: str = 'Government', 
+                 issuer: str = 'US Treasury',  
+                 maturity: datetime = datetime(2035, 10, 1), 
+                 price: float = 100.0):
+        super().__init__(symbol, "Bond", price, sector, issuer) 
+        self.maturity = maturity
+    
+    def get_info(self) -> dict:
+        return {
+            'symbol': self.symbol,
+            'type': self.type,
+            'price': self.price,
+            'sector': self.sector,
+            'issuer': self.issuer,
+            'maturity': self.maturity
+        }
 
-        # Handle multiple entries - look for the matching symbol
-        for entry in root.findall('.//entry'):
-            xml_symbol = entry.findtext("symbol")
-            if xml_symbol == symbol:
-                xml_timestamp = datetime.strptime(entry.findtext("timestamp"), "%Y-%m-%dT%H:%M:%S")
-                xml_price = float(entry.findtext("price"))
-                return MarketDataPoint(xml_timestamp, xml_symbol, xml_price)
 
-
-class YahooFinanceAdapter(MarketDataSource):
-    def get_data(self, symbol) -> MarketDataPoint:
-        data_dir = self.get_directory_path()
-        data_path = os.path.join(data_dir, "external_data_yahoo.json")
-
-        df = pd.read_json(data_path)
-        df = df[df['ticker'] == symbol]
-
-        row = df.iloc[0]   
-        return MarketDataPoint(row['timestamp'], row['ticker'], row['last_price'])
+class ETF(Instrument):
+    def __init__(self, 
+                 price: float,
+                 symbol: str = 'SPY', 
+                 sector: str = 'Index', 
+                 issuer: str = 'State Street'):
+    
+        super().__init__(symbol, "ETF", price, sector, issuer)
+        self.sector = sector
+    
+    def get_info(self) -> dict:
+        return {
+            'symbol': self.symbol,
+            'type': self.type,
+            'price': self.price,
+            'sector': self.sector,
+            'issuer': self.issuer,
+        }
 
 
 '''
