@@ -44,7 +44,7 @@ class MeanReversionStrategy(Strategy):
                            'symbol': tick.symbol,
                            'signal': signal,
                            'price': tick.price,
-                           'qty': 1,
+                           'qty': 2,
                            }
             self.publisher.notify(signal_data)
             return signal_data
@@ -78,7 +78,7 @@ class BreakoutStrategy(Strategy):
                            'symbol': tick.symbol,
                            'signal': signal,
                            'price': tick.price,
-                           'qty': 1,
+                           'qty': 2,
                            }
             self.publisher.notify(signal_data)
 

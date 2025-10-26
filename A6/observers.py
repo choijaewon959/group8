@@ -1,6 +1,5 @@
 from collections import deque
 import numpy as np
-from strategies import BreakoutStrategy
 
 class Observer():
     def update(self, signal:dict):
@@ -19,13 +18,13 @@ class SignalPublisher():
 
 
 class LoggerObserver(Observer):
-    def update(signal):
+    def update(self, signal):
         print(f"[LOGGER] {signal['strategy']} emits signal {signal['signal']} at {signal['price']} on {signal['symbol']}")
 
 class AlertObserver(Observer):
-    def update(signal):
-        if abs(signal['signal']) == 1 and signal.qty > 500:
-            print(f"[ALERT] LARGE TRADE involving {signal['strategy']}: emits {signal.signal} signal for {signal.qty} units at {signal.price} ")
+    def update(self, signal):
+        if abs(signal['signal']) == 1 and signal['qty']> 1:
+            print(f"[ALERT] LARGE TRADE involving {signal['strategy']}: emits {signal['signal']} signal for {signal['qty']} units at {signal['price']} ")
 
 
 

@@ -42,7 +42,10 @@ class UndoOrderCommand(OrderCommand):
         self.broker = broker
         self.command = command
 
+    def execute(self):
+        pass
+
     def undo(self):
         if self.command:
-            self.broker.undo()
+            self.command.undo()
 
