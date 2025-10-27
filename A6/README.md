@@ -19,7 +19,12 @@ This project demonstrates the implementation of various design patterns in a fin
 
 2. **Install dependencies**:
    ```bash
-   pip install numpy matplotlib memory-profiler pytest
+   pip install -r requirements.txt
+   ```
+   
+   Or install individually:
+   ```bash
+   pip install numpy matplotlib memory-profiler pytest pandas
    ```
 
 3. **Run the main application**:
