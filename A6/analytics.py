@@ -1,3 +1,5 @@
+import numpy as np
+
 def VolatilityDecorator(func):
     def wrapper(*args, **kwargs):
         result = func(*args, **kwargs)
@@ -10,12 +12,10 @@ def VolatilityDecorator(func):
         else:
             data = result
 
-        if not data:
+        if not data or len(data) < 2:
             vol = 0.0
         else:
-            mean = sum(data) / len(data)
-            variance = sum((x - mean) ** 2 for x in data) / len(data)
-            vol = variance ** 0.5
+            vol = np.std(data, ddof=1)
 
         # When stacked, merge results
         if isinstance(result, dict):
