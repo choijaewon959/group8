@@ -13,15 +13,17 @@ class Config(object):
                 cls._instance._initialized = False
         return cls._instance
 
-    # return from __new__ goes to __init__ 
-
     def __init__(self, config_path: str = None):
         if self._initialized:
             return
         
-        # given_value
+        # default path to A6/config/config.json
         if config_path is None:
-            config_path = os.path.join(os.path.dirname(__file__), "config.json")
+            config_path = os.path.join(
+                os.path.dirname(os.path.dirname(__file__)),  # patterns/ -> A6/
+                "config",
+                "config.json"
+            )
 
         with open(config_path, "r") as f:
             self.settings = json.load(f)
