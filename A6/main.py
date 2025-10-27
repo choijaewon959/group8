@@ -8,7 +8,7 @@ from strategies import MeanReversionStrategy, BreakoutStrategy
 from observers import SignalPublisher, LoggerObserver, AlertObserver
 from commands import ExecuteOrderCommand, Broker, UndoOrderCommand
 from invokers import Invoker
-
+from engine import ExecutionEngine
 
 
 SYMBOLS = ["AAPL", "MSFT", "US10Y", "SPY"]
@@ -95,3 +95,25 @@ invoker.execute_command(sell)
 #use invoker to undo & redo last commands
 invoker.undo_last()
 invoker.redo_last()
+
+## engine execution and update Portfolio
+strategies = {
+    "BreakoutStrategy": br,
+    "MeanReversionStrategy": mr
+}
+engine = ExecutionEngine(market_data, strategies)
+
+for symbol in SYMBOLS:
+    all_signals = engine.generate_all_signals(symbol)
+
+    for strategy_name, signals in all_signals.items():
+        print(f"Signals for {strategy_name} | Symbol: {symbol}:")
+        for s in signals:
+            print(s)
+
+    for strategy_name, signals in all_signals.items():
+        engine.apply_signals_to_portfolio(strategy_name, signals)
+
+## final portfolio
+import json
+print(json.dumps(engine.portfolio, indent=2))
