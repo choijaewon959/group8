@@ -15,11 +15,13 @@ class Broker():
 
     def execute_order(self,side,symbol,qty,price):
         self.trades.append((side,symbol,qty,price))
-        print(f"[BROKER] EXECUTED {"BUY" if side==1 else "SELL"} signal for {qty} {symbol} at {price}")
+        label = "BUY" if side == 1 else "SELL"
+        print(f"[BROKER] EXECUTED {label} signal for {qty} {symbol} at {price}")
 
     def reverse_order(self,side,symbol,qty,price):
         self.trades.append((-side,symbol,qty,price))
-        print(f"[BROKER] REVERSED {"BUY" if side==1 else "SELL"} signal for {qty} {symbol} at {price}")
+        label = "BUY" if side == 1 else "SELL"
+        print(f"[BROKER] REVERSED {label} signal for {qty} {symbol} at {price}")
 
 
 class ExecuteOrderCommand(OrderCommand):

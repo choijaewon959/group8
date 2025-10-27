@@ -1,7 +1,7 @@
 from observers import SignalPublisher, LoggerObserver, AlertObserver
 import pytest
 
-def test_notify_observers(monkeypatch):
+def test_notify_observers():
     signal = {"strategy": "BreakoutStrategy",
         "symbol": "MSFT",
         "signal": 1,
@@ -11,11 +11,11 @@ def test_notify_observers(monkeypatch):
     publisher = SignalPublisher()
     executed = []
 
-    class MockObserver:
+    class obs:
         def update(self, signal):
             executed.append(signal)
 
-    publisher.attach(MockObserver())
+    publisher.attach(obs())
     publisher.notify(signal)
 
     assert len(executed) == 1
