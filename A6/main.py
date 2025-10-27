@@ -47,9 +47,10 @@ market_data = csv_adapter.get_market_data()
 ###-------------- Demonstrate trade lifecycle: signal → execution → undo → redo -------------------------
 ### Load strategy config
 base_dir = os.path.dirname(__file__)
-file_path = base_dir + "/config/strategy_params.json"
+file_path = os.path.join(base_dir, "config", "strategy_params.json")
+
 with open(file_path, "r") as f:
-    config = json.load(f)
+    strategy_params = json.load(f)
 
 #Load publisher
 publisher = SignalPublisher()
@@ -63,8 +64,8 @@ publisher.attach(logger)
 publisher.attach(alert)
 
 #import strategies
-br = BreakoutStrategy(config["BreakoutStrategy"], publisher)
-mr = MeanReversionStrategy(config["MeanReversionStrategy"], publisher)
+br = BreakoutStrategy(strategy_params["BreakoutStrategy"], publisher)
+mr = MeanReversionStrategy(strategy_params["MeanReversionStrategy"], publisher)
 
 #showcase interchangeability
 for strategy in [br, mr]:
