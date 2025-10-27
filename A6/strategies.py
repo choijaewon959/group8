@@ -50,7 +50,6 @@ class MeanReversionStrategy(Strategy):
             return signal_data
 
 class BreakoutStrategy(Strategy):
-
     def __init__(self, params, publisher):
         super().__init__(params, publisher)
         self.__threshold = params["threshold"]
@@ -59,27 +58,30 @@ class BreakoutStrategy(Strategy):
 
     def generate_signals(self, tick: MarketDataPoint) -> dict:
 
-        self.__prices.append(tick.price)
-        signal = 0
-        
         if len(self.__prices) < self.__window:
+            self.__prices.append(tick.price)
             return 0
 
         high = np.max(self.__prices)
         low = np.min(self.__prices)
 
+        signal = 0
         if tick.price > high * (1 + self.__threshold):
             signal = 1
         elif tick.price < low * (1 - self.__threshold):
             signal = -1
 
-        if signal != 0:
-            signal_data = {'strategy': "BreakoutStrategy",
-                           'symbol': tick.symbol,
-                           'signal': signal,
-                           'price': tick.price,
-                           'qty': 2,
-                           }
-            self.publisher.notify(signal_data)
+        self.__prices.append(tick.price)
 
+        if signal != 0:
+            signal_data = {
+                'strategy': "BreakoutStrategy",
+                'symbol': tick.symbol,
+                'signal': signal,
+                'price': tick.price,
+                'qty': 1,
+            }
+            self.publisher.notify(signal_data)
             return signal_data
+
+        return 0
