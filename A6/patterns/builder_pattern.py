@@ -24,27 +24,31 @@ class PortfolioBuilder:
         self.portfolio.sub_portfolios.append(subportfolio)
         return self
 
-    def build(self) -> dict:    # print out function
-        def portfolio_to_dict(p: Portfolio) -> dict:
-            return {
-                "name": p.port_name,
-                "owner": p.owner,
-                "positions": p.positions,
-                "sub_portfolios": [portfolio_to_dict(sub) for sub in p.sub_portfolios]
-            }
+    def build(self) -> dict:
+        def portfolio_to_dict(p):
+            if isinstance(p, dict):
+                return p
+            else:
+                return {
+                    "name": p.port_name,
+                    "owner": p.owner,
+                    "positions": p.positions,
+                    "sub_portfolios": [portfolio_to_dict(sub) for sub in p.sub_portfolios]
+                }
         return portfolio_to_dict(self.portfolio)
 
-## Sample Execution
-main_builder = PortfolioBuilder("Main Portfolio","doohwan1")\
-    .add_position("AAPL", 100, 172.35)\
-    .add_position("MSFT", 50, 328.10)
 
-index_sub = PortfolioBuilder("Index Holdings","doohwan2")\
-    .add_position("SPY", 20, 430.50)\
-    .portfolio  # dictionary form same as json
+# ## Sample Execution
+# main_builder = PortfolioBuilder("Main Portfolio","doohwan1")\
+#     .add_position("AAPL", 100, 172.35)\
+#     .add_position("MSFT", 50, 328.10)
 
-print(main_builder.portfolio)
+# index_sub = PortfolioBuilder("Index Holdings","doohwan2")\
+#     .add_position("SPY", 20, 430.50)\
+#     .portfolio  # dictionary form same as json
 
-main_builder.add_subportfolio(index_sub)
-portfolio_dict = main_builder.build()
-print(portfolio_dict)
+# print(main_builder.portfolio)
+
+# main_builder.add_subportfolio(index_sub)
+# portfolio_dict = main_builder.build()
+# print(portfolio_dict)
