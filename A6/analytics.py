@@ -17,6 +17,8 @@ def VolatilityDecorator(func):
         else:
             vol = np.std(data, ddof=1)
 
+        print('Volatility calculated:', vol)
+
         # When stacked, merge results
         if isinstance(result, dict):
             result["volatility"] = vol
@@ -50,6 +52,8 @@ def BetaDecorator(func):
             ) / len(data)
             market_var = sum((x - market_mean) ** 2 for x in market_returns) / len(market_returns)
             beta = covariance / market_var if market_var != 0 else 0.0
+
+        print('Beta calculated:', beta)
 
         if isinstance(result, dict):
             result["beta"] = beta
@@ -88,6 +92,8 @@ def DrawdownDecorator(func):
                 dd = (peak - v) / peak if peak != 0 else 0
                 max_dd = max(max_dd, dd)
             dd = max_dd
+
+        print('Max Drawdown calculated:', dd)
 
         if isinstance(result, dict):
             result["max_drawdown"] = dd
