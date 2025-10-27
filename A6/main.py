@@ -46,8 +46,7 @@ market_data = csv_adapter.get_market_data()
 
 ###-------------- Demonstrate trade lifecycle: signal → execution → undo → redo -------------------------
 ### Load strategy config
-base_dir = os.path.dirname(__file__)
-file_path = os.path.join(base_dir, "config", "strategy_params.json")
+strategy_params = cfg.settings["strategy_params"]
 
 with open(file_path, "r") as f:
     strategy_params = json.load(f)
