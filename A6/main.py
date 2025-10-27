@@ -38,7 +38,7 @@ SPY_etf = symbol_map.get("SPY")
 
 stock_prices = [AAPL_stock.price, MSFT_stock.price]
 decorated = DrawdownDecorator(BetaDecorator(VolatilityDecorator(lambda: stock_prices)))
-print(decorated())
+print('decorated: ', decorated())
 # Load market data using CSVAdapter
 market_data = csv_adapter.get_market_data()
 # print(market_data)
@@ -112,5 +112,4 @@ for symbol in SYMBOLS:
         engine.apply_signals_to_portfolio(strategy_name, signals)
 
 ## final portfolio
-import json
-print(json.dumps(engine.portfolio, indent=2))
+print('final portfolio: ', engine.portfolio)
