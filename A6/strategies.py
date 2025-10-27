@@ -74,7 +74,7 @@ class BreakoutStrategy(Strategy):
             signal = -1
 
         if signal != 0:
-            signal_data = {'strategy': "MeanReversionStrategy",
+            signal_data = {'strategy': "BreakoutStrategy",
                            'symbol': tick.symbol,
                            'signal': signal,
                            'price': tick.price,
