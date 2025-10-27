@@ -70,8 +70,9 @@ def test_portfolio_builder_simple():
 
 def test_portfolio_builder_with_subportfolio():
     main = PortfolioBuilder("Main", "owner1").add_position("MSFT", 50, 300)
-    sub = PortfolioBuilder("Sub", "owner2").add_position("SPY", 20, 430).build()
-    main.add_subportfolio(sub)
-    portfolio = main.build()
+    sub = PortfolioBuilder("Sub", "owner2").add_position("SPY", 20, 430).portfolio  
+    main.add_subportfolio(sub)  
+    portfolio = main.build()    
+    
     assert len(portfolio["sub_portfolios"]) == 1
     assert portfolio["sub_portfolios"][0]["name"] == "Sub"
