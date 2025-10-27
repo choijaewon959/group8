@@ -46,7 +46,7 @@ market_data = csv_adapter.get_market_data()
 
 ###-------------- Demonstrate trade lifecycle: signal → execution → undo → redo -------------------------
 ### Load strategy config
-strategy_params = cfg.settings["strategy_params"]
+strategy_params = config["strategy_params"]
 
 #Load publisher
 publisher = SignalPublisher()

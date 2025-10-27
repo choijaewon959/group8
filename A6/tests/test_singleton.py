@@ -1,5 +1,5 @@
 import pytest
-from config.config import Config
+from patterns.singleton_pattern import Config
 
 def test_singleton_instance():
     cfg1 = Config()
