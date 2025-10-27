@@ -9,6 +9,7 @@ from patterns.observers import SignalPublisher, LoggerObserver, AlertObserver
 from patterns.commands import ExecuteOrderCommand, Broker, UndoOrderCommand
 from patterns.invokers import Invoker
 from engine import ExecutionEngine
+from models import MarketDataPoint
 
 
 SYMBOLS = ["AAPL", "MSFT", "US10Y", "SPY"]
@@ -108,3 +109,26 @@ for symbol in SYMBOLS:
 
 ## final portfolio
 print('final portfolio: ', engine.portfolio)
+
+
+
+####### _____________Reporting integration_________________ ##########
+
+from reporting import reportObserver
+
+publisher = SignalPublisher()
+reporter = reportObserver()
+publisher.attach(reporter)
+
+params = {"lookback_window": 5, "threshold": 0.02}
+strategy = BreakoutStrategy(params, publisher)
+
+# Simulate a price stream
+prices = [100, 101, 102, 103, 104, 107, 105, 108]
+
+for p in prices:
+    tick = MarketDataPoint("2025-10-25T12:00:00", "AAPL", p)
+    strategy.generate_signals(tick)
+
+print(reporter.summary())
+reporter.to_json("signals.json")
