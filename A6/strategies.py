@@ -87,5 +87,4 @@ class BreakoutStrategy(Strategy):
                            'qty': 2,
                            }
             self.publisher.notify(signal_data)
-
-        return 0
+            return signal_data
