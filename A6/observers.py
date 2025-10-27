@@ -28,18 +28,6 @@ class AlertObserver(Observer):
 
 
 
-"""
-observers = SignalPublisher()
-
-observers.attach(broker_listener)
-observers.attach(logger_listener)
-
-breakout = BreakoutStrategy()
-run(breakout, price_series)
-"""
-
-
-
 
 
 

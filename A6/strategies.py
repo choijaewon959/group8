@@ -83,12 +83,3 @@ class BreakoutStrategy(Strategy):
             self.publisher.notify(signal_data)
 
             return signal_data
-
-"""
-def run(strategy, price_series):
-    print(f"Running the strategy {strategy.name}")
-    for i,p in enumerate(price_series):
-        s = strategy.generate_signals(p)
-        print(f"Tick {i}: price {s.price} and signal {s.signal}")
-"""
-
