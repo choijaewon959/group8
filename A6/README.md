@@ -162,11 +162,11 @@ This project demonstrates the implementation of various design patterns in a fin
 ### Basic Strategy Execution
 ```python
 from patterns.strategy_pattern import MovingAverageStrategy
-from engine import TradingEngine
+from engine import ExecutionEngine
 
 strategy = MovingAverageStrategy(window=20)
-engine = TradingEngine()
-engine.execute_strategy(strategy, data)
+engine = ExecutionEngine()
+engine.generate_all_signals(strategy, symbol)
 ```
 
 ### Portfolio Building
