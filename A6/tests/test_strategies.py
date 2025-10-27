@@ -1,5 +1,5 @@
-from strategies import BreakoutStrategy, MeanReversionStrategy
-from observers import SignalPublisher, LoggerObserver, AlertObserver
+from patterns.strategies import BreakoutStrategy, MeanReversionStrategy
+from patterns.observers import SignalPublisher, LoggerObserver, AlertObserver
 from models import MarketDataPoint
 
 def test_length_of_return_data():

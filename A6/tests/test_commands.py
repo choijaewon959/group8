@@ -1,6 +1,6 @@
-from strategies import BreakoutStrategy
-from commands import ExecuteOrderCommand, Broker
-from invokers import Invoker
+from patterns.strategies import BreakoutStrategy
+from patterns.commands import ExecuteOrderCommand, Broker
+from patterns.invokers import Invoker
 
 
 def test_execute_order_command():

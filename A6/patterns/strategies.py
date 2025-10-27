@@ -5,7 +5,6 @@ import os
 import pandas as pd
 from collections import deque
 import numpy as np
-from observers import *
 
 class Strategy(ABC):
     def __init__(self, params, publisher):

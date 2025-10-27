@@ -1,4 +1,4 @@
-from observers import SignalPublisher, LoggerObserver, AlertObserver
+from patterns.observers import SignalPublisher, LoggerObserver, AlertObserver
 import pytest
 
 def test_notify_observers():

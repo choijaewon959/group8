@@ -4,10 +4,10 @@ from analytics import BetaDecorator, DrawdownDecorator, VolatilityDecorator
 from data_loader import CSVAdapter
 from patterns.factory_pattern import InstrumentFactory
 from config.config import Config
-from strategies import MeanReversionStrategy, BreakoutStrategy
-from observers import SignalPublisher, LoggerObserver, AlertObserver
-from commands import ExecuteOrderCommand, Broker, UndoOrderCommand
-from invokers import Invoker
+from patterns.strategies import MeanReversionStrategy, BreakoutStrategy
+from patterns.observers import SignalPublisher, LoggerObserver, AlertObserver
+from patterns.commands import ExecuteOrderCommand, Broker, UndoOrderCommand
+from patterns.invokers import Invoker
 from engine import ExecutionEngine
 
 

@@ -1,6 +1,6 @@
 from typing import Dict, List
 from models import MarketDataPoint
-from strategies import Strategy
+from patterns.strategies import Strategy
 from patterns.builder_pattern import Portfolio, PortfolioBuilder
 
 class ExecutionEngine:
