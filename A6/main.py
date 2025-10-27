@@ -14,11 +14,10 @@ from engine import ExecutionEngine
 SYMBOLS = ["AAPL", "MSFT", "US10Y", "SPY"]
 
 # Load configuration
-config = Config()
-# base_dir = os.path.dirname(__file__)
-# file_path = base_dir + "/config/config.json"
-# with open(file_path, "r") as f:
-#     config = json.load(f)
+base_dir = os.path.dirname(__file__)
+file_path = base_dir + "/config/config.json"
+with open(file_path, "r") as f:
+    config = json.load(f)
 
 # Load toy data using CSVAdapter
 csv_adapter = CSVAdapter()
@@ -38,10 +37,8 @@ US10Y_bond = symbol_map.get("US10Y")
 SPY_etf = symbol_map.get("SPY")
 
 stock_prices = [AAPL_stock.price, MSFT_stock.price]
-"""
 decorated = DrawdownDecorator(BetaDecorator(VolatilityDecorator(lambda: stock_prices)))
 print(decorated())
-"""
 # Load market data using CSVAdapter
 market_data = csv_adapter.get_market_data()
 # print(market_data)
