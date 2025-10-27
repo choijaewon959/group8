@@ -48,9 +48,6 @@ market_data = csv_adapter.get_market_data()
 ### Load strategy config
 strategy_params = cfg.settings["strategy_params"]
 
-with open(file_path, "r") as f:
-    strategy_params = json.load(f)
-
 #Load publisher
 publisher = SignalPublisher()
 
