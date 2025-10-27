@@ -166,7 +166,7 @@ from engine import ExecutionEngine
 
 strategy = MovingAverageStrategy(window=20)
 engine = ExecutionEngine()
-engine.generate_all_signals(strategy, symbol)
+engine.generate_all_signals(symbol)
 ```
 
 ### Portfolio Building
