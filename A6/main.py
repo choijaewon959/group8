@@ -3,7 +3,7 @@ import json
 from analytics import BetaDecorator, DrawdownDecorator, VolatilityDecorator
 from data_loader import CSVAdapter
 from patterns.factory_pattern import InstrumentFactory
-from config.config import Config
+from patterns.singleton_pattern import Config
 from patterns.strategies import MeanReversionStrategy, BreakoutStrategy
 from patterns.observers import SignalPublisher, LoggerObserver, AlertObserver
 from patterns.commands import ExecuteOrderCommand, Broker, UndoOrderCommand
@@ -14,10 +14,8 @@ from engine import ExecutionEngine
 SYMBOLS = ["AAPL", "MSFT", "US10Y", "SPY"]
 
 # Load configuration
-base_dir = os.path.dirname(__file__)
-file_path = base_dir + "/config/config.json"
-with open(file_path, "r") as f:
-    config = json.load(f)
+cfg = Config()       
+config = cfg.settings 
 
 # Load toy data using CSVAdapter
 csv_adapter = CSVAdapter()
