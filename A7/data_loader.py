@@ -5,7 +5,7 @@ from memory_profiler import memory_usage
 
 def load_data_pandas(file_path: str) -> pd.DataFrame:
     start = time.perf_counter()
-    df = pd.read_csv(file_path, parse_dates=True).set_index('timestamp', drop=False)
+    df = pd.read_csv(file_path, index_col='timestamp', parse_dates=True)
     end = time.perf_counter()
 
     elapsed_time = end - start
