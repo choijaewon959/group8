@@ -123,7 +123,6 @@ publisher.attach(reporter)
 params = {"lookback_window": 5, "threshold": 0.02}
 strategy = BreakoutStrategy(params, publisher)
 
-# Simulate a price stream
 prices = [100, 101, 102, 103, 104, 107, 105, 108]
 
 for p in prices:
