@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 import polars as pl
 from data_loader import load_data_pandas, load_data_polars
-from reporting import plot_rolling_metrics
 
 
 def rolling_metrics_pandas(df: pd.DataFrame, symbol: str, ts_cols: list, window=20) -> tuple[pd.DataFrame, float]:
@@ -73,8 +72,8 @@ if __name__ == "__main__":
 
     df_pandas, _, _ = load_data_pandas(file_path)
     df_pandas_metrics = rolling_metrics_pandas(df_pandas, symbol, ['price'], window=window)
-    plot_rolling_metrics(df_pandas_metrics, window=window, subsample_size=subsample_size)
+    print(df_pandas_metrics.tail())
 
     df_polars, _, _ = load_data_polars(file_path)
     df_polars_metrics = rolling_metrics_polars(df_polars, symbol, ['price'], window=window)
-    plot_rolling_metrics(df_polars_metrics, window=window, subsample_size=subsample_size)
+    print(df_polars_metrics.tail())

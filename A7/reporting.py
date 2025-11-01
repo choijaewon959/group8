@@ -2,7 +2,7 @@ import pandas as pd
 import polars as pl
 import matplotlib.pyplot as plt
 from data_loader import load_data_pandas, load_data_polars
-from metrics import compute_rolling_metrics_pandas, compute_rolling_metrics_polars
+from metrics import rolling_metrics_pandas, rolling_metrics_polars
 
 
 def plot_rolling_metrics(df: pd.DataFrame, window: int = 20, subsample_size: int = 5000):
@@ -49,11 +49,11 @@ if __name__ == "__main__":
     file_path = "./data/market_data-1.csv"
 
     df_pandas, _, _ = load_data_pandas(file_path)
-    df_pandas_metrics, elapsed_time = compute_rolling_metrics_pandas(df_pandas, symbol, ['price'], window=window)
+    df_pandas_metrics, elapsed_time = rolling_metrics_pandas(df_pandas, symbol, ['price'], window=window)
     print(f"Pandas elapsed time: {elapsed_time:.2f} seconds")
     plot_rolling_metrics(df_pandas_metrics, window=window, subsample_size=subsample_size)
 
     df_polars, _, _ = load_data_polars(file_path)
-    df_polars_metrics, elapsed_time = compute_rolling_metrics_polars(df_polars, symbol, ['price'], window=window)
+    df_polars_metrics, elapsed_time = rolling_metrics_polars(df_polars, symbol, ['price'], window=window)
     print(f"Polars elapsed time: {elapsed_time:.2f} seconds")
     plot_rolling_metrics(df_polars_metrics, window=window, subsample_size=subsample_size)
