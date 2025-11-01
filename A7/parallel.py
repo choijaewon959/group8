@@ -1,72 +1,109 @@
+import time
 import pandas as pd
+import numpy as np
 import polars as pl
 from data_loader import load_data_pandas, load_data_polars
-from metrics import compute_rolling_metrics_pandas, compute_rolling_metrics_polars
-from reporting import profiled_task
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from metrics import rolling_metrics_pandas, rolling_metrics_polars
+# for parallel programing library
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor, as_completed
+# for measuring performance libraries
+import psutil
+from memory_profiler import memory_usage
 
 
-def rolling_metrics_pandas_parallel(df: pd.DataFrame, ts_cols: list, window: int = 20, max_workers: int = 4):
-    symbols = df["symbol"].unique()
-    results = []
-    metrics_list = []
+def compute_metrics_threading(df, symbols, lib="pandas", window=20):
+    # variables : df = loaded df / symbols = list of sybmol which is unique in df / lib = string pandas or polars / window = integer
+    results = {}
 
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        future_to_symbol = {
-            executor.submit(profiled_task, compute_rolling_metrics_pandas, df, symbol, ts_cols, window): symbol
-            for symbol in symbols
-        }
-        for future in as_completed(future_to_symbol):
-            symbol = future_to_symbol[future]
-            try:
-                sym, result_df, metrics = future.result()
-                results.append(result_df)
-                metrics_list.append(metrics)
-                print(f"Completed {sym}: {metrics}")
-            except Exception as e:
-                print(f"Error computing {symbol}: {e}")
+    # context manager for each symbol's thread  
+    with ThreadPoolExecutor(max_workers=len(symbols)) as executor:
+        futures = {}
+        # futures = {future obejct1 : 'AAPL', 
+        #            future object2 : 'MSFT',
+        #            future object3 : 'SPY' 
+        #            } : key is a future object
+        for s in symbols:
+            # load on multi-thread process for each symbol 
+            if lib == "pandas":
+                futures[executor.submit(rolling_metrics_pandas, df, s, ["price"], window)] = s
+            elif lib == "polars":
+                futures[executor.submit(rolling_metrics_polars, df, s, ["price"], window)] = s
+            else:
+                raise ValueError(f"only pandas and polars are valid library")
+        
+        # use only key in dictionary:futures as an iterator
+        # retrieve results from each thread
+        for f in as_completed(futures):
+            symbol = futures[f]
+            result_df, elapsed = f.result()
+            results[symbol] = (result_df, elapsed)
+    
+    return results
 
-    df_metrics = pd.DataFrame(metrics_list)
-    return pd.concat(results, ignore_index=True), df_metrics
+
+def compute_metrics_multiprocessing(df, symbols, lib="pandas", window=20):
+    results = {}
+
+    with ProcessPoolExecutor(max_workers=len(symbols)) as executor:
+        futures = {}
+        for s in symbols:
+            if lib == "pandas":
+                futures[executor.submit(rolling_metrics_pandas, df, s, ["price"], window)] = s
+            elif lib == "polars":
+                futures[executor.submit(rolling_metrics_polars, df, s, ["price"], window)] = s
+            else:
+                raise ValueError(f"only pandas and polars are valid library")
+
+        for f in as_completed(futures):
+            symbol = futures[f]
+            result_df, elapsed = f.result()
+            results[symbol] = (result_df, elapsed)
+    
+    return results
 
 
-def rolling_metrics_polars_parallel(df: pl.DataFrame, ts_cols: list, window: int = 20, max_workers: int = 4):
-    symbols = df["symbol"].unique().to_list()
-    results = []
-    metrics_list = []
 
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        future_to_symbol = {
-            executor.submit(profiled_task, compute_rolling_metrics_polars, df, symbol, ts_cols, window): symbol
-            for symbol in symbols
-        }
+def measure_performance(func, *args, **kwargs):
+    process = psutil.Process() 
 
-        for future in as_completed(future_to_symbol):
-            symbol = future_to_symbol[future]
-            try:
-                sym, result_df, metrics = future.result()
-                results.append(result_df)
-                metrics_list.append(metrics)
-                print(f"Completed {sym}: {metrics}")
-            except Exception as e:
-                print(f"Error computing {symbol}: {e}")
+    def wrapper():
+        start_time = time.perf_counter()
+        result = func(*args, **kwargs)
+        total_time = time.perf_counter() - start_time
+        return result, total_time
 
-    df_metrics = pl.DataFrame(metrics_list)
-    return pl.concat(results), df_metrics
+    mem_usage, (result, total_time) = memory_usage(wrapper, max_usage=True, retval=True)
+    cpu_percent = process.cpu_percent(interval=None)
+
+    return result, total_time, cpu_percent, mem_usage
+
+
+
 
 
 if __name__ == "__main__":
-    symbol = 'AAPL'
-    window = 20
-    subsample_size = 1000
+    window = 30
     file_path = "./data/market_data-1.csv"
 
     df_pandas, _, _ = load_data_pandas(file_path)
-    df_result_pd, df_metrics_pd = rolling_metrics_pandas_parallel(df_pandas, ["price"], window=20, max_workers=4)
-    print(df_result_pd.tail())
-    print(df_metrics_pd)
-
     df_polars, _, _ = load_data_polars(file_path)
-    df_result_pl, df_metrics_pl = rolling_metrics_polars_parallel(df_polars, ["price"], window=20, max_workers=4)
-    print(df_result_pl.tail())
-    print(df_metrics_pl)
+    # same csv data set. therefore set the only symbols list
+    symbols = df_pandas['symbol'].unique().tolist()
+    
+    print("Threading Test (pandas)")
+    threading_results, total_time, cpu, mem = measure_performance(compute_metrics_threading, df_pandas, symbols, "pandas", window)
+    print(f"Threading - Time: {total_time:.2f}s, CPU: {cpu}%, Memory: {mem} MiB")
+
+    print("Multiprocessing Test (pandas)")
+    multiprocessing_results, total_time, cpu, mem = measure_performance(compute_metrics_multiprocessing, df_pandas, symbols, "pandas", window)
+    print(f"Multiprocessing - Time: {total_time:.2f}s, CPU: {cpu}%, Memory: {mem} MiB")
+
+    # Threading/Multiprocessing with Polars
+    print("Threading Test (polars)")
+    threading_results_polars, total_time, cpu, mem = measure_performance(compute_metrics_threading, df_polars, symbols, "polars", window)
+    print(f"Threading (Polars) - Time: {total_time:.2f}s, CPU: {cpu}%, Memory: {mem} MiB")
+    
+    print("Multiprocessing Test (polars)")
+    multiprocessing_results_polars, total_time, cpu, mem = measure_performance(compute_metrics_multiprocessing, df_polars, symbols, "polars", window)
+    print(f"Multiprocessing (Polars) - Time: {total_time:.2f}s, CPU: {cpu}%, Memory: {mem} MiB")
+
