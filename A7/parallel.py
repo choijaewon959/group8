@@ -8,6 +8,7 @@ from metrics import rolling_metrics_pandas, rolling_metrics_polars
 from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor, as_completed
 # for measuring performance libraries
 import psutil
+import threading
 from memory_profiler import memory_usage
 
 
@@ -73,37 +74,59 @@ def measure_performance(func, *args, **kwargs):
         return result, total_time
 
     mem_usage, (result, total_time) = memory_usage(wrapper, max_usage=True, retval=True)
-    cpu_percent = process.cpu_percent(interval=None)
+    # set interval to capture cpu usage 
+    cpu_percent = process.cpu_percent(interval=0.1)  
 
     return result, total_time, cpu_percent, mem_usage
 
 
+def measure_cpu_during(func, *args, **kwargs):
+    process = psutil.Process()
+    cpu_readings = []
+
+
+    def monitor():
+        while not done[0]:
+            cpu_readings.append(process.cpu_percent(interval=0.05))
+
+    done = [False]
+    # generate upper thread to check cpu_usage
+    monitor_thread = threading.Thread(target=monitor)
+    monitor_thread.start()
+
+    start_time = time.perf_counter()
+    result = func(*args, **kwargs)
+    total_time = time.perf_counter() - start_time
+
+    done[0] = True
+    monitor_thread.join()
+
+    avg_cpu = sum(cpu_readings)/len(cpu_readings)
+
+    return result, total_time, avg_cpu
 
 
 
 if __name__ == "__main__":
-    window = 30
+    window = 1000
     file_path = "./data/market_data-1.csv"
 
     df_pandas, _, _ = load_data_pandas(file_path)
     df_polars, _, _ = load_data_polars(file_path)
-    # same csv data set. therefore set the only symbols list
     symbols = df_pandas['symbol'].unique().tolist()
-    
-    print("Threading Test (pandas)")
-    threading_results, total_time, cpu, mem = measure_performance(compute_metrics_threading, df_pandas, symbols, "pandas", window)
-    print(f"Threading - Time: {total_time:.2f}s, CPU: {cpu}%, Memory: {mem} MiB")
 
-    print("Multiprocessing Test (pandas)")
-    multiprocessing_results, total_time, cpu, mem = measure_performance(compute_metrics_multiprocessing, df_pandas, symbols, "pandas", window)
-    print(f"Multiprocessing - Time: {total_time:.2f}s, CPU: {cpu}%, Memory: {mem} MiB")
+    # Threading (pandas)
+    threading_results, total_time, avg_cpu = measure_cpu_during(compute_metrics_threading, df_pandas, symbols, lib="pandas", window=window)
+    print(f"Threading (Pandas) - Time: {total_time:.2f}s, Avg CPU: {avg_cpu:.1f}%")
 
-    # Threading/Multiprocessing with Polars
-    print("Threading Test (polars)")
-    threading_results_polars, total_time, cpu, mem = measure_performance(compute_metrics_threading, df_polars, symbols, "polars", window)
-    print(f"Threading (Polars) - Time: {total_time:.2f}s, CPU: {cpu}%, Memory: {mem} MiB")
-    
-    print("Multiprocessing Test (polars)")
-    multiprocessing_results_polars, total_time, cpu, mem = measure_performance(compute_metrics_multiprocessing, df_polars, symbols, "polars", window)
-    print(f"Multiprocessing (Polars) - Time: {total_time:.2f}s, CPU: {cpu}%, Memory: {mem} MiB")
+    # Multiprocessing (pandas)
+    multiprocessing_results, total_time, avg_cpu = measure_cpu_during(compute_metrics_multiprocessing, df_pandas, symbols, lib="pandas", window=window)
+    print(f"Multiprocessing (Pandas) - Time: {total_time:.2f}s, Avg CPU: {avg_cpu:.1f}%")
 
+    # Threading (polars)
+    threading_results_polars, total_time, avg_cpu = measure_cpu_during(compute_metrics_threading, df_polars, symbols, lib="polars", window=window)
+    print(f"Threading (Polars) - Time: {total_time:.2f}s, Avg CPU: {avg_cpu:.1f}%")
+
+    # Multiprocessing (polars)
+    multiprocessing_results_polars, total_time, avg_cpu = measure_cpu_during(compute_metrics_multiprocessing, df_polars, symbols, lib="polars", window=window)
+    print(f"Multiprocessing (Polars) - Time: {total_time:.2f}s, Avg CPU: {avg_cpu:.1f}%")
