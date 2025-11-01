@@ -1,15 +1,10 @@
-import time
 import pandas as pd
 import numpy as np
 import polars as pl
-import matplotlib.pyplot as plt
 from data_loader import load_data_pandas, load_data_polars
-from reporting import plot_rolling_metrics
 
 
 def compute_rolling_metrics_pandas(df: pd.DataFrame, symbol: str, ts_cols: list, window=20) -> tuple[pd.DataFrame, float]:
-    start = time.perf_counter()
-
     df_symbol = df[df["symbol"] == symbol].copy()
     df_symbol = df_symbol.sort_values("timestamp")
 
@@ -35,15 +30,10 @@ def compute_rolling_metrics_pandas(df: pd.DataFrame, symbol: str, ts_cols: list,
         # annualize Sharpe ratio
         df_symbol[f"{col}_sharpe_{window}"] *= np.sqrt(252)
 
-    end = time.perf_counter()
-    elapsed_time = end - start
-
-    return df_symbol, elapsed_time
+    return df_symbol
 
 
 def compute_rolling_metrics_polars(df: pl.DataFrame, symbol: str, ts_cols: list, window: int = 20) -> tuple[pl.DataFrame, float]:
-    start = time.perf_counter()
-
     df_symbol = df.filter(pl.col("symbol") == symbol).sort("timestamp")
     df_symbol = (
         df.filter(pl.col("symbol") == symbol)
@@ -70,11 +60,7 @@ def compute_rolling_metrics_polars(df: pl.DataFrame, symbol: str, ts_cols: list,
             ).alias(f"{col}_sharpe_{window}")
         ])
 
-    end = time.perf_counter()
-    elapsed_time = end - start
-
-    return df_symbol, elapsed_time
-
+    return df_symbol
 
 
 if __name__ == "__main__":
@@ -84,9 +70,7 @@ if __name__ == "__main__":
     file_path = "./data/market_data-1.csv"
 
     df_pandas, _, _ = load_data_pandas(file_path)
-    df_pandas_metrics, elapsed_time = compute_rolling_metrics_pandas(df_pandas, symbol, ['price'], window=window)
-    print(f"Pandas elapsed time: {elapsed_time:.2f} seconds")
+    df_pandas_metrics = compute_rolling_metrics_pandas(df_pandas, symbol, ['price'], window=window)
 
     df_polars, _, _ = load_data_polars(file_path)
-    df_polars_metrics, elapsed_time = compute_rolling_metrics_polars(df_polars, symbol, ['price'], window=window)
-    print(f"Polars elapsed time: {elapsed_time:.2f} seconds")
+    df_polars_metrics = compute_rolling_metrics_polars(df_polars, symbol, ['price'], window=window)

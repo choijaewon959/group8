@@ -1,8 +1,36 @@
+import time
+import threading
+import psutil
 import pandas as pd
 import polars as pl
 import matplotlib.pyplot as plt
 from data_loader import load_data_pandas, load_data_polars
 from metrics import compute_rolling_metrics_pandas, compute_rolling_metrics_polars
+
+
+def profiled_task(func, df, symbol, ts_cols, window):
+    process = psutil.Process()
+    start_time = time.time()
+    start_cpu_times = process.cpu_times()
+    start_mem = process.memory_info().rss / (1024 ** 2)
+
+    # Run the actual computation
+    result_df = func(df, symbol, ts_cols, window)
+
+    end_time = time.time()
+    end_cpu_times = process.cpu_times()
+    end_mem = process.memory_info().rss / (1024 ** 2)
+
+    metrics = {
+        "symbol": symbol,
+        "thread_id": threading.get_ident(),
+        "elapsed_time_s": end_time - start_time,
+        "cpu_user_s": end_cpu_times.user - start_cpu_times.user,
+        "cpu_system_s": end_cpu_times.system - start_cpu_times.system,
+        "mem_used_MB": end_mem - start_mem,
+    }
+
+    return symbol, result_df, metrics
 
 
 def plot_rolling_metrics(df: pd.DataFrame, window: int = 20, subsample_size: int = 5000):
