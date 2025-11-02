@@ -10,7 +10,7 @@ from patterns.builder_pattern import PortfolioBuilder, Portfolio
 
 def long_only_MA20_port_construction_with_time_series(mkt_df, symbol, builder: PortfolioBuilder):
 
-    df, _ = rolling_metrics_pandas(mkt_df, symbol, ['price'], window=20)   
+    df = rolling_metrics_pandas(mkt_df, symbol, ['price'], window=20)   
     df['position'] = 0
     df.loc[df['price'] < df['price_MA_20'], 'position'] = 1
     df['cumulative_position'] = df['position'].cumsum()
@@ -166,3 +166,4 @@ if __name__ == "__main__":
     print("Sequential Metrics:\n", json.dumps(metrics_sequential, indent=2))
 
     
+
