@@ -21,7 +21,10 @@ class PortfolioBuilder:
         return self
 
     def add_subportfolio(self, subportfolio: "Portfolio"):
-        self.portfolio.sub_portfolios.append(subportfolio)
+        clean_sub = Portfolio(subportfolio.port_name, subportfolio.owner)
+        clean_sub.positions = subportfolio.positions.copy()
+        clean_sub.sub_portfolios = [] 
+        self.portfolio.sub_portfolios.append(clean_sub)
         return self
 
     def build(self) -> dict:
