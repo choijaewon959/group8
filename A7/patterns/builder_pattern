@@ -27,17 +27,18 @@ class PortfolioBuilder:
         self.portfolio.sub_portfolios.append(clean_sub)
         return self
 
+    
     def build(self) -> dict:
         def portfolio_to_dict(p):
-            if isinstance(p, dict):
-                return p
-            else:
-                return {
-                    "name": p.port_name,
-                    "owner": p.owner,
-                    "positions": p.positions,
-                    "sub_portfolios": [portfolio_to_dict(sub) for sub in p.sub_portfolios]
-                }
+            d = {
+                "name": p.port_name,
+                "owner": p.owner,
+                "positions": p.positions
+            }
+            if p.sub_portfolios: 
+                d["sub_portfolios"] = [portfolio_to_dict(sub) for sub in p.sub_portfolios]
+            return d
+
         return portfolio_to_dict(self.portfolio)
 
 
