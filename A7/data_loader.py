@@ -28,13 +28,11 @@ def load_data_polars(file_path: str) -> pl.DataFrame:
 
 if __name__ == "__main__":
     pandas_df, pandas_time, pandas_mem = load_data_pandas("./data/market_data-1.csv")
-    print("Pandas DataFrame:")
-    print(pandas_df.head())
+    print("Pandas:")
     print(f"Elapsed Time: {pandas_time:.4f} seconds")
     print(f"Memory Usage: {pandas_mem} MiB")
 
     polars_df, polars_time, polars_mem = load_data_polars("./data/market_data-1.csv")
-    print("\nPolars DataFrame:")
-    print(polars_df.head())
+    print("Polars:")
     print(f"Elapsed Time: {polars_time:.4f} seconds")
     print(f"Memory Usage: {polars_mem} MiB")
