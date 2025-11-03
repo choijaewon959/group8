@@ -36,8 +36,9 @@ def compute_metrics_threading(df, symbols, lib="pandas", window=20):
         # retrieve results from each thread
         for f in as_completed(futures):
             symbol = futures[f]
-            result_df, elapsed = f.result()
-            results[symbol] = (result_df, elapsed)
+         #   result_df, elapsed = f.result()
+            result_df = f.result()
+            results[symbol] = (result_df)
     
     return results
 
@@ -57,8 +58,9 @@ def compute_metrics_multiprocessing(df, symbols, lib="pandas", window=20):
 
         for f in as_completed(futures):
             symbol = futures[f]
-            result_df, elapsed = f.result()
-            results[symbol] = (result_df, elapsed)
+          #  result_df, elapsed = f.result()
+            result_df = f.result()
+            results[symbol] = (result_df)
     
     return results
 
@@ -83,11 +85,13 @@ def measure_performance(func, *args, **kwargs):
 def measure_cpu_during(func, *args, **kwargs):
     process = psutil.Process()
     cpu_readings = []
+    mem_readings = []
 
 
     def monitor():
         while not done[0]:
             cpu_readings.append(process.cpu_percent(interval=0.05))
+            mem_readings.append(process.memory_info().rss/1e6)
 
     done = [False]
     # generate upper thread to check cpu_usage
@@ -102,8 +106,9 @@ def measure_cpu_during(func, *args, **kwargs):
     monitor_thread.join()
 
     avg_cpu = sum(cpu_readings)/len(cpu_readings)
+    mem_usage = sum(mem_readings)/len(mem_readings)
 
-    return result, total_time, avg_cpu
+    return result, total_time, avg_cpu, mem_usage
 
 
 
@@ -116,17 +121,17 @@ if __name__ == "__main__":
     symbols = df_pandas['symbol'].unique().tolist()
 
     # Threading (pandas)
-    threading_results, total_time, avg_cpu = measure_cpu_during(compute_metrics_threading, df_pandas, symbols, lib="pandas", window=window)
-    print(f"Threading (Pandas) - Time: {total_time:.2f}s, Avg CPU: {avg_cpu:.1f}%")
+    threading_results, total_time, avg_cpu, mem_usage = measure_cpu_during(compute_metrics_threading, df_pandas, symbols, lib="pandas", window=window)
+    print(f"Threading (Pandas) - Time: {total_time:.2f}s, Avg CPU: {avg_cpu:.1f}%, Mem Usage: {mem_usage:.2f}%")
 
     # Multiprocessing (pandas)
-    multiprocessing_results, total_time, avg_cpu = measure_cpu_during(compute_metrics_multiprocessing, df_pandas, symbols, lib="pandas", window=window)
-    print(f"Multiprocessing (Pandas) - Time: {total_time:.2f}s, Avg CPU: {avg_cpu:.1f}%")
+    multiprocessing_results, total_time, avg_cpu, mem_usage = measure_cpu_during(compute_metrics_multiprocessing, df_pandas, symbols, lib="pandas", window=window)
+    print(f"Multiprocessing (Pandas) - Time: {total_time:.2f}s, Avg CPU: {avg_cpu:.1f}%, Mem Usage: {mem_usage:.2f}%")
 
     # Threading (polars)
-    threading_results_polars, total_time, avg_cpu = measure_cpu_during(compute_metrics_threading, df_polars, symbols, lib="polars", window=window)
-    print(f"Threading (Polars) - Time: {total_time:.2f}s, Avg CPU: {avg_cpu:.1f}%")
+    threading_results_polars, total_time, avg_cpu, mem_usage = measure_cpu_during(compute_metrics_threading, df_polars, symbols, lib="polars", window=window)
+    print(f"Threading (Polars) - Time: {total_time:.2f}s, Avg CPU: {avg_cpu:.1f}%, Mem Usage: {mem_usage:.2f}%")
 
     # Multiprocessing (polars)
-    multiprocessing_results_polars, total_time, avg_cpu = measure_cpu_during(compute_metrics_multiprocessing, df_polars, symbols, lib="polars", window=window)
-    print(f"Multiprocessing (Polars) - Time: {total_time:.2f}s, Avg CPU: {avg_cpu:.1f}%")
+    multiprocessing_results_polars, total_time, avg_cpu, mem_usage = measure_cpu_during(compute_metrics_multiprocessing, df_polars, symbols, lib="polars", window=window)
+    print(f"Multiprocessing (Polars) - Time: {total_time:.2f}s, Avg CPU: {avg_cpu:.1f}%, Mem Usage: {mem_usage:.2f}%")

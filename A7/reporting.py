@@ -57,3 +57,5 @@ if __name__ == "__main__":
     df_polars_metrics, elapsed_time = rolling_metrics_polars(df_polars, symbol, ['price'], window=window)
     print(f"Polars elapsed time: {elapsed_time:.2f} seconds")
     plot_rolling_metrics(df_polars_metrics, window=window, subsample_size=subsample_size)
+
+
