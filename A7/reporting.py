@@ -41,9 +41,9 @@ def plot_rolling_metrics(df: pd.DataFrame, window: int = 20, subsample_size: int
     plt.show()
 
 def measure_cpu_mem_exec_time(df: pd.DataFrame):
-    fig, axs = plt.subplots(3, 1, figsize=(10, 8))
+    fig, axs = plt.subplots(3, 1, figsize=(18, 8))
 
-    axs[0].bar(df.index, df["Time"], color="tab:blue", label="Execution Time")
+    axs[0].bar(df.index, df["Total Time"], color="tab:blue", label="Execution Time")
     axs[0].set_title("Execution Time")
     axs[0].set_ylabel("Seconds")
     axs[0].legend()
@@ -53,7 +53,7 @@ def measure_cpu_mem_exec_time(df: pd.DataFrame):
     axs[1].set_ylabel("CPU")
     axs[1].legend()
 
-    axs[2].bar(df.index, df["Memory(MB)"], color="tab:red", label="Memory Usage(MB)")
+    axs[2].bar(df.index, df["Memory"], color="tab:red", label="Memory Usage(MB)")
     axs[2].set_title("Memory Usage(MB)")
     axs[2].set_ylabel("Memory(MB)")
     axs[2].legend()
@@ -95,4 +95,3 @@ if __name__ == "__main__":
         results.append({"Method": name, "Time": total_time, "CPU": avg_cpu, "Memory(MB)": mem_usage})
 
     df = pd.DataFrame(results)
-    #measure_cpu_mem_exec_time(df)
