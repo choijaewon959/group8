@@ -39,8 +39,9 @@ This project demonstrates advanced parallel processing techniques and high-perfo
    ```
 
 5. **Run tests**:
+    Run the following command at root level of A7.
    ```bash
-   pytest tests/
+   pytest
    ```
 
 ## Module Descriptions
@@ -62,14 +63,12 @@ This project demonstrates advanced parallel processing techniques and high-perfo
   - Pandas compatibility layer
   - Memory-efficient data streaming
   - Data validation and cleaning
-- **Supported Formats**: CSV, Parquet, JSON
 
 #### `metrics.py`
 - **Purpose**: Financial metrics calculation engine
 - **Contains**:
   - Rolling window calculations (mean, volatility, Sharpe ratio)
-  - Risk metrics (VaR, drawdown, beta)
-  - Performance analytics (alpha, information ratio)
+  - Performance analytics (alpha, information ratio, drawdown)
 - **Optimization**: Vectorized operations using NumPy and Polars
 - **Parallelization**: Thread-safe implementations for concurrent processing
 
@@ -84,9 +83,9 @@ This project demonstrates advanced parallel processing techniques and high-perfo
 - **Performance**: Automatic CPU core detection and load balancing
 
 #### `portfolio.py`
-- **Purpose**: Portfolio management and optimization
+- **Purpose**: Portfolio management
 - **Functionality**:
-  - Portfolio construction and rebalancing
+  - Portfolio construction
   - Risk-return optimization
   - Multi-asset allocation strategies
 - **Parallelization**: Concurrent portfolio scenario analysis
@@ -232,21 +231,6 @@ pytest
 
 # Run with coverage
 pytest --cov=. --cov-report=html
-
-# Run performance tests only
-pytest -m performance
-
-# Run parallel tests
-pytest tests/test_rolling_metrics.py -v
-```
-
-### Performance Profiling
-```bash
-# Memory profiling
-python -m memory_profiler main.py
-
-# CPU profiling
-python -m cProfile -s cumulative main.py
 ```
 
 ### Benchmarking
