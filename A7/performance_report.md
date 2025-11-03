@@ -13,6 +13,15 @@ To measure CPU utilization during the execution of the rolling metrics computati
 
 ---
 
+## Ingestion Time
+| Library | Ingestion Time (s) | Mem Usage(MiB) |
+|---------|-----------------|-----------|
+| Pandas  | 0.1431          | 273.13    |
+| Polars  | 0.1259          | 360.77    |
+
+**Observations:**
+- Polars outperforms Pandas in Ingestion time by leveraging more memory on the runtime.
+
 
 ## Performance Metrics
 ---
