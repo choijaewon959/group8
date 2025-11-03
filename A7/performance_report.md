@@ -51,8 +51,17 @@ To measure CPU utilization during the execution of the rolling metrics computati
 
 ---
 
-### 3. Syntax difference: Pandas vs Polars
-- Imports and Dataframe creation
+### 3. Summary
+
+- **Threading** outperforms multiprocessing for small-to-medium data chunks, especially with Polars.
+- **Multiprocessing** introduces overhead that is only worth it for very large datasets or CPU-bound computations where GIL is limiting.
+- Polars demonstrates stronger CPU utilization and faster execution than Pandas for the same tasks.
+- Due to Python's Global Interpreter Lock (GIL), multithreading has limited parallel performance for CPU-bound tasks; if the dataset is very large, multiprocessing is preferred for computationally intensive operations.
+
+---
+
+## Syntax difference: Pandas vs Polars
+### 1. Imports and Dataframe creation
 ```python
 # Pandas
 import pandas as pd
@@ -64,7 +73,7 @@ df = pl.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]})
 ```
 > They are similar in importing and making dataframes.
 
-- Updating columns/Data Manipulation
+### 2. Updating columns/Data Manipulation
 ```python
 # Pandas
 df_symbol[f"{col}_rets_mean_{window}"] = (
@@ -81,7 +90,7 @@ df_symbol = df_symbol.with_columns([
 > Pandas has more eager approach in data manipulation whereas Polars has lazy approach. 
 > Polars has unique way of creating columns with 'with_columns'
 
-- Index
+### 3. Index
 ```python
 def load_data_pandas(file_path: str) -> pd.DataFrame:
     start = time.perf_counter()
@@ -107,13 +116,3 @@ def load_data_polars(file_path: str) -> pl.DataFrame:
     return df, elapsed_time, mem
 ```
 > Polars does NOT have index functionality so we add manually as above.
-
----
-
-### 3. Summary
-
-- **Threading** outperforms multiprocessing for small-to-medium data chunks, especially with Polars.
-- **Multiprocessing** introduces overhead that is only worth it for very large datasets or CPU-bound computations where GIL is limiting.
-- Polars demonstrates stronger CPU utilization and faster execution than Pandas for the same tasks.
-- Due to Python's Global Interpreter Lock (GIL), multithreading has limited parallel performance for CPU-bound tasks; if the dataset is very large, multiprocessing is preferred for computationally intensive operations.
-- There are several notable syntax differences (index, data manipulation) and similarities in pandas and polars (data creation).
