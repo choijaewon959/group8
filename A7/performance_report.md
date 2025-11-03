@@ -26,6 +26,9 @@ To measure CPU utilization during the execution of the rolling metrics computati
 ## Performance Metrics
 ---
 
+![performance data stats preview](./img/performance barchart.png)
+
+
 ### 1. Window Size: 30
 
 | Library | Method           | Time (s) | Avg CPU (%) |
