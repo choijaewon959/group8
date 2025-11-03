@@ -5,9 +5,19 @@ This report summarizes the performance of rolling metrics computation across thr
 
 To measure CPU utilization during the execution of the rolling metrics computations, we sampled the CPU usage of the process at 0.5-second intervals using psutil. These periodic readings were then **averaged** to obtain the mean CPU usage over the duration of each computation. This method provides an approximate view of the CPU load while the parallel tasks were running.
 
+
+--- 
+
+## Statistical Rolling Metrics
+![market data stats preview](./img/market_data_stats.png)
+
 ---
 
-## 1. Window Size: 30
+
+## Performance Metrics
+---
+
+### 1. Window Size: 30
 
 | Library | Method           | Time (s) | Avg CPU (%) |
 |---------|-----------------|-----------|-------------|
@@ -24,7 +34,7 @@ To measure CPU utilization during the execution of the rolling metrics computati
 
 ---
 
-## 2. Window Size: 1000
+### 2. Window Size: 1000
 
 | Library | Method           | Time (s) | Avg CPU (%) |
 |---------|-----------------|-----------|-------------|
@@ -41,7 +51,7 @@ To measure CPU utilization during the execution of the rolling metrics computati
 
 ---
 
-## 3. Summary
+### 3. Summary
 
 - **Threading** outperforms multiprocessing for small-to-medium data chunks, especially with Polars.
 - **Multiprocessing** introduces overhead that is only worth it for very large datasets or CPU-bound computations where GIL is limiting.
