@@ -118,6 +118,8 @@ if __name__ == "__main__":
     df_polars, _, _ = load_data_polars(file_path)
     symbols = df_pandas['symbol'].unique().tolist()
 
+    
+
     # Threading (pandas)
     threading_results, total_time, avg_cpu, mem_usage = measure_cpu_mem_during(compute_metrics_threading, df_pandas, symbols, lib="pandas", window=window)
     print(f"Threading (Pandas) - Time: {total_time:.2f}s, Avg CPU: {avg_cpu:.1f}%, Mem Usage: {mem_usage:.2f}%")
