@@ -3,6 +3,7 @@ import polars as pl
 import matplotlib.pyplot as plt
 from data_loader import load_data_pandas, load_data_polars
 from metrics import rolling_metrics_pandas, rolling_metrics_polars
+from parallel import compute_metrics_threading, compute_metrics_multiprocessing, measure_cpu_mem_during
 
 
 def plot_rolling_metrics(df: pd.DataFrame, window: int = 20, subsample_size: int = 5000):
@@ -39,7 +40,25 @@ def plot_rolling_metrics(df: pd.DataFrame, window: int = 20, subsample_size: int
     plt.tight_layout()
     plt.show()
 
+def measure_cpu_mem_exec_time(df: pd.DataFrame):
+    fig, axs = plt.subplots(3, 1, figsize=(10, 8))
 
+    axs[0].bar(df.index, df["Time"], color="tab:blue", label="Execution Time")
+    axs[0].set_title("Execution Time")
+    axs[0].set_ylabel("Seconds")
+    axs[0].legend()
+
+    axs[1].bar(df.index, df["CPU"], color="tab:orange", label="Average CPU Usage")
+    axs[1].set_title("Average CPU Usage")
+    axs[1].set_ylabel("CPU")
+    axs[1].legend()
+
+    axs[2].bar(df.index, df["Memory(MB)"], color="tab:red", label="Memory Usage(MB)")
+    axs[2].set_title("Memory Usage(MB)")
+    axs[2].set_ylabel("Memory(MB)")
+    axs[2].legend()
+
+    plt.show()
 
 
 if __name__ == "__main__":
@@ -59,3 +78,21 @@ if __name__ == "__main__":
     plot_rolling_metrics(df_polars_metrics, window=window, subsample_size=subsample_size)
 
 
+    ####___________Memory usage & Parallel execution speed______________####
+    results = []
+    window = 1000
+    df_polars, _, _ = load_data_polars(file_path)
+    symbols = df_pandas['symbol'].unique().tolist()
+
+    for name, func, df, lib in [
+        ("Threading (Pandas)", compute_metrics_threading, df_pandas, "pandas"),
+        ("Multiprocessing (Pandas)", compute_metrics_multiprocessing, df_pandas, "pandas"),
+        ("Threading (Polars)", compute_metrics_threading, df_polars, "polars"),
+        ("Multiprocessing (Polars)", compute_metrics_multiprocessing, df_polars, "polars")
+    ]:
+        _, total_time, avg_cpu, mem_usage = measure_cpu_mem_during(func, df, symbols, lib=lib, window=window)
+        print(f"{name} - Time: {total_time}s, Avg CPU: {avg_cpu}%, Memory: {mem_usage} MB")
+        results.append({"Method": name, "Time": total_time, "CPU": avg_cpu, "Memory(MB)": mem_usage})
+
+    df = pd.DataFrame(results)
+    #measure_cpu_mem_exec_time(df)

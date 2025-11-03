@@ -2,9 +2,11 @@ import pandas as pd
 import numpy as np
 import polars as pl
 from data_loader import load_data_pandas, load_data_polars
+import time
 
 
 def rolling_metrics_pandas(df: pd.DataFrame, symbol: str, ts_cols: list, window=20) -> tuple[pd.DataFrame, float]:
+    start = time.time()
     df_symbol = df[df["symbol"] == symbol].copy()
     df_symbol = df_symbol.sort_values("timestamp")
 
@@ -30,10 +32,12 @@ def rolling_metrics_pandas(df: pd.DataFrame, symbol: str, ts_cols: list, window=
         # annualize Sharpe ratio
         df_symbol[f"{col}_sharpe_{window}"] *= np.sqrt(252)
 
-    return df_symbol
+    elapsed = time.time() - start
+    return df_symbol, elapsed
 
 
 def rolling_metrics_polars(df: pl.DataFrame, symbol: str, ts_cols: list, window: int = 20) -> tuple[pl.DataFrame, float]:
+    start = time.time()
     df_symbol = df.filter(pl.col("symbol") == symbol).sort("timestamp")
     df_symbol = (
         df.filter(pl.col("symbol") == symbol)
@@ -60,7 +64,8 @@ def rolling_metrics_polars(df: pl.DataFrame, symbol: str, ts_cols: list, window:
             ).alias(f"{col}_sharpe_{window}")
         ])
 
-    return df_symbol
+    elapsed = time.time() - start
+    return df_symbol, elapsed
 
 
 
