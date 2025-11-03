@@ -19,6 +19,12 @@ To measure CPU utilization during the execution of the rolling metrics computati
 | Pandas  | 0.1431          | 273.13    |
 | Polars  | 0.1259          | 360.77    |
 
+## Rolling Metrics Execution Time (Elapsed)
+| Library | Symbol | Window | Sample Size | Execution Time (s) |
+|---------|--------|--------|-------------|------------------|
+| Pandas  | AAPL   | 20     | 1000        | 0.0252           |
+| Polars  | AAPL   | 20     | 1000        | 0.0075           |
+
 **Observations:**
 - Polars outperforms Pandas in Ingestion time by leveraging more memory on the runtime.
 
@@ -69,7 +75,7 @@ To measure CPU utilization during the execution of the rolling metrics computati
 - **Multiprocessing** introduces overhead that is only worth it for very large datasets or CPU-bound computations where GIL is limiting.
 - Polars demonstrates stronger CPU utilization and faster execution than Pandas for the same tasks.
 - Due to Python's Global Interpreter Lock (GIL), multithreading has limited parallel performance for CPU-bound tasks; if the dataset is very large, multiprocessing is preferred for computationally intensive operations.
-
+- For the dataset and window size tested, execution time was dominated by Threading, with Multiprocessing showing slower performance due to process creation overhead. This highlights that parallel execution speed gains are only realized for larger datasets or heavier computations
 ---
 
 ## Syntax difference: Pandas vs Polars
@@ -128,3 +134,4 @@ def load_data_polars(file_path: str) -> pl.DataFrame:
     return df, elapsed_time, mem
 ```
 > Polars does NOT have index functionality so we add manually as above.
+
