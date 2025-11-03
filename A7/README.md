@@ -113,7 +113,7 @@ This project demonstrates advanced parallel processing techniques and high-perfo
 #### `data/`
 - **Purpose**: Sample datasets and configuration files
 - **Contents**:
-  - Market data samples (CSV/Parquet)
+  - Market data samples (CSV)
   - Benchmark datasets for testing
   - Configuration templates
 - **Performance**: Optimized file formats for fast loading
