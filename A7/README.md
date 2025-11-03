@@ -7,8 +7,6 @@ This project demonstrates advanced parallel processing techniques and high-perfo
 
 ### Prerequisites
 - Python 3.8 or higher
-- pip package manager
-- Multi-core CPU (recommended for parallel processing benefits)
 
 ### Installation
 
@@ -166,61 +164,12 @@ This project demonstrates advanced parallel processing techniques and high-perfo
 
 ### Basic Rolling Metrics
 ```python
-from metrics import RollingMetrics
+from metrics import rolling_metrics_pandas
 from data_loader import load_market_data
 
-data = load_market_data("data/sample_prices.csv")
-metrics = RollingMetrics(window=30)
-
-# Serial calculation
-volatility = metrics.rolling_volatility(data['returns'])
-
-# Parallel calculation
-volatility_parallel = metrics.rolling_volatility_parallel(data['returns'])
+data = load_data_pandas("data/sample_prices.csv")
+metrics = rolling_metrics_pandas(data['returns'], 'AAPL', ['price'])
 ```
-
-### Parallel Portfolio Analysis
-```python
-from portfolio import PortfolioOptimizer
-from parallel import ParallelProcessor
-
-optimizer = PortfolioOptimizer()
-processor = ParallelProcessor(n_workers=4)
-
-# Analyze multiple portfolio scenarios in parallel
-scenarios = processor.map(optimizer.optimize, scenario_configs)
-```
-
-### Performance Benchmarking
-```python
-from reporting import PerformanceBenchmark
-
-benchmark = PerformanceBenchmark()
-results = benchmark.compare_implementations(
-    serial_func=calculate_metrics_serial,
-    parallel_func=calculate_metrics_parallel,
-    data_sizes=[1000, 10000, 100000]
-)
-benchmark.generate_report(results)
-```
-
-## Performance Considerations
-
-### Optimization Guidelines
-1. **Use Polars for large datasets** (>100k rows)
-2. **Enable parallel processing** for CPU-intensive calculations
-3. **Profile memory usage** with built-in monitoring tools
-4. **Choose appropriate chunk sizes** for parallel processing
-
-### Expected Performance Gains
-- **2-4x speedup** for rolling calculations on multi-core systems
-- **5-10x improvement** with Polars vs Pandas for large datasets
-- **Linear scaling** up to available CPU cores for embarrassingly parallel tasks
-
-### Memory Usage
-- **Streaming processing** reduces peak memory usage by 60-80%
-- **Lazy evaluation** minimizes intermediate object creation
-- **Efficient data types** (Polars native types) reduce memory footprint
 
 ## Development & Testing
 
@@ -236,8 +185,17 @@ pytest --cov=. --cov-report=html
 ### Benchmarking
 The project includes built-in benchmarking tools:
 ```python
-from reporting import run_benchmarks
-run_benchmarks()  # Generates performance_report.md
+from reporting import plot_rolling_metrics
+from metrics import rolling_metrics_pandas
+symbol = 'AAPL'
+window = 20
+subsample_size = 1000
+file_path = "./data/market_data-1.csv"
+
+df_pandas, _, _ = load_data_pandas(file_path)
+df_pandas_metrics, elapsed_time = rolling_metrics_pandas(df_pandas, symbol, ['price'], window=window)
+print(f"Pandas elapsed time: {elapsed_time:.2f} seconds")
+plot_rolling_metrics(df_pandas_metrics, window=window, subsample_size=subsample_size)
 ```
 
 ## Dependencies
