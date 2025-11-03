@@ -3,7 +3,7 @@ from metrics import rolling_metrics_pandas, rolling_metrics_polars
 
 
 def test_compute_rolling_metrics_pandas(mock_market_data):
-    df_metrics = rolling_metrics_pandas(mock_market_data['pandas'], "AAPL", ['price'], window=20)
+    df_metrics, _ = rolling_metrics_pandas(mock_market_data['pandas'], "AAPL", ['price'], window=20)
 
     assert not df_metrics['price_MA_20'].isnull().all()
     assert not df_metrics['price_STD_20'].isnull().all()
@@ -14,7 +14,7 @@ def test_compute_rolling_metrics_pandas(mock_market_data):
 
 
 def test_compute_rolling_metrics_polars(mock_market_data):
-    df_metrics = rolling_metrics_polars(mock_market_data['polars'], "AAPL", ['price'], window=20)
+    df_metrics, _ = rolling_metrics_polars(mock_market_data['polars'], "AAPL", ['price'], window=20)
 
     assert not df_metrics['price_MA_20'].is_null().all()
     assert not df_metrics['price_STD_20'].is_null().all()
@@ -25,8 +25,8 @@ def test_compute_rolling_metrics_polars(mock_market_data):
 
 
 def test_pandas_polars_equivalence(mock_market_data):
-    df_metrics_pd = rolling_metrics_pandas(mock_market_data['pandas'], "AAPL", ['price'], window=20)
-    df_metrics_pl = rolling_metrics_polars(mock_market_data['polars'], "AAPL", ['price'], window=20)
+    df_metrics_pd, _ = rolling_metrics_pandas(mock_market_data['pandas'], "AAPL", ['price'], window=20)
+    df_metrics_pl, _ = rolling_metrics_polars(mock_market_data['polars'], "AAPL", ['price'], window=20)
 
     # ensure results are the same for any random index
     test_index = np.random.randint(30, 101)
