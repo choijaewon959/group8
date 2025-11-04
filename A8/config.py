@@ -1,3 +1,7 @@
+# Server Info
 SERVER_HOST = "localhost"
-SERVER_PORT = 8999
+SERVER_PORT_GATEWAY = 8999
+
+# Message Info
 BYTE_LIMIT = 1024
+MESSAGE_DELIMITER = b'*'
