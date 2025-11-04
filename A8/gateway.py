@@ -3,11 +3,12 @@ import time
 import threading
 import random
 import pandas as pd
+from collections import defaultdict
 from config import *
 
 
 # client servers
-clients = {} # k: name, v: list
+clients = defaultdict(list) # k: client type, v: list of client connections
 
 def get_price_data():
     # Simulate getting price data from a data source
@@ -15,30 +16,55 @@ def get_price_data():
     return data
 
 
+def broadcast(msg: bytes, client_type: str):
+    for conn in clients[client_type]:
+        try:
+            conn.sendall(msg)
+        except Exception:
+            print("[!] Dropping disconnected client.")
+            clients.remove(conn)
+
+
 def feed_price_stream():
     price_data = get_price_data()
     while True:
-        # print(price_data)
-        time.sleep(1)
+        pass
 
 
 def feed_news_stream():
     while True:
         sentiment = random.randint(0, 100)
+        broadcast(sentiment.to_bytes(), ClientType.STRATEGY)
 
 
 def handle_client(conn, addr):
     print(f"[+] Connected: {addr}")
+    buffer = b""
+    client_type = None
+
     try:
         while True:
-            time.sleep(1)
-    except Exception:
-        pass
-    finally:
-        print(f"[-] Disconnected: {addr}")
-        clients.remove(conn)
-        conn.close()
+            data = conn.recv(BYTE_LIMIT)
+            if not data:
+                break
+            buffer += data
 
+            while MESSAGE_DELIMITER in buffer:
+                # split the message from the buffer, process a message a time
+                msg, buffer = buffer.split(MESSAGE_DELIMITER, 1)
+                msg_type, client_type, client_id = msg.split(STRING_DELIMITER)
+
+                if msg_type == MessageType.REGISTER:
+                    clients[client_type] = clients.get(client_type).append(conn)
+                    print(f"[+] Registered client: {client_type}: {client_id}")
+    except Exception as e:
+        print(f"[!] Connection error with {addr}: {e}")
+    finally:
+        if client_type and client_type in clients:
+            del clients[client_type]
+        conn.close()
+        print(f"[-] Disconnected {addr}")
+                    
 
 def start_server():
     server = socket.socket(
