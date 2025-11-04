@@ -15,8 +15,8 @@ while counter < len_nums:
     res = client.recv(1024)
     if not res:
         break
-    
-    print(res.decode())
+    print(res)
+    # print(res.decode())
     
 # client.sendall(f"{total/counter}".encode())
 client.close()

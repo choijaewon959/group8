@@ -16,6 +16,12 @@ def get_price_data():
     return data
 
 
+def get_sentiment_data():
+    # Simulate news data from a data source
+    data = pd.read_csv('./data/market_sentiment.csv')
+    return data
+
+
 def broadcast(msg: bytes, client_type: str):
     for conn in clients[client_type]:
         try:
@@ -32,9 +38,20 @@ def feed_price_stream():
 
 
 def feed_news_stream():
-    while True:
-        sentiment = random.randint(0, 100)
-        broadcast(str(sentiment).encode(), ClientType.STRATEGY.value)
+    news_data = get_sentiment_data()
+    
+    for _, row in news_data.iterrows():
+        sentiment = int(row["sentiment"])
+        timestamp = row.get("timestamp", "")
+        symbol = row["symbol"]
+
+        # Create message
+        message = f"NEWS_SENTIMENT,{timestamp},{symbol},{sentiment},*".encode()
+        
+        # Broadcast to all strategy clients
+        broadcast(message, ClientType.STRATEGY.value)
+        
+        time.sleep(1)
 
 
 def handle_client(conn, addr):
