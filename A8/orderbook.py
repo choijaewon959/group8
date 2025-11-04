@@ -6,7 +6,7 @@ client = socket.socket(
 )
 
 client.connect(("localhost", 8999))
-client.sendall(b"REGISTER,STRATEGY,1")
+client.sendall(b"REGISTER,STRATEGY,1*")
 counter = 0
 len_nums = 100
 total = 0
@@ -16,9 +16,8 @@ while counter < len_nums:
     if not res:
         break
     
-    total += int(res.decode())
-    counter += 1
+    print(res.decode())
     
-client.sendall(f"{total/counter}".encode())
+# client.sendall(f"{total/counter}".encode())
 client.close()
 

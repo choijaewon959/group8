@@ -34,7 +34,7 @@ def feed_price_stream():
 def feed_news_stream():
     while True:
         sentiment = random.randint(0, 100)
-        broadcast(sentiment.to_bytes(), ClientType.STRATEGY)
+        broadcast(str(sentiment).encode(), ClientType.STRATEGY.value)
 
 
 def handle_client(conn, addr):
@@ -48,14 +48,16 @@ def handle_client(conn, addr):
             if not data:
                 break
             buffer += data
+            print('buffer: ', buffer)
 
             while MESSAGE_DELIMITER in buffer:
                 # split the message from the buffer, process a message a time
                 msg, buffer = buffer.split(MESSAGE_DELIMITER, 1)
-                msg_type, client_type, client_id = msg.split(STRING_DELIMITER)
+                msg_decoded = msg.decode()
+                msg_type, client_type, client_id = msg_decoded.split(STRING_DELIMITER)
 
-                if msg_type == MessageType.REGISTER:
-                    clients[client_type] = clients.get(client_type).append(conn)
+                if msg_type == MessageType.REGISTER.value:
+                    clients[client_type].append(conn)
                     print(f"[+] Registered client: {client_type}: {client_id}")
     except Exception as e:
         print(f"[!] Connection error with {addr}: {e}")
