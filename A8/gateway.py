@@ -34,7 +34,19 @@ def broadcast(msg: bytes, client_type: str):
 def feed_price_stream():
     price_data = get_price_data()
     while True:
-        pass
+        for _, row in price_data.iterrows():
+            price = row["price"]
+            timestamp = row.get("timestamp", "")
+            symbol = row["symbol"]
+
+            # Create message
+            message = f"{MessageType.PRICE.value},{timestamp},{symbol},{price},*".encode()
+            
+            # Broadcast to all strategy clients
+            broadcast(message, ClientType.ORDERBOOK.value)
+            
+            # Simulate broadcast buffer
+            time.sleep(1)
 
 
 def feed_news_stream():
@@ -46,11 +58,12 @@ def feed_news_stream():
         symbol = row["symbol"]
 
         # Create message
-        message = f"NEWS_SENTIMENT,{timestamp},{symbol},{sentiment},*".encode()
+        message = f"{MessageType.NEWS_SENTIMENT.value},{timestamp},{symbol},{sentiment},*".encode()
         
         # Broadcast to all strategy clients
         broadcast(message, ClientType.STRATEGY.value)
         
+        # Simulate broadcast buffer
         time.sleep(1)
 
 

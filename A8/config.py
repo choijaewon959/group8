@@ -12,7 +12,10 @@ STRING_DELIMITER = ','
 # Message Type
 class MessageType(Enum):
     REGISTER = "REGISTER"
+    PRICE = "PRICE"
+    NEWS_SENTIMENT = "NEWS_SENTIMENT"
 
 # Client Type
 class ClientType(Enum):
     STRATEGY = "STRATEGY"
+    ORDERBOOK = "ORDERBOOK"
