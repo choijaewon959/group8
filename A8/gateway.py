@@ -25,10 +25,6 @@ news_tick_id = 0
 lock = threading.Lock()
 
 
-
-
-
-
 # monitoring throughput
 def monitor_throughput(interval=5):
     global price_tick_count, news_tick_count, prev_price, prev_news
@@ -77,7 +73,7 @@ def broadcast(msg: bytes, client_type: str):
 def feed_price_stream():
     global price_tick_count
     price_data = get_price_data()
-    
+
     for _, row in price_data.iterrows():
         price = row["price"]
         timestamp = row.get("timestamp", "")
