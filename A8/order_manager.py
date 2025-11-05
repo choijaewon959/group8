@@ -6,7 +6,8 @@ from datetime import datetime
 from psutil._common import addr
 
 
-def OrderManager():
+class OrderManager():
+
     def __init__(self, host='localhost', port=8000, log_file="trades.log"):
         self.host = host
         self.port = port
@@ -14,7 +15,7 @@ def OrderManager():
         self.server_socket = socket.socket(socket.AF_INET,
                                            socket.SOCK_STREAM
                                            )
-        self.server.setsockopt(socket.SOL_SOCKET,
+        self.server_socket.setsockopt(socket.SOL_SOCKET,
                                socket.SO_REUSEADDR,
                                1
                                )
@@ -30,7 +31,7 @@ def OrderManager():
 
         self.server_socket.listen()
         self.running = True
-        print("[ORDER MANAGER] Broadcasting on {self.host}:{self.port}...")
+        print(f"[ORDER MANAGER] Broadcasting on {self.host}:{self.port}...")
 
         try:
             while self.running:
@@ -72,12 +73,8 @@ def OrderManager():
             f.write(f"{self.timestamp}, {confirmation}\n")
 
 
-
-
-
-
-
-
-
+order = OrderManager()
+order.start()
+order.handle_client(order.host, order.port)
 
 
