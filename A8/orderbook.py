@@ -3,6 +3,7 @@ import time
 from multiprocessing import shared_memory
 import numpy as np 
 
+# variables to calculate processing efficiency 
 tick_id = 0
 latency_logs = []
 
@@ -11,8 +12,10 @@ class SharedPriceBook:
     def __init__(self, symbols, name=None):
         self.symbols = symbols # list of symbols : ['AAPL', 'MSFT'. 'SPY']
         self.size = len(symbols) # number of symbols : 3 
+        # generate numpy array on sharedmemory
         self.shm = shared_memory.SharedMemory(create=True, size=self.size*8, name=name)
         self.prices = np.ndarray((self.size,), dtype=np.float64, buffer=self.shm.buf)
+        # symbol mappin hash map
         self.symbol_index = {s: i for i, s in enumerate(symbols)}
     
     def update(self, symbol, price):
