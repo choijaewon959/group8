@@ -4,6 +4,13 @@ from enum import Enum
 SERVER_HOST = "localhost"
 SERVER_PORT_GATEWAY = 8999
 
+# Order_manager server Info
+SERVER_HOST_OM = "Rhazihost"
+SERVER_PORT_GATEWAY_OM = 8000
+
+# Log File
+LOG_FILE = "trades.log"
+
 # Message Info
 BYTE_LIMIT = 1024
 MESSAGE_DELIMITER = b'*'
