@@ -81,83 +81,114 @@ class NewsSentimentStrategy:
 
 
 # total function ----------------------------------------------------------
-def start_strategy(symbol):
+# strategy.py
+def start_price_strategy(symbol="AAPL"):
     global tick_id
     global price_signals
-    global news_signals
-
+ 
     # reset global variables as client starts 
     price_signals.clear()
-    news_signals.clear()
 
-    client = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect(("localhost", 8999))
     client.sendall(b"REGISTER,STRATEGY,1*")
     counter = 0
     len_nums = 100
-    
-    # set shared news book object
+
     symbols = ['AAPL', 'SPY', 'MSFT']
     shared_price_book = SharedPriceBook(symbols, name='G8_Shared_Prcie_Book', create=False)
-    shared_news_book = SharedNewsBook(symbols, name='G8_Shared_News_Book', create=False)
-    
-    # set strategy objects
     price_strategy = SimplePriceStrategy(symbol, shared_price_book, window=10)
-    news_strategy = NewsSentimentStrategy(shared_news_book, symbol)
 
-
-    while True: #counter < len_nums:
+    while True: # counter < len_nums
         res = client.recv(1024)
         if not res:
             break
-        # print("[STRATEGY]", res.decode())
         output = res.decode().split('*')
-
         for msg in output:
             if not msg:
                 continue
 
             fields = msg.split(',')
             tick_id += 1
-            # meaningless : server tick id will not match with client side tick id unless they generated at same time. 
-            # if int(fields[1]) != tick_id:
-            #     print(f"[STRATEGY] Warning: Tick ID mismatch. Expected {tick_id}, got {fields[1]}")
+            ts_sent = float(fields[-1])
+            ts_rcvd = time()
+            latency = ts_rcvd - ts_sent
+            latency_logs.append(latency)
+
+            price_signal = price_strategy.generate_signal()
+            if price_signal:
+                print(f"[PRICE STRAT] {price_signal}")
+                price_signals.append(price_signal)
+            
+            counter += 1 
+
+        trade_time = time()
+        decision_latency = trade_time - ts_sent
+        print(f"[PRICE STRATEGY] Latency: {latency:.6f} seconds, Decision Latency: {decision_latency:.6f} seconds")
+
+    client.close()
+
+
+
+def start_news_strategy(symbol="AAPL"):
+    global tick_id
+    global news_signals
+
+    # reset global variables as client starts 
+    news_signals.clear()
+
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client.connect(("localhost", 8999))
+    client.sendall(b"REGISTER,STRATEGY,1*")
+    counter = 0
+    len_nums = 100
+
+    symbols = ['AAPL', 'SPY', 'MSFT']
+    shared_news_book = SharedNewsBook(symbols, name='G8_Shared_News_Book', create=False)
+    news_strategy = NewsSentimentStrategy(shared_news_book, symbol)
+
+    while True: # counter < len_nums:
+        res = client.recv(1024)
+        if not res:
+            break
+        output = res.decode().split('*')
+        
+        for msg in output:
+            if not msg:
+                continue
+            fields = msg.split(',')
+            tick_id +=1 
             ts_sent = float(fields[-1])
             ts_rcvd = time()
             latency = ts_rcvd - ts_sent
             latency_logs.append(latency)
 
             # update news object
-            if fields[0] == "NEWS":
-                news_symbol = fields[2]
-                sentiment = float(fields[3])
+            if fields[0] == "NEWS_SENTIMENT":
+                news_symbol = fields[3]
+                sentiment = float(fields[4])
                 shared_news_book.update(news_symbol, sentiment)
-
-            # run the strategies : generate signals  
-            price_signal = price_strategy.generate_signal()
+            
             news_signal = news_strategy.generate_signal()
             
-            if price_signal:
-                print(f"[PRICE STRAT] {price_signal}")
-                price_signals.append(price_signal)
-
             if news_signal:
                 print(f"[NEWS STRAT] {news_signal}")
                 news_signals.append(news_signal)
 
             counter += 1
 
-
         trade_time = time()
         decision_latency = trade_time - ts_sent
-        print(f"[STRATEGY] Latency: {latency:.6f} seconds, Decision Latency: {decision_latency:.6f} seconds")
+        print(f"[NEWS STRATEGY] Latency: {latency:.6f} seconds, Decision Latency: {decision_latency:.6f} seconds")
     # client.sendall(f"{total/counter}".encode())
     client.close()
 
 
+
+
 if __name__ == "__main__":
     symbols = ['AAPL', 'SPY', 'MSFT']
-    
+
     try:
         shared_price_book = SharedPriceBook(symbols, name='G8_Shared_Prcie_Book', create=True)
     except FileExistsError:
@@ -168,6 +199,5 @@ if __name__ == "__main__":
     except FileExistsError:
         shared_news_book = SharedNewsBook(symbols, name='G8_Shared_News_Book', create=False)
 
-
-    # run strategy
-    start_strategy("AAPL")
+    start_news_strategy()
+    #start_price_strategy()
