@@ -9,10 +9,15 @@ latency_logs = []
 
 
 class SharedPriceBook: 
-    def __init__(self, symbols, name=None):
+    def __init__(self, symbols, name=None, create=True):
         self.symbols = symbols # list of symbols : ['AAPL', 'MSFT'. 'SPY']
         self.size = len(symbols) # number of symbols : 3 
         # generate numpy array on sharedmemory
+        if create:
+            self.shm = shared_memory.SharedMemory(create=True, size=self.size*8, name=name)  
+        else:
+            self.shm = shared_memory.SharedMemory(name=name)  
+
         self.shm = shared_memory.SharedMemory(create=True, size=self.size*8, name=name)
         self.prices = np.ndarray((self.size,), dtype=np.float64, buffer=self.shm.buf)
         # symbol mappin hash map
