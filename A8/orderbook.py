@@ -29,6 +29,8 @@ class SharedPriceBook:
 
 
 def start_orderbook():
+    global tick_id
+    
     client = socket.socket(
         socket.AF_INET,
         socket.SOCK_STREAM
@@ -40,6 +42,10 @@ def start_orderbook():
     len_nums = 100
     total = 0
 
+    # set Orderbook object on Shared Memory
+    symbols = ['AAPL', 'SPY', 'MSFT']
+    price_book = SharedPriceBook(symbols, name='G8_Shared_Prcie_Book')
+    
     while counter < len_nums:
         res = client.recv(1024)
         if not res:
@@ -51,16 +57,21 @@ def start_orderbook():
                 continue
             fields = msg.split(',')
             tick_id += 1
-            if int(fields[1]) != tick_id:
-                print(f"[ORDERBOOK] Warning: Tick ID mismatch. Expected {tick_id}, got {fields[1]}")
+            
+            # meaningless : server tick id will not match with client side tick id unless they generated at same time. 
+            # if int(fields[1]) != tick_id:
+            #     print(f"[ORDERBOOK] Warning: Tick ID mismatch. Expected {tick_id}, got {fields[1]}")
+            
             ts_sent = float(fields[-1])
             ts_rcvd = time.time()
             latency = ts_rcvd - ts_sent
             latency_logs.append(latency)
 
-        '''
-            @TODO: Add trade decision here
-        '''
+            # update orderbook 
+            symbol = fields[2]
+            price = float(fields[3])
+            price_book.update(symbol,price)
+        
         trade_time = time.time()
         decision_latency = trade_time - ts_sent
         print(f"[ORDERBOOK] Latency: {latency:.6f} seconds, Decision Latency: {decision_latency:.6f} seconds")
