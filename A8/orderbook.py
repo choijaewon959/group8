@@ -1,8 +1,29 @@
 import socket
 import time
+from multiprocessing import shared_memory
+import numpy as np 
 
 tick_id = 0
 latency_logs = []
+
+
+class SharedPriceBook: 
+    def __init__(self, symbols, name=None):
+        self.symbols = symbols # list of symbols : ['AAPL', 'MSFT'. 'SPY']
+        self.size = len(symbols) # number of symbols : 3 
+        self.shm = shared_memory.SharedMemory(create=True, size=self.size*8, name=name)
+        self.prices = np.ndarray((self.size,), dtype=np.float64, buffer=self.shm.buf)
+        self.symbol_index = {s: i for i, s in enumerate(symbols)}
+    
+    def update(self, symbol, price):
+        idx = self.symbol_index[symbol]
+        self.prices[idx] = price
+
+    def read(self, symbol):
+        idx = self.symbol_index[symbol]
+        return self.prices[idx]
+
+
 
 def start_orderbook():
     client = socket.socket(
