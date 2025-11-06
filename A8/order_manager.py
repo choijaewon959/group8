@@ -51,6 +51,59 @@ class OrderManager():
             f.write(f"{self.timestamp}, {confirmation}\n")
 
 
+def start_orderbook():
+    global tick_id
+
+    client = socket.socket(
+        socket.AF_INET,
+        socket.SOCK_STREAM
+    )
+
+    client.connect(("localhost", 8999))
+    client.sendall(b"REGISTER,ORDERBOOK,1*")
+    counter = 0
+    len_nums = 100
+    total = 0
+
+    # set Orderbook object on Shared Memory
+    symbols = ['AAPL', 'SPY', 'MSFT']
+    price_book = SharedPriceBook(symbols, name='G8_Shared_Prcie_Book')
+
+    while counter < len_nums:
+        res = client.recv(1024)
+        if not res:
+            break
+        print("[ORDERBOOK]", res.decode())
+        output = res.decode().split('*')
+        for msg in output:
+            if msg == '':
+                continue
+            fields = msg.split(',')
+            tick_id += 1
+
+            # meaningless : server tick id will not match with client side tick id unless they generated at same time.
+            # if int(fields[1]) != tick_id:
+            #     print(f"[ORDERBOOK] Warning: Tick ID mismatch. Expected {tick_id}, got {fields[1]}")
+
+            ts_sent = float(fields[-1])
+            ts_rcvd = time.time()
+            latency = ts_rcvd - ts_sent
+            latency_logs.append(latency)
+
+            # update orderbook
+            symbol = fields[2]
+            price = float(fields[3])
+            price_book.update(symbol, price)
+
+        trade_time = time.time()
+        decision_latency = trade_time - ts_sent
+        print(f"[ORDERBOOK] Latency: {latency:.6f} seconds, Decision Latency: {decision_latency:.6f} seconds")
+
+        # print(res.decode())
+
+    # client.sendall(f"{total/counter}".encode())
+    client.close()
+
 def start_ordermanager(self):
     #start the order manager server
     self.server_socket.bind((
@@ -71,8 +124,13 @@ def start_ordermanager(self):
     finally:
         self.server_socket.close()
 
+if __name__ == "__main__":
+    start_ordermanager()
+
+"""
 order = OrderManager()
 order.start()
 order.handle_client(order.host, order.port)
+"""
 
 
