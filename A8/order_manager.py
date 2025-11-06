@@ -21,28 +21,6 @@ class OrderManager():
                                )
         self.running = False
 
-
-    def start(self):
-        #start the order manager server
-        self.server_socket.bind((
-            self.host,
-            self.port)
-        )
-
-        self.server_socket.listen()
-        self.running = True
-        print(f"[ORDER MANAGER] Broadcasting on {self.host}:{self.port}...")
-
-        try:
-            while self.running:
-                conn, addr = self.server_socket.accept()
-                threading.Thread(target=self.handle_client(), args=(conn, addr), daemon=True).start()
-        except KeyboardInterrupt:
-            print("[ORDER MANAGER] Shutting down")
-        finally:
-            self.server_socket.close()
-
-
     def handle_client(self, conn, addr):
         #handle strategy objects coming from strategy clients
         with conn:
@@ -72,6 +50,26 @@ class OrderManager():
         with open(self.log_file, 'a') as f:
             f.write(f"{self.timestamp}, {confirmation}\n")
 
+
+def start_ordermanager(self):
+    #start the order manager server
+    self.server_socket.bind((
+        self.host,
+        self.port)
+    )
+
+    self.server_socket.listen()
+    self.running = True
+    print(f"[ORDER MANAGER] Broadcasting on {self.host}:{self.port}...")
+
+    try:
+        while self.running:
+            conn, addr = self.server_socket.accept()
+            threading.Thread(target=self.handle_client(), args=(conn, addr), daemon=True).start()
+    except KeyboardInterrupt:
+        print("[ORDER MANAGER] Shutting down")
+    finally:
+        self.server_socket.close()
 
 order = OrderManager()
 order.start()
