@@ -2,9 +2,6 @@ import socket
 import threading
 import json
 from config import *
-from collections import defaultdict
-
-clients = defaultdict()
 
 def log_trade(order: dict, addr, message_type:str):
     #Deserialize each order and log the trade
