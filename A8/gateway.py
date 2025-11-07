@@ -43,13 +43,13 @@ def monitor_throughput(interval=5):
 
 def get_price_data():
     # Simulate getting price data from a data source
-    data = pd.read_csv('./data/market_data-1.csv').iloc[:3, :]
+    data = pd.read_csv('./data/market_data-1.csv')
     return data
 
 
 def get_sentiment_data():
     # Simulate news data from a data source
-    data = pd.read_csv('./data/market_sentiment.csv').iloc[:3, :]
+    data = pd.read_csv('./data/market_sentiment.csv')
     return data
 
 

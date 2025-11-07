@@ -3,6 +3,9 @@ from time import time
 from multiprocessing import shared_memory
 import numpy as np 
 from orderbook import SharedPriceBook
+from config import *
+import json
+import threading
 
 # variables to calculate processing efficiency 
 tick_id = 0
@@ -120,7 +123,7 @@ def start_price_strategy(symbol="AAPL"):
                 print(f"[PRICE STRAT] {price_signal}")
                 price_signals.append(price_signal)
             
-            counter += 1 
+            counter += 1
 
         trade_time = time()
         decision_latency = trade_time - ts_sent
@@ -144,7 +147,7 @@ def start_news_strategy(symbol="AAPL"):
     len_nums = 100
 
     symbols = ['AAPL', 'SPY', 'MSFT']
-    shared_news_book = SharedNewsBook(symbols, name='G8_Shared_News_Book', create=False)
+    shared_news_book = SharedNewsBook(symbols, name='G8_Shared_News_Book')
     news_strategy = NewsSentimentStrategy(shared_news_book, symbol)
 
     while True: # counter < len_nums:
@@ -172,23 +175,50 @@ def start_news_strategy(symbol="AAPL"):
             news_signal = news_strategy.generate_signal()
             
             if news_signal:
-                print(f"[NEWS STRAT] {news_signal}")
+                #print(f"[NEWS STRAT] {news_signal}")
                 news_signals.append(news_signal)
 
             counter += 1
 
         trade_time = time()
         decision_latency = trade_time - ts_sent
-        print(f"[NEWS STRATEGY] Latency: {latency:.6f} seconds, Decision Latency: {decision_latency:.6f} seconds")
+        #print(f"[NEWS STRATEGY] Latency: {latency:.6f} seconds, Decision Latency: {decision_latency:.6f} seconds")
     # client.sendall(f"{total/counter}".encode())
     client.close()
 
 
+def send_price_order():
+    global price_signals
+
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client.connect((MANAGER_HOST, MANAGER_PORT_GATEWAY))
+    print("[PRICE STRATEGY] connected to OrderManager")
+
+    while True:
+        for price_signal in price_signals:
+            client.sendall((json.dumps(price_signal) + "*").encode())
+            print("[PRICE STRATEGY] sent price signal")
+
+    client.close()
+
+def send_news_order():
+    global news_signals
+
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client.connect((MANAGER_HOST, MANAGER_PORT_GATEWAY))
+    print("[NEWS STRATEGY] connected to OrderManager")
+
+    while True:
+        for news_signal in news_signals:
+            client.sendall((json.dumps(news_signal) + "*").encode())
+            print("[NEWS STRATEGY] sent price signal")
+
+    client.close()
 
 
 if __name__ == "__main__":
+    """
     symbols = ['AAPL', 'SPY', 'MSFT']
-
     try:
         shared_price_book = SharedPriceBook(symbols, name='G8_Shared_Prcie_Book', create=True)
     except FileExistsError:
@@ -198,6 +228,25 @@ if __name__ == "__main__":
         shared_news_book = SharedNewsBook(symbols, name='G8_Shared_News_Book', create=True)
     except FileExistsError:
         shared_news_book = SharedNewsBook(symbols, name='G8_Shared_News_Book', create=False)
-
-    start_news_strategy()
+    """
+    #start_news_strategy()
     #start_price_strategy()
+
+    t1 = threading.Thread(target=start_news_strategy, daemon=True)
+    t2 = threading.Thread(target=start_price_strategy, daemon=True)
+
+    t3 = threading.Thread(target=send_news_order, daemon=True)
+    t4 = threading.Thread(target=send_price_order, daemon=True)
+
+    t1.start()
+    t2.start()
+
+    t3.start()
+    t4.start()
+
+    t1.join()
+    t2.join()
+
+    t3.join()
+    t4.join()
+

@@ -5,8 +5,8 @@ SERVER_HOST = "localhost"
 SERVER_PORT_GATEWAY = 8999
 
 # Order_manager server Info
-SERVER_HOST_OM = "Rhazihost"
-SERVER_PORT_GATEWAY_OM = 8000
+MANAGER_HOST = "localhost"
+MANAGER_PORT_GATEWAY = 8998
 
 # Log File
 LOG_FILE = "trades.log"
