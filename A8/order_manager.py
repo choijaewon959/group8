@@ -16,10 +16,11 @@ def log_trade(order: dict, addr, message_type:str):
     symbol = order['symbol']
     signal = order['signal']
 
-    confirmation = print(f"[RECEIVED ORDER FROM {addr}]: {1} {signal} signal of {symbol} at {value}")
+    confirmation = f"[RECEIVED ORDER FROM {addr}]: {1} {symbol} {signal} signal at {value}"
+    print(confirmation)
 
     with open(LOG_FILE, 'a') as f:
-        f.write(f"{confirmation}\n")
+        f.write(confirmation + "\n")
 
 
 def handle_client(conn, addr):
