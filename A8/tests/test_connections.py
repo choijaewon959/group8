@@ -7,7 +7,7 @@ def test_server_socket_creation():
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     
     try:
-        server_socket.bind(('localhost', 9000))
+        server_socket.bind(('localhost', 8887))
         server_socket.listen(5)
         bound_successfully = True
     except OSError:
@@ -20,7 +20,7 @@ def test_server_socket_creation():
 def test_client_connection_to_server():
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    server_socket.bind(('localhost', 9001))
+    server_socket.bind(('localhost', 8887))
     server_socket.listen(1)
     
     connections = []
@@ -40,7 +40,7 @@ def test_client_connection_to_server():
     client_socket.settimeout(2.0)
     
     try:
-        client_socket.connect(('localhost', 9001))
+        client_socket.connect(('localhost', 8887))
         connection_successful = True
     except:
         connection_successful = False
