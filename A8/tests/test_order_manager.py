@@ -50,6 +50,29 @@ def test_manager_receiving_correct_number_of_orders():
 
     assert len(trades_received) == len(mock_orders)
 
+    for msg_sent, msg_received in zip(mock_orders, trades_received):
+        assert msg_sent == msg_received
+
+    MOCK_LOG_FILE = "mocktrade.log"
+
+    for trade in trades_received:
+        confirmation = f"[RECEIVED ORDER]: {1} {trade["symbol"]} {trade["price"]} signal at {trade["signal"]}"
+
+        with open(MOCK_LOG_FILE, 'a') as f:
+            f.write(confirmation + "\n")
+
+    with open(MOCK_LOG_FILE) as f:
+        lines = [line.strip() for line in f if line.strip()]
+
+    assert len(lines) == len(mock_orders)
+
+    for line, order in zip(lines, mock_orders):
+
+        assert order['symbol'] in line
+        assert str(order['price']) in line
+        assert order['signal'] in line
+
+
 
 
 
