@@ -22,7 +22,7 @@ Comparison of processing and decision latency across AAPL, SPY, and MSFT.
 
 ![AAPL Latency Over Time](img/Latency.png)
 
-* Mean Processing Latency and Mean Decision Latency are very similar with mean of 12.45. Given that most of the latency is clustered around this mean, there seem to be no systematic issue in the process.
+* Mean Processing Latency and Mean Decision Latency are very similar with mean of 12.45ms. Given that most of the latency is clustered around this mean, there seem to be no systematic issue in the process.
 
 * No pattern has been found on latency over time. This further confirms delay is not affected by running time of the system. 
 
