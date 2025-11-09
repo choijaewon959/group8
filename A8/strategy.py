@@ -1,5 +1,5 @@
 import socket
-from time import time
+import time
 from multiprocessing import shared_memory
 import numpy as np 
 from orderbook import SharedPriceBook
@@ -123,7 +123,7 @@ def start_price_strategy(symbol="AAPL"):
             except ValueError:
                 #print(f"[WARN] Invalid timestamp field: {fields[-1]} from {msg}")
                 continue
-            ts_rcvd = time()
+            ts_rcvd = time.time()
             latency = ts_rcvd - ts_sent
             latency_logs.append(latency)
 
@@ -136,7 +136,7 @@ def start_price_strategy(symbol="AAPL"):
             
             counter += 1
 
-        trade_time = time()
+        trade_time = time.time()
         decision_latency = trade_time - ts_sent
         
         # Log performance metrics to CSV
@@ -189,7 +189,7 @@ def start_news_strategy(symbol="AAPL"):
             except ValueError:
                 print(f"[WARN] Invalid timestamp field: {fields[-1]} from {msg}")
                 continue
-            ts_rcvd = time()
+            ts_rcvd = time.time()
             latency = ts_rcvd - ts_sent
             latency_logs.append(latency)
 
@@ -209,7 +209,7 @@ def start_news_strategy(symbol="AAPL"):
 
             counter += 1
 
-        trade_time = time()
+        trade_time = time.time()
         decision_latency = trade_time - ts_sent
         
         # Log performance metrics to CSV
