@@ -13,7 +13,7 @@ The focus is on building a mini trading stack — a Gateway, OrderBook, Strategy
 1. **Clone the repository** (if not already done):
    ```bash
    git clone <repository-url>
-   cd group8/A7
+   cd group8/A8
    ```
 
 2. **Install dependencies**:
@@ -23,12 +23,12 @@ The focus is on building a mini trading stack — a Gateway, OrderBook, Strategy
    
    Or install individually:
    ```bash
-   pip install polars pandas memory-profiler pytest numpy
+   pip install socket pytest numpy memory-profiler multiprocessing shared_memory_utils"
    ```
 
 3. **Verify installation**:
    ```bash
-   python -c "import polars, pandas, numpy; print('All dependencies installed successfully')"
+   python -c "import socket, pandas, numpy; print('All dependencies installed successfully')"
    ```
 
 4. **Run the main application**:
@@ -42,189 +42,113 @@ The focus is on building a mini trading stack — a Gateway, OrderBook, Strategy
    pytest
    ```
 
-## Module Descriptions
+## Architecture
+
+**-Gateway streams price and sentiment data to all subscribed clients.**
+<br />**-OrderBook maintains the most recent prices in shared memory, accessible to multiple readers.**
+<br />**-Strategy reads from shared memory, generates buy/sell signals, and sends serialized JSON orders via TCP to the OrderManager.**
+<br />**-OrderManager receives orders, logs them to file, and confirms receipt.**
 
 ### Core Modules
 
-#### `main.py`
-- **Purpose**: Entry point for the parallel processing demonstration
-- **Functionality**: Orchestrates data loading, parallel metric calculations, and performance comparisons
-- **Features**:
-  - Benchmarks serial vs parallel processing
-  - Demonstrates various parallelization strategies
-  - Generates performance reports
+#### `gateway.py`
+**-Reads price and sentiment CSVs.**
+<br />**-Broadcasts encoded tick messages over TCP.**
+<br />**-Tracks throughput in ticks/seconds**
+<br />**-Each client registers via a simple handshake message.**
 
-#### `data_loader.py`
-- **Purpose**: High-performance data loading utilities
-- **Features**:
-  - Polars-based fast CSV reading
-  - Pandas compatibility layer
-  - Memory-efficient data streaming
-  - Data validation and cleaning
+#### `orderbook.py`
+-**Connects to the Gateway as a client.**
+<br />**-Updates shared memory with the latest symbol prices (SharedPriceBook).**
+<br />**-Acts as a central in-memory store for the system.**
 
-#### `metrics.py`
-- **Purpose**: Financial metrics calculation engine
-- **Contains**:
-  - Rolling window calculations (mean, volatility, Sharpe ratio)
-  - Performance analytics (alpha, information ratio, drawdown)
-- **Optimization**: Vectorized operations using NumPy and Polars
-- **Parallelization**: Thread-safe implementations for concurrent processing
+#### `strategy.py`
+-**Connects to the Gateway to receive live sentiment.**
+<br />-**Reads live prices from shared memory.**
+<br />-**Generates signals (e.g., moving-average crossover, sentiment trigger).**
+<br />-**Immediately sends JSON orders to the OrderManager**
 
-#### `parallel.py`
-- **Purpose**: Parallel processing framework and utilities
-- **Features**:
-  - Thread pool management
-  - Process pool implementations
-  - Async/await patterns for I/O operations
-  - Work distribution algorithms
-- **Design Patterns**: Producer-Consumer, MapReduce
-- **Performance**: Automatic CPU core detection and load balancing
+#### `order_manager.py`
+**-Listens for strategy connections via TCP.**
+<br />**-Receives JSON orders, logs them, and can optionally send acknowledgements.**
+<br />**-Maintains order_log.txt with timestamps and signal details.**
 
-#### `portfolio.py`
-- **Purpose**: Portfolio management
-- **Functionality**:
-  - Portfolio construction
-  - Risk-return optimization
-  - Multi-asset allocation strategies
-- **Parallelization**: Concurrent portfolio scenario analysis
-- **Integration**: Works with metrics.py for performance calculation
+#### `shared_memory_utils.py`
+-Defines reusable shared memory structures:
+<br />   **SharedPriceBook**
+<br />   **SharedNewsBook**
+<br />-Backed by multiprocessing.shared_memory and numpy.ndarray for fast numerical sharing.
 
-#### `reporting.py`
-- **Purpose**: Performance reporting and visualization
-- **Features**:
-  - Parallel processing performance comparisons
-  - Memory usage analysis
-  - Execution time benchmarking
-  - HTML/PDF report generation
-- **Visualizations**: Performance charts, scalability analysis
+### How to Run
 
-### Design Patterns
+#### Environment
+```bash
+python3 -m venv venv
+<br />source venv/bin/activate
+<br />pip install -r requirements.txt
+```
 
-#### `patterns/builder_pattern.py`
-- **Purpose**: Builder pattern implementation for complex financial objects
-- **Use Cases**:
-  - Portfolio construction with validation
-  - Multi-step metric calculation pipelines
-  - Configuration object building
-- **Benefits**: Thread-safe construction, immutable results
 
-### Configuration & Data
+### Start the full system
+Run the orchestrator:
+```bash
+python main.py
+```
 
-#### `data/`
-- **Purpose**: Sample datasets and configuration files
-- **Contents**:
-  - Market data samples (CSV)
-  - Benchmark datasets for testing
-  - Configuration templates
-- **Performance**: Optimized file formats for fast loading
+This will launch all core processes:
+<br />**-Gateway**
+<br />**-OrderBook**
+<br />**-OrderManager**
+<br />**-Strategy (Price + News)**
+And each process will print specific logs:
 
-### Testing Framework
 
-#### `tests/conftest.py`
-- **Purpose**: Pytest configuration and shared fixtures
-- **Features**:
-  - Test data generation
-  - Performance test utilities
-  - Parallel test execution setup
+#### `Testing/`
+- Run the integrated unit tests:
+```bash
+pytest -v
+```
+Example tests include:
+<br />**-Connectivity between Gateway ↔ OrderBook**
+<br />**-Shared memory synchronization**
+<br />**-Strategy order count matches received orders in OrderManager**
+<br />**-Throughput and latency tracking**
 
-#### `tests/test_rolling_metrics.py`
-- **Purpose**: Comprehensive testing for rolling metrics calculations
-- **Coverage**:
-  - Correctness verification against known results
-  - Performance benchmarking
-  - Edge case handling
-  - Parallel vs serial result consistency
+### Performance Metrics
 
-## Key Features
+Key metrics recorded in performance_report.md:
+<br />**-Average tick rate (price + sentiment): ~500 ticks/sec.**
+<br />**-Shared memory write/read latency: < 0.1 ms.**
+<br />**-OrderManager round-trip acknowledgment: < 1 ms.**
+<br />**-CPU / memory footprint under 100 MB for all processes.**
+
+#### `DEMO VIDEO`
+See video.mp4 for a live demonstration of the system in action:
+<br />**-Each process runs in a separate terminal..**
+<br />**-Real-time logs show price streaming, signal generation, and order reception..**
+<br />**-Confirms successful inter-process communication via TCP + shared memory..**
+
+## Key features
 
 ### 1. **High-Performance Data Processing**
-- **Polars Integration**: Ultra-fast DataFrame operations
-- **Memory Efficiency**: Lazy evaluation and streaming processing
-- **SIMD Optimization**: Vectorized calculations using modern CPU features
+<br />**-Inter-Process Communication (IPC)**
+<br />**-TCP socket programming)**
+<br />**-Serialization / deserialization (JSON))**
+<br />**-Shared memory via multiprocessing.shared_memory)**
+<br />**-Process synchronization and orchestration)**
+<br />**-Low-latency trading infrastructure simulation)**
 
-### 2. **Parallel Processing Strategies**
-- **Thread-based Parallelism**: CPU-bound tasks using ThreadPoolExecutor
-- **Process-based Parallelism**: Intensive computations using multiprocessing
-- **Async Processing**: I/O-bound operations with asyncio
-- **Hybrid Approaches**: Combined strategies for optimal performance
+##Future Extensions
 
-### 3. **Financial Analytics**
-- **Rolling Metrics**: Moving averages, volatility, correlation
-- **Risk Analysis**: VaR, Expected Shortfall, Maximum Drawdown
-- **Portfolio Optimization**: Mean-variance, risk parity, factor models
-- **Performance Attribution**: Alpha, beta, information ratio
-
-### 4. **Scalability & Performance**
-- **Automatic Scaling**: Adapts to available CPU cores
-- **Memory Management**: Efficient memory usage patterns
-- **Caching**: Intelligent result caching for repeated calculations
-- **Profiling**: Built-in performance monitoring
-
-## Usage Examples
-
-### Basic Rolling Metrics
-```python
-from metrics import rolling_metrics_pandas
-from data_loader import load_market_data
-
-data = load_data_pandas("data/sample_prices.csv")
-metrics = rolling_metrics_pandas(data['returns'], 'AAPL', ['price'])
-```
-
-## Development & Testing
-
-### Running Tests
-```bash
-# Run all tests
-pytest
-
-# Run with coverage
-pytest --cov=. --cov-report=html
-```
-
-### Benchmarking
-The project includes built-in benchmarking tools:
-```python
-from reporting import plot_rolling_metrics
-from metrics import rolling_metrics_pandas
-symbol = 'AAPL'
-window = 20
-subsample_size = 1000
-file_path = "./data/market_data-1.csv"
-
-df_pandas, _, _ = load_data_pandas(file_path)
-df_pandas_metrics, elapsed_time = rolling_metrics_pandas(df_pandas, symbol, ['price'], window=window)
-print(f"Pandas elapsed time: {elapsed_time:.2f} seconds")
-plot_rolling_metrics(df_pandas_metrics, window=window, subsample_size=subsample_size)
-```
-
-## Dependencies
-
-- **polars**: High-performance DataFrame library
-- **pandas**: Data manipulation and analysis
-- **numpy**: Numerical computing
-- **memory-profiler**: Memory usage monitoring
-- **pytest**: Testing framework
-
-## Contributing
-
-1. Follow existing code structure and naming conventions
-2. Add tests for new functionality in `tests/`
-3. Update this README for new modules or features
-4. Ensure all tests pass and performance doesn't regress
-5. Profile new code for memory and CPU usage
-
-## Performance Reports
-
-The system generates detailed performance reports in `performance_report.md` including:
-- Execution time comparisons
-- Memory usage analysis
-- Scalability metrics
-- Optimization recommendations
+<br />**-Replace TCP sockets with ZeroMQ or gRPC for scalability.**
+<br />**-Add pandas/Polars analytics layer for performance dashboards.**
+<br />**-Implement asynchronous I/O with asyncio for non-blocking strategies.**
+<br />**-Expand to include risk management and execution simulation modules.**
 
 ## Authors
 - Group 8, FINM325 - University of Chicago
 
 ---
 
-For detailed implementation examples, advanced usage patterns, and performance optimization tips, refer to the source code documentation and the generated performance reports.
+For detailed implementation examples and advanced usage patterns, refer to the source code documentation and the generated performance reports.
+
