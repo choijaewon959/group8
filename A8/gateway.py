@@ -4,6 +4,7 @@ import threading
 import pandas as pd
 from collections import defaultdict
 from config import *
+from shared_memory_utils import print_memory_usage, log_throughput
 
 
 # client servers
@@ -33,12 +34,21 @@ def monitor_throughput(interval=5):
         with lock:
             delta_price = price_tick_count - prev_price
             delta_news = news_tick_count - prev_news
+            total_current = price_tick_count + news_tick_count
             prev_price = price_tick_count
             prev_news = news_tick_count
 
         rate_price = delta_price / interval
         rate_news = delta_news / interval
+        
+        # Log throughput metrics to CSV
+        log_throughput("GATEWAY", rate_price, rate_news, total_current)
+        
         print(f"[THROUGHPUT] Price ticks/sec: {rate_price}, News ticks/sec: {rate_news}")
+        
+        # Print memory report every few intervals
+        if total_current % 50 == 0:
+            print_memory_usage('G8_Shared_Prcie_Book')
 
 
 def get_price_data():
