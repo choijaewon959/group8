@@ -104,7 +104,7 @@ def start_price_strategy(symbol="AAPL"):
     print("[PRICE STRATEGY] connected to OrderManager")
 
     symbols = ['AAPL', 'SPY', 'MSFT']
-    shared_price_book = SharedPriceBook(symbols, name='G8_Shared_Prcie_Book',create=False)
+    shared_price_book = SharedPriceBook(symbols, name='G8_Shared_Prcie_Book')
     price_strategy = SimplePriceStrategy(symbol, shared_price_book, window=10)
 
     while True: # counter < len_nums
