@@ -140,7 +140,7 @@ def start_price_strategy(symbol="AAPL"):
         decision_latency = trade_time - ts_sent
         
         # Log performance metrics to CSV
-        log_latency("PRICE_STRATEGY", tick_id, latency, decision_latency, symbol)
+        #log_latency("PRICE_STRATEGY", tick_id, latency, decision_latency, symbol)
         
         print(f"[PRICE STRATEGY] Latency: {latency:.6f} seconds, Decision Latency: {decision_latency:.6f} seconds")
         
@@ -202,7 +202,7 @@ def start_news_strategy(symbol="AAPL"):
             news_signal = news_strategy.generate_signal()
             
             if news_signal:
-                #print(f"[NEWS STRAT] {news_signal}")
+                print(f"[NEWS STRAT] {news_signal}")
                 news_signals.append(news_signal)
                 client.sendall((json.dumps(news_signal) + "*").encode())
                 print("[NEWS STRATEGY] sent price signal")
@@ -213,13 +213,13 @@ def start_news_strategy(symbol="AAPL"):
         decision_latency = trade_time - ts_sent
         
         # Log performance metrics to CSV
-        log_latency("NEWS_STRATEGY", tick_id, latency, decision_latency, symbol)
+        #log_latency("NEWS_STRATEGY", tick_id, latency, decision_latency, symbol)
         
         # Log memory usage every 50 ticks
         if tick_id % 50 == 0:
             log_memory_usage("NEWS_STRATEGY", 'G8_Shared_News_Book')
             
-        #print(f"[NEWS STRATEGY] Latency: {latency:.6f} seconds, Decision Latency: {decision_latency:.6f} seconds")
+        print(f"[NEWS STRATEGY] Latency: {latency:.6f} seconds, Decision Latency: {decision_latency:.6f} seconds")
     # client.sendall(f"{total/counter}".encode())
     client.close()
 
