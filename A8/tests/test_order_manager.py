@@ -24,7 +24,7 @@ def test_manager_receiving_correct_number_of_orders():
 
     def run_server():
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server.bind(('localhost', 9002))
+        server.bind(('localhost', 8996))
         server.listen()
 
         conn, addr = server.accept()
@@ -41,7 +41,7 @@ def test_manager_receiving_correct_number_of_orders():
                    {'symbol':'AAPL','price':110,'signal':'BUY'}]
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect(('localhost', 9002))
+    client.connect(('localhost', 8996))
     for order in mock_orders:
         client.sendall(json.dumps(order).encode() + MESSAGE_DELIMITER)
     client.close()
