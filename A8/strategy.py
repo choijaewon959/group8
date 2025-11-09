@@ -98,8 +98,12 @@ def start_price_strategy(symbol="AAPL"):
     counter = 0
     len_nums = 100
 
+    manager = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    manager.connect((MANAGER_HOST, MANAGER_PORT_GATEWAY))
+    print("[PRICE STRATEGY] connected to OrderManager")
+
     symbols = ['AAPL', 'SPY', 'MSFT']
-    shared_price_book = SharedPriceBook(symbols, name='G8_Shared_Prcie_Book', create=False)
+    shared_price_book = SharedPriceBook(symbols, name='G8_Shared_Prcie_Book')
     price_strategy = SimplePriceStrategy(symbol, shared_price_book, window=10)
 
     while True: # counter < len_nums
@@ -113,7 +117,11 @@ def start_price_strategy(symbol="AAPL"):
 
             fields = msg.split(',')
             tick_id += 1
-            ts_sent = float(fields[-1])
+            try:
+                ts_sent = float(fields[-1])
+            except ValueError:
+                print(f"[WARN] Invalid timestamp field: {fields[-1]} from {msg}")
+                continue
             ts_rcvd = time()
             latency = ts_rcvd - ts_sent
             latency_logs.append(latency)
@@ -122,6 +130,8 @@ def start_price_strategy(symbol="AAPL"):
             if price_signal:
                 print(f"[PRICE STRAT] {price_signal}")
                 price_signals.append(price_signal)
+                manager.sendall((json.dumps(price_signal) + "*").encode())
+                print("[PRICE STRATEGY] sent price signal")
             
             counter += 1
 
@@ -146,6 +156,10 @@ def start_news_strategy(symbol="AAPL"):
     counter = 0
     len_nums = 100
 
+    manager = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    manager.connect((MANAGER_HOST, MANAGER_PORT_GATEWAY))
+    print("[NEWS STRATEGY] connected to OrderManager")
+
     symbols = ['AAPL', 'SPY', 'MSFT']
     shared_news_book = SharedNewsBook(symbols, name='G8_Shared_News_Book')
     news_strategy = NewsSentimentStrategy(shared_news_book, symbol)
@@ -160,8 +174,12 @@ def start_news_strategy(symbol="AAPL"):
             if not msg:
                 continue
             fields = msg.split(',')
-            tick_id +=1 
-            ts_sent = float(fields[-1])
+            tick_id +=1
+            try:
+                ts_sent = float(fields[-1])
+            except ValueError:
+                print(f"[WARN] Invalid timestamp field: {fields[-1]} from {msg}")
+                continue
             ts_rcvd = time()
             latency = ts_rcvd - ts_sent
             latency_logs.append(latency)
@@ -177,6 +195,8 @@ def start_news_strategy(symbol="AAPL"):
             if news_signal:
                 #print(f"[NEWS STRAT] {news_signal}")
                 news_signals.append(news_signal)
+                client.sendall((json.dumps(news_signal) + "*").encode())
+                print("[NEWS STRATEGY] sent price signal")
 
             counter += 1
 
@@ -188,6 +208,7 @@ def start_news_strategy(symbol="AAPL"):
 
 
 def send_price_order():
+    time.sleep(1)
     global price_signals
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -202,6 +223,7 @@ def send_price_order():
     client.close()
 
 def send_news_order():
+    time.sleep(1)
     global news_signals
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

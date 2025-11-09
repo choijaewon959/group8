@@ -49,7 +49,7 @@ def start_orderbook():
             time.sleep(0.1)  # Wait and retry if no data received
             continue
 
-        print("[ORDERBOOK]", res.decode())
+        #print("[ORDERBOOK]", res.decode())
         output = res.decode().split('*')
         for msg in output:
             if not msg:
@@ -73,11 +73,11 @@ def start_orderbook():
             price = float(fields[4])
             price_book.update(symbol, price)
 
-            print("Current order book status:", {s: price_book.read(s) for s in symbols})
+            #print("Current order book status:", {s: price_book.read(s) for s in symbols})
 
         trade_time = time.time()
         decision_latency = trade_time - ts_sent
-        print(f"[ORDERBOOK] Latency: {latency:.6f} seconds, Decision Latency: {decision_latency:.6f} seconds")
+        #print(f"[ORDERBOOK] Latency: {latency:.6f} seconds, Decision Latency: {decision_latency:.6f} seconds")
 
     client.close()
 
