@@ -103,7 +103,7 @@ This will launch all core processes:
 And each process will print specific logs:
 
 
-#### `Testing/`
+### Testing
 - Run the integrated unit tests:
 ```bash
 pytest -v
@@ -115,32 +115,28 @@ Example tests include:
 <br />**-Throughput and latency tracking**
 
 ### Performance Metrics
-
 Key metrics recorded in performance_report.md:
 <br />**-Average tick rate (price + sentiment): ~500 ticks/sec.**
 <br />**-Shared memory write/read latency: < 0.1 ms.**
 <br />**-OrderManager round-trip acknowledgment: < 1 ms.**
 <br />**-CPU / memory footprint under 100 MB for all processes.**
 
-#### `DEMO VIDEO`
+### DEMO VIDEO
 See video.mp4 for a live demonstration of the system in action:
 <br />**-Each process runs in a separate terminal..**
 <br />**-Real-time logs show price streaming, signal generation, and order reception..**
 <br />**-Confirms successful inter-process communication via TCP + shared memory..**
 
-## Key features
-
-### 1. **High-Performance Data Processing**
-<br />**-Inter-Process Communication (IPC)**
+### Key features
+**-Inter-Process Communication (IPC)**
 <br />**-TCP socket programming)**
 <br />**-Serialization / deserialization (JSON))**
 <br />**-Shared memory via multiprocessing.shared_memory)**
 <br />**-Process synchronization and orchestration)**
 <br />**-Low-latency trading infrastructure simulation)**
 
-##Future Extensions
-
-<br />**-Replace TCP sockets with ZeroMQ or gRPC for scalability.**
+### Future Extensions
+**-Replace TCP sockets with ZeroMQ or gRPC for scalability.**
 <br />**-Add pandas/Polars analytics layer for performance dashboards.**
 <br />**-Implement asynchronous I/O with asyncio for non-blocking strategies.**
 <br />**-Expand to include risk management and execution simulation modules.**
@@ -151,4 +147,5 @@ See video.mp4 for a live demonstration of the system in action:
 ---
 
 For detailed implementation examples and advanced usage patterns, refer to the source code documentation and the generated performance reports.
+
 
