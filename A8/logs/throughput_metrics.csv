@@ -1,2 +1,3 @@
 timestamp,datetime,component,price_ticks_per_sec,news_ticks_per_sec,total_ticks
 1762653210.55987,2025-11-08 19:53:30,GATEWAY,155.4,156.6,1560
+1762653745.980621,2025-11-08 20:02:25,GATEWAY,155.0,155.4,1552

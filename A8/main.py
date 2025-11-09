@@ -9,7 +9,7 @@ from strategy import start_news_strategy, start_price_strategy
 from shared_memory_utils import print_memory_usage
 
 def signal_handler(sig, frame):
-    print('\n[MAIN] Shutting down gracefully...')
+    print('\n[MAIN] Shutting down...')
     print_memory_usage('G8_Shared_Prcie_Book')
     print('[MAIN] Performance logs saved to logs/ directory')
     sys.exit(0)
