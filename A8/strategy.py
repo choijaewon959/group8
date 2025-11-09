@@ -6,6 +6,7 @@ from orderbook import SharedPriceBook
 from config import *
 import json
 import threading
+from shared_memory_utils import log_latency, log_memory_usage
 
 # variables to calculate processing efficiency 
 tick_id = 0
@@ -137,7 +138,15 @@ def start_price_strategy(symbol="AAPL"):
 
         trade_time = time()
         decision_latency = trade_time - ts_sent
+        
+        # Log performance metrics to CSV
+        log_latency("PRICE_STRATEGY", tick_id, latency, decision_latency, symbol)
+        
         print(f"[PRICE STRATEGY] Latency: {latency:.6f} seconds, Decision Latency: {decision_latency:.6f} seconds")
+        
+        # Log memory usage every 50 ticks
+        if tick_id % 50 == 0:
+            log_memory_usage("PRICE_STRATEGY", 'G8_Shared_Prcie_Book')
 
     client.close()
 
@@ -202,6 +211,14 @@ def start_news_strategy(symbol="AAPL"):
 
         trade_time = time()
         decision_latency = trade_time - ts_sent
+        
+        # Log performance metrics to CSV
+        log_latency("NEWS_STRATEGY", tick_id, latency, decision_latency, symbol)
+        
+        # Log memory usage every 50 ticks
+        if tick_id % 50 == 0:
+            log_memory_usage("NEWS_STRATEGY", 'G8_Shared_News_Book')
+            
         #print(f"[NEWS STRATEGY] Latency: {latency:.6f} seconds, Decision Latency: {decision_latency:.6f} seconds")
     # client.sendall(f"{total/counter}".encode())
     client.close()

@@ -2,6 +2,7 @@ import socket
 import time
 from multiprocessing import shared_memory
 import numpy as np
+from shared_memory_utils import print_memory_usage, get_memory_footprint_mb, log_memory_usage, log_latency
 
 # Variables for processing efficiency
 tick_id = 0
@@ -41,7 +42,14 @@ def start_orderbook():
     client.sendall(b"REGISTER,ORDERBOOK,1*")  # Register as ORDERBOOK client
 
     symbols = ['AAPL', 'SPY', 'MSFT']
+    
+    # Create shared price book
     price_book = SharedPriceBook(symbols, name='G8_Shared_Prcie_Book')
+    
+    # Print initial memory usage
+    print_memory_usage('G8_Shared_Prcie_Book', len(symbols))
+    
+    print(f"[ORDERBOOK] Started with symbols: {symbols}")
 
     while True:
         res = client.recv(1024)
@@ -79,6 +87,20 @@ def start_orderbook():
         decision_latency = trade_time - ts_sent
         #print(f"[ORDERBOOK] Latency: {latency:.6f} seconds, Decision Latency: {decision_latency:.6f} seconds")
 
+        # Log performance metrics to CSV
+        log_latency("ORDERBOOK", tick_id, latency, decision_latency, symbol)
+        
+        print(f"[ORDERBOOK] Latency: {latency:.6f} seconds, Decision Latency: {decision_latency:.6f} seconds")
+        
+        # Print and log memory stats every 20 ticks
+        if tick_id % 20 == 0:
+            current_footprint = get_memory_footprint_mb('G8_Shared_Prcie_Book')
+            print(f"[MEMORY] Shared memory footprint: {current_footprint:.6f} MB")
+            log_memory_usage("ORDERBOOK", 'G8_Shared_Prcie_Book')
+
+    # Print final memory usage before closing
+    print("\n[ORDERBOOK] Shutting down...")
+    print_memory_usage('G8_Shared_Prcie_Book', len(symbols))
     client.close()
 
 

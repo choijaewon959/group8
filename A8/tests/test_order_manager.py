@@ -2,7 +2,7 @@ import socket
 import threading
 import time
 import json
-from group8.A8.config import *
+from config import *
 
 
 def test_manager_receiving_correct_number_of_orders():
