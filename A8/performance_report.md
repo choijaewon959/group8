@@ -52,8 +52,6 @@ Shared memory is pre-allocated with fixed size for predictable performance:
 
 ### Process Memory
 
-![Process Memory Usage](img/process_memory_usage.png)
-
 * Orderbook class is continuously consuming the highest memory. This is expected as orderbook
 1. is influenced by server connection overhead
 2. contains huge data parsing logic for each input msg
