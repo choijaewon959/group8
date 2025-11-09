@@ -49,7 +49,7 @@ def start_orderbook():
     # Print initial memory usage
     print_memory_usage('G8_Shared_Prcie_Book', len(symbols))
     
-    print(f"[ORDERBOOK] Started with symbols: {symbols}")
+    #print(f"[ORDERBOOK] Started with symbols: {symbols}")
 
     while True:
         res = client.recv(1024)
@@ -57,7 +57,7 @@ def start_orderbook():
             time.sleep(0.1)  # Wait and retry if no data received
             continue
 
-        print("[ORDERBOOK]", res.decode())
+        #print("[ORDERBOOK]", res.decode())
         output = res.decode().split('*')
         for msg in output:
             if not msg:
@@ -81,25 +81,25 @@ def start_orderbook():
             price = float(fields[4])
             price_book.update(symbol, price)
 
-            print("Current order book status:", {s: price_book.read(s) for s in symbols})
+            #print("Current order book status:", {s: price_book.read(s) for s in symbols})
 
         trade_time = time.time()
         decision_latency = trade_time - ts_sent
-        print(f"[ORDERBOOK] Latency: {latency:.6f} seconds, Decision Latency: {decision_latency:.6f} seconds")
+        #print(f"[ORDERBOOK] Latency: {latency:.6f} seconds, Decision Latency: {decision_latency:.6f} seconds")
 
         # Log performance metrics to CSV
         log_latency("ORDERBOOK", tick_id, latency, decision_latency, symbol)
         
-        print(f"[ORDERBOOK] Latency: {latency:.6f} seconds, Decision Latency: {decision_latency:.6f} seconds")
+        #print(f"[ORDERBOOK] Latency: {latency:.6f} seconds, Decision Latency: {decision_latency:.6f} seconds")
         
         # Print and log memory stats every 20 ticks
         if tick_id % 20 == 0:
             current_footprint = get_memory_footprint_mb('G8_Shared_Prcie_Book')
-            print(f"[MEMORY] Shared memory footprint: {current_footprint:.6f} MB")
+            #print(f"[MEMORY] Shared memory footprint: {current_footprint:.6f} MB")
             log_memory_usage("ORDERBOOK", 'G8_Shared_Prcie_Book')
 
     # Print final memory usage before closing
-    print("\n[ORDERBOOK] Shutting down...")
+    #print("\n[ORDERBOOK] Shutting down...")
     print_memory_usage('G8_Shared_Prcie_Book', len(symbols))
     client.close()
 

@@ -63,7 +63,7 @@ class SimplePriceStrategy:
         if price is None or len(self.price_history) < self.window:
             return None 
         ma = np.mean(self.price_history)
-        print(ma)
+        #print(ma)
         if price > ma:
             signal = "BUY"
             return {"symbol": self.symbol, "price": round(price, 2), "signal": signal}
@@ -104,7 +104,7 @@ def start_price_strategy(symbol="AAPL"):
     print("[PRICE STRATEGY] connected to OrderManager")
 
     symbols = ['AAPL', 'SPY', 'MSFT']
-    shared_price_book = SharedPriceBook(symbols, name='G8_Shared_Prcie_Book')
+    shared_price_book = SharedPriceBook(symbols, name='G8_Shared_Prcie_Book',create=False)
     price_strategy = SimplePriceStrategy(symbol, shared_price_book, window=10)
 
     while True: # counter < len_nums
@@ -121,7 +121,7 @@ def start_price_strategy(symbol="AAPL"):
             try:
                 ts_sent = float(fields[-1])
             except ValueError:
-                print(f"[WARN] Invalid timestamp field: {fields[-1]} from {msg}")
+                #print(f"[WARN] Invalid timestamp field: {fields[-1]} from {msg}")
                 continue
             ts_rcvd = time()
             latency = ts_rcvd - ts_sent
@@ -132,7 +132,7 @@ def start_price_strategy(symbol="AAPL"):
                 print(f"[PRICE STRAT] {price_signal}")
                 price_signals.append(price_signal)
                 manager.sendall((json.dumps(price_signal) + "*").encode())
-                print("[PRICE STRATEGY] sent price signal")
+                #print("[PRICE STRATEGY] sent price signal")
             
             counter += 1
 
@@ -142,7 +142,7 @@ def start_price_strategy(symbol="AAPL"):
         # Log performance metrics to CSV
         #log_latency("PRICE_STRATEGY", tick_id, latency, decision_latency, symbol)
         
-        print(f"[PRICE STRATEGY] Latency: {latency:.6f} seconds, Decision Latency: {decision_latency:.6f} seconds")
+        #print(f"[PRICE STRATEGY] Latency: {latency:.6f} seconds, Decision Latency: {decision_latency:.6f} seconds")
         
         # Log memory usage every 50 ticks
         if tick_id % 50 == 0:
@@ -205,7 +205,7 @@ def start_news_strategy(symbol="AAPL"):
                 print(f"[NEWS STRAT] {news_signal}")
                 news_signals.append(news_signal)
                 client.sendall((json.dumps(news_signal) + "*").encode())
-                print("[NEWS STRATEGY] sent price signal")
+                #print("[NEWS STRATEGY] sent price signal")
 
             counter += 1
 
@@ -219,7 +219,7 @@ def start_news_strategy(symbol="AAPL"):
         if tick_id % 50 == 0:
             log_memory_usage("NEWS_STRATEGY", 'G8_Shared_News_Book')
             
-        print(f"[NEWS STRATEGY] Latency: {latency:.6f} seconds, Decision Latency: {decision_latency:.6f} seconds")
+        #print(f"[NEWS STRATEGY] Latency: {latency:.6f} seconds, Decision Latency: {decision_latency:.6f} seconds")
     # client.sendall(f"{total/counter}".encode())
     client.close()
 
@@ -230,7 +230,7 @@ def send_price_order():
 
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect((MANAGER_HOST, MANAGER_PORT_GATEWAY))
-    print("[PRICE STRATEGY] connected to OrderManager")
+    #print("[PRICE STRATEGY] connected to OrderManager")
 
     while True:
         for price_signal in price_signals:
