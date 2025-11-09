@@ -7,7 +7,6 @@ from shared_memory_utils import get_memory_footprint_mb
 
 
 def writer_process(symbols, shared_mem_name, symbol, value):
-    print("here")
     book = SharedPriceBook(symbols, shared_mem_name, create=False)
     book.update(symbol, value)
     time.sleep(0.2)
