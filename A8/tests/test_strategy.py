@@ -51,7 +51,7 @@ def test_price_strategy_no_signal_until_window_full():
     assert signal is None 
 
 
-def test_news_strategy_buy_signal()
+def test_news_strategy_buy_signal():
     # for normal case
     sentiments = [30, 45, 50, 80]  
     mock_news = MockNewsBook(sentiments)
