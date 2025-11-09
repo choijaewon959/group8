@@ -53,7 +53,7 @@ def test_manager_receiving_correct_number_of_orders():
     for msg_sent, msg_received in zip(mock_orders, trades_received):
         assert msg_sent == msg_received
 
-    MOCK_LOG_FILE = "mocktrade.log"
+    MOCK_LOG_FILE = "mocktrade2.log"
 
     for trade in trades_received:
         confirmation = f"[RECEIVED ORDER]: {1} {trade["symbol"]} {trade["price"]} signal at {trade["signal"]}"
