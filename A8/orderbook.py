@@ -49,7 +49,7 @@ def start_orderbook():
     # Print initial memory usage
     print_memory_usage('G8_Shared_Prcie_Book', len(symbols))
     
-    #print(f"[ORDERBOOK] Started with symbols: {symbols}")
+    print(f"[ORDERBOOK] Started with symbols: {symbols}")
 
     while True:
         res = client.recv(1024)
@@ -81,7 +81,7 @@ def start_orderbook():
             price = float(fields[4])
             price_book.update(symbol, price)
 
-            #print("Current order book status:", {s: price_book.read(s) for s in symbols})
+            print("Current order book status:", {s: price_book.read(s) for s in symbols})
 
         trade_time = time.time()
         decision_latency = trade_time - ts_sent
