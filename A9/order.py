@@ -12,7 +12,7 @@ class Order:
         self.state = OrderState.NEW
         self.symbol = symbol
         self.qty = qty
-        self.side = side
+        self.side = side                  # side should be '+1' or '-1'
         self.state = OrderState.NEW
 
     def transition(self, new_state):
@@ -32,3 +32,4 @@ state = OrderState.NEW
 
 if state == OrderState.ACKED:
     print("Order acknowledged")
+
