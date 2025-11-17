@@ -32,11 +32,12 @@ if __name__ == "__main__":
         print("[END] Order rejected by risk engine.")
         exit()
 
-    # Order transition
+    # Order transition log
     print("\n[STEP] ORDER FILLED")
     risk.update_position(order)
     order.transition(OrderState.FILLED)
 
-    # Order log
+    # final position log
     print("\n[STEP] FINAL POSITION")
     print(risk.positions)
+
