@@ -33,6 +33,12 @@ class Logger:
             print(f"[LOG] saved {len(self.events)} events in {self.logfile}")
 
 
+if __name__ == "main":
+    log = Logger("test.json")
+    log.log("OrderCreated", {"symbol":"AAPL", "qty":50})
+    log.log("OrderFilled", {"symbol": "AAPL", "qty": 50})
+    log.save()
+
 
 
 
