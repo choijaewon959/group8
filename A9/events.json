@@ -1,0 +1,28 @@
+[
+  {
+    "type": "OrderCreated",
+    "data": {
+      "8": "FIX.4.2",
+      "35": "D",
+      "55": "AAPL",
+      "54": "1",
+      "38": "500",
+      "40": "2",
+      "10": "128"
+    }
+  },
+  {
+    "type": "OrderAcked",
+    "data": {
+      "symbol": "AAPL",
+      "qty": 500
+    }
+  },
+  {
+    "type": "OrderFilled",
+    "data": {
+      "symbol": "AAPL",
+      "qty": 500
+    }
+  }
+]
