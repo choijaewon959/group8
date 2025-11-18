@@ -1,28 +1,18 @@
-# Test Coverage Report# Coverage Report - Assignment 9
+# Test Coverage Report
 
-**Date:** November 18, 2025  **Date:** November 18, 2025  
+**Date:** November 18, 2025  
+**Coverage:** 84% (16/16 tests passing)
 
-**Coverage:** 84% (16/16 tests passing)**Python Version:** 3.13.5  
+---
 
-**Testing Framework:** pytest 8.3.4  
+## Summary
 
----**Coverage Tool:** pytest-cov 7.0.0
-
-
-
-## Summary---
-| Module | Coverage | Missing Lines |## Executive Summary
-
-|--------|----------|--------|---------------|
-
-| order.py | 100% | None |- **Total Test Cases:** 11
-
-| tests/*.py | 100% | None |- **Tests Passed:** 11 (100%)
-
+| Module | Coverage | Missing Lines |
+|--------|----------|---------------|
+| order.py | 100% | None |
+| tests/*.py | 100% | None |
 | risk_engine.py | 96% | 27 |
-
 | logger.py | 82% | 28-29, 32, 45-48 |
-
 | fix_parser.py | 74% | 36-48 (__main__) |
 
 ---
