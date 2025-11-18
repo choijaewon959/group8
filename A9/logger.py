@@ -1,11 +1,19 @@
 import json
 
 class Logger:
+    __instance = None
+    __initialized = False
+
+    def __new__(cls, *args, **kwargs):
+        if not cls.__instance:
+            cls.__instance = super().__new__(cls)
+        return cls.__instance
 
     def __init__(self, path="events.json"):
-        self.logfile = path
-        self.events = []
-
+        if not Logger.__initialized:
+            self.logfile = path
+            self.events = []
+            Logger.__initialized = True
 
     def log(self, event_type, data):
         self.events.append({"type":event_type, "data":data})
@@ -34,10 +42,10 @@ class Logger:
 
 
 if __name__ == "main":
-    log = Logger("test.json")
-    log.log("OrderCreated", {"symbol":"AAPL", "qty":50})
-    log.log("OrderFilled", {"symbol": "AAPL", "qty": 50})
-    log.save()
+    log1 = Logger("test.json")
+    log2 = Logger("hello.json")
+
+    print(log1 is log2)
 
 
 

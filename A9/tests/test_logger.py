@@ -39,14 +39,9 @@ def test_check_coherent_logs(capsys):
     #number of events should amount to what was saved
     assert saved == logger_obj.events
 
-    #new logger
+    #test new logger instance
     logger_obj2 = Logger("test.json")
-    logger_obj2.log("OrderRejected", Mock_order)
-    logger_obj2.save()
 
-    with open("test.json", "r") as f:
-        saved_data = json.load(f)
+    #test if singleton only instantiates once
+    assert logger_obj is logger_obj2
 
-    #overwriting the same log file, should only include second file logs
-    assert len(saved_data) == 1
-    assert saved_data[0]["type"] == "OrderRejected"
