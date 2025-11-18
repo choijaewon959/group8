@@ -28,8 +28,3 @@ class Order:
             print(f"[ERROR] Invalid transition: {self.state.name} → {new_state.name}")
     
 
-state = OrderState.NEW
-
-if state == OrderState.ACKED:
-    print("Order acknowledged")
-
