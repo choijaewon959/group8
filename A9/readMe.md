@@ -1,9 +1,18 @@
-# A8: Inter-Process Communication for Trading Systems
+# Assignment 9: Mini Trading System
 
 ## Overview
-The project is a simplified multi-process trading system that uses interprocess communication (IPC) to connect independent components through real TCP sockets and shared memory.
-The focus is on building a mini trading stack — a Gateway, OrderBook, Strategy, and OrderManager — that communicate in real time emphasizing process orchestration, socket programming, serialization, and shared memory synchronization in the context of financial systems.
-## Setup Instructions
+
+The project builds a simplified electronic trading system.
+Four incremental components are implemented:
+
+1	**FIX Message Parser**
+<br />2	**Order Lifecycle Simulator**
+<br />3	**Risk Check Engine**
+<br />4	**Event Logger**
+
+At completion, the system supports this end-to-end event flow:
+
+FIX Message → Parser → Order → RiskEngine → Logger
 
 ### Prerequisites
 - Python 3.8 or higher
@@ -23,12 +32,12 @@ The focus is on building a mini trading stack — a Gateway, OrderBook, Strategy
    
    Or install individually:
    ```bash
-   pip install socket pytest numpy memory-profiler multiprocessing shared_memory_utils"
+   pip install pytest numpy"
    ```
 
 3. **Verify installation**:
    ```bash
-   python -c "import socket, pandas, numpy; print('All dependencies installed successfully')"
+   python -c "import pytest numpy; print('All dependencies installed successfully')"
    ```
 
 4. **Run the main application**:
@@ -42,42 +51,39 @@ The focus is on building a mini trading stack — a Gateway, OrderBook, Strategy
    pytest
    ```
 
-## Architecture
-
-**-Gateway streams price and sentiment data to all subscribed clients.**
-<br />**-OrderBook maintains the most recent prices in shared memory, accessible to multiple readers.**
-<br />**-Strategy reads from shared memory, generates buy/sell signals, and sends serialized JSON orders via TCP to the OrderManager.**
-<br />**-OrderManager receives orders, logs them to file, and confirms receipt.**
-
 ### Core Modules
 
-#### `gateway.py`
-**-Reads price and sentiment CSVs.**
-<br />**-Broadcasts encoded tick messages over TCP.**
-<br />**-Tracks throughput in ticks/seconds**
-<br />**-Each client registers via a simple handshake message.**
+#### `fix_parser.py`
+-Convert incoming FIX protocol strings into validated Python dictionaries:
 
-#### `orderbook.py`
--**Connects to the Gateway as a client.**
-<br />**-Updates shared memory with the latest symbol prices (SharedPriceBook).**
-<br />**-Acts as a central in-memory store for the system.**
+**Parse key=value FIX fields separated by |**
+<br />**Validate required tags (symbol, side, price/qty)**
+<br />**Raise ValueError when required data is missing**
+<br />**Support multiple FIX message types (orders/quotes/etc.)**
 
-#### `strategy.py`
--**Connects to the Gateway to receive live sentiment.**
-<br />-**Reads live prices from shared memory.**
-<br />-**Generates signals (e.g., moving-average crossover, sentiment trigger).**
-<br />-**Immediately sends JSON orders to the OrderManager**
 
-#### `order_manager.py`
-**-Listens for strategy connections via TCP.**
-<br />**-Receives JSON orders, logs them, and can optionally send acknowledgements.**
-<br />**-Maintains order_log.txt with timestamps and signal details.**
+#### `order.py`
+-Represent the lifecycle of an order through valid states:
 
-#### `shared_memory_utils.py`
--Defines reusable shared memory structures:
-<br />   **SharedPriceBook**
-<br />   **SharedNewsBook**
-<br />-Backed by multiprocessing.shared_memory and numpy.ndarray for fast numerical sharing.
+**Maintain strict state transitions**
+<br />**If an invalid transition occurs → log or raise error**
+
+#### `risk_engine.py`
+-Block orders that violate configured risk limits:
+
+**Validate max order size**
+<br />**Maintain and update position limits across symbols**
+<br />**Reject risky orders before acknowledgment**
+
+#### `logger.py`
+Store and replay important trading events:
+
+**Singleton class**
+<br />**JSON-based persistent log (events.json)**
+<br />**Log order lifecycle + risk events**
+
+#### `main.py`
+-Runs all parts for automated order evaluation from raw FIX messages.
 
 ### How to Run
 
@@ -95,51 +101,25 @@ Run the orchestrator:
 python main.py
 ```
 
-This will launch all core processes:
-<br />**-Gateway**
-<br />**-OrderBook**
-<br />**-OrderManager**
-<br />**-Strategy (Price + News)**
-And each process will print specific logs:
-
+This will launch all core processes sequentially:
+<br />**-fix_parser**
+<br />**-order**
+<br />**-risk_engine**
+<br />**-logger**
 
 ### Testing
 - Run the integrated unit tests:
 ```bash
 pytest -v
 ```
-Example tests include:
-<br />**-Connectivity between Gateway ↔ OrderBook**
-<br />**-Shared memory synchronization**
-<br />**-Strategy order count matches received orders in OrderManager**
-<br />**-Throughput and latency tracking**
-
-### Performance Metrics
-Key metrics recorded in performance_report.md:
-<br />**-Average tick rate (price + sentiment): ~500 ticks/sec.**
-<br />**-Shared memory write/read latency: < 0.1 ms.**
-<br />**-OrderManager round-trip acknowledgment: < 1 ms.**
-<br />**-CPU / memory footprint under 100 MB for all processes.**
-
-### DEMO VIDEO
-See video.mp4 for a live demonstration of the system in action:
-<br />**-Each process runs in a separate terminal..**
-<br />**-Real-time logs show price streaming, signal generation, and order reception..**
-<br />**-Confirms successful inter-process communication via TCP + shared memory..**
-
-### Key features
-**-Inter-Process Communication (IPC)**
-<br />**-TCP socket programming)**
-<br />**-Serialization / deserialization (JSON))**
-<br />**-Shared memory via multiprocessing.shared_memory)**
-<br />**-Process synchronization and orchestration)**
-<br />**-Low-latency trading infrastructure simulation)**
 
 ### Future Extensions
-**-Replace TCP sockets with ZeroMQ or gRPC for scalability.**
-<br />**-Add pandas/Polars analytics layer for performance dashboards.**
-<br />**-Implement asynchronous I/O with asyncio for non-blocking strategies.**
-<br />**-Expand to include risk management and execution simulation modules.**
+
+<br />**FIX heartbeat + session management**
+<br />**Asynchronous processing using asyncio / ZeroMQ**
+<br />**Expand more state transitions (partial fills, modify orders)**
+<br />**Add GUI or live feed simulation**
+<br />**Integrate quantitative strategy signals**
 
 ## Authors
 - Group 8, FINM325 - University of Chicago
