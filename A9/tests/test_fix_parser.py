@@ -63,3 +63,22 @@ def test_fix_parser_missing_fields(bad_fix_message):
     missing_quote_msg = bad_fix_message['missing_quote']
     with pytest.raises(ValueError):
         fp.parse(missing_quote_msg)
+
+
+def test_fix_parser_edge_cases():
+    fp = FixParser()
+    
+    # Test field with equals sign in value (only split on first =)
+    msg_with_special = "8=FIX.4.2|35=D|55=AA=PL|54=1|38=100|40=2|10=128"
+    fields = fp.parse(msg_with_special)
+    assert fields['55'] == 'AA=PL'
+    
+    # Test empty field handling
+    msg_with_empty = "8=FIX.4.2|35=D|55=|54=1|38=100|40=2|10=128"
+    fields = fp.parse(msg_with_empty)
+    assert fields['55'] == ''
+    
+    # Test trailing pipe
+    msg_with_trailing = "8=FIX.4.2|35=D|55=AAPL|54=1|38=100|40=2|10=128|"
+    fields = fp.parse(msg_with_trailing)
+    assert fields['10'] == '128'
