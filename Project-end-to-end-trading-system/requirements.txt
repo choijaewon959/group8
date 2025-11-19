@@ -1,1 +1,2 @@
 ccxt
+alpaca-trade-api
