@@ -6,12 +6,16 @@ from config import *
 
 
 
-def load_data_eq(ticker: str, period: str = "1mo", interval: str = "1m") -> pd.DataFrame:
-    data = yf.download(ticker, period=period, interval=interval)
+def load_data_eq(ticker: str, start, end, interval: str = "1m") -> pd.DataFrame:
+    # get data from yfinance
+
+    data = yf.download(ticker, start=start, end=end, interval=interval)
     return data
 
 
 def get_ccxt_ohlcv(exchange_id, symbol, timeframe, start, end):
+    # get data from coinbase via ccxt
+
     ex_class = getattr(ccxt, exchange_id)
     exchange = ex_class()
 
@@ -50,16 +54,17 @@ def get_ccxt_ohlcv(exchange_id, symbol, timeframe, start, end):
 
 
 if __name__ == "__main__":
-    eq_data = load_data_eq("AAPL", period="3mo", interval="1d")
-    print("Equity Data:")
+    st = "2025-11-18"
+    et = "2025-11-19"
+
+    eq_data = load_data_eq("AAPL", start=st, end=et, interval="1m")
     print(eq_data.head())
 
-    # Example: BTC/USD on Kraken
     crpyto_data = get_ccxt_ohlcv(
         exchange_id=coinbase_exchange_id,
         symbol="BTC/USD",
         timeframe="1m",
-        start="2025-11-18",
-        end="2025-11-19"
+        start=st,
+        end=et
     )
     print(crpyto_data.head())
