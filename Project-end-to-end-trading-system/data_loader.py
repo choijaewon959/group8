@@ -10,6 +10,14 @@ def get_data_eq(ticker: str, start, end, interval: str = "1m") -> pd.DataFrame:
     # get data from yfinance
 
     data = yf.download(ticker, start=start, end=end, interval=interval)
+    data = data.reset_index()
+    
+    # If multi-index columns, flatten them by taking only the first level
+    if isinstance(data.columns, pd.MultiIndex):
+        data.columns = data.columns.get_level_values(0)
+    
+    data['Symbol'] = ticker
+    
     return data
 
 
@@ -49,17 +57,28 @@ def get_ccxt_ohlcv(exchange_id, symbol, timeframe, start, end):
     df = df[(df["Datetime"] >= pd.Timestamp(start, tz='UTC')) &
             (df["Datetime"] <= pd.Timestamp(end,   tz='UTC'))]
 
-    return df[["Datetime", "Open", "High", "Low", "Close", "Volume"]]
+    df = df.reset_index().drop(columns=["index"])
+    df['Symbol'] = symbol
+    return df[["Datetime", "Open", "High", "Low", "Close", "Volume", "Symbol"]]
 
+
+def preprocess_data(df: pd.DataFrame, window: int = 12) -> pd.DataFrame:
+    df.dropna(inplace=True)
+    df.set_index('Datetime', inplace=True)
+    df.sort_index(inplace=True)
+
+    df['returns'] = df['Close'].pct_change().fillna(0)
+    df['ma'] = df['Close'].rolling(window=window).mean().fillna(method='bfill')
+    
+    return df
 
 
 if __name__ == "__main__":
+    # load and save sample data
     st = "2025-11-18"
     et = "2025-11-19"
 
     eq_data = get_data_eq("AAPL", start=st, end=et, interval="1m")
-    eq_data = eq_data.reset_index()
-    eq_data.columns = [''.join(col) for col in eq_data.columns.to_flat_index()]
     print(eq_data.head())
     eq_data.to_csv(data_path + "AAPL_1m.csv", index=False)
 
@@ -70,7 +89,14 @@ if __name__ == "__main__":
         start=st,
         end=et
     )
-    crpyto_data = crpyto_data.reset_index().drop(columns=["index"])
     print(crpyto_data.head())
     crpyto_data.to_csv(data_path + "BTCUSD_1m.csv", index=False)
+
+    #process data
+    eq_data_processed = preprocess_data(eq_data, window=12)
+    print(eq_data_processed.head())
+    crpyto_data_processed = preprocess_data(crpyto_data, window=12)
+    print(crpyto_data_processed.head())
+
+
 
