@@ -1,2 +1,3 @@
 ccxt
 alpaca-trade-api
+python-dotenv
