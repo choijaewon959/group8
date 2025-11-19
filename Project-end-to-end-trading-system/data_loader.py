@@ -6,7 +6,7 @@ from config import *
 
 
 
-def load_data_eq(ticker: str, start, end, interval: str = "1m") -> pd.DataFrame:
+def get_data_eq(ticker: str, start, end, interval: str = "1m") -> pd.DataFrame:
     # get data from yfinance
 
     data = yf.download(ticker, start=start, end=end, interval=interval)
@@ -57,8 +57,11 @@ if __name__ == "__main__":
     st = "2025-11-18"
     et = "2025-11-19"
 
-    eq_data = load_data_eq("AAPL", start=st, end=et, interval="1m")
+    eq_data = get_data_eq("AAPL", start=st, end=et, interval="1m")
+    eq_data = eq_data.reset_index()
+    eq_data.columns = [''.join(col) for col in eq_data.columns.to_flat_index()]
     print(eq_data.head())
+    eq_data.to_csv(data_path + "AAPL_1m.csv", index=False)
 
     crpyto_data = get_ccxt_ohlcv(
         exchange_id=coinbase_exchange_id,
@@ -67,4 +70,7 @@ if __name__ == "__main__":
         start=st,
         end=et
     )
+    crpyto_data = crpyto_data.reset_index().drop(columns=["index"])
     print(crpyto_data.head())
+    crpyto_data.to_csv(data_path + "BTCUSD_1m.csv", index=False)
+
