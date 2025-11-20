@@ -15,9 +15,9 @@ API_KEY = os.getenv("ALPACA_API_KEY")
 SECRET_KEY = os.getenv("ALPACA_SECRET_KEY")
 
 def get_data_eq(ticker: str, start, end, interval: str = "1m") -> pd.DataFrame:
-    # get data from yfinance
+    # get data from yfinance with extended hours (premarket + regular + aftermarket)
 
-    data = yf.download(ticker, start=start, end=end, interval=interval)
+    data = yf.download(ticker, start=start, end=end, interval=interval, prepost=True)
     data = data.reset_index()
     
     # If multi-index columns, flatten them by taking only the first level
@@ -34,6 +34,13 @@ def get_data_eq(ticker: str, start, end, interval: str = "1m") -> pd.DataFrame:
         'Volume': 'volume'
     }
     data = data.rename(columns=column_mapping)
+    
+    # Ensure timestamp is timezone-aware UTC (matching Alpaca format)
+    if data['timestamp'].dt.tz is None:
+        data['timestamp'] = pd.to_datetime(data['timestamp']).dt.tz_localize('UTC')
+    else:
+        data['timestamp'] = pd.to_datetime(data['timestamp']).dt.tz_convert('UTC')
+    
     data['symbol'] = ticker
     
     return data
@@ -110,8 +117,18 @@ def get_data_from_alpaca(symbol: str, start, end, timeframe: str = "1m") -> pd.D
     )
 
     bars = data_client.get_stock_bars(request_params)
-    df = bars.df               # AAPL is already the index
-    df = df.reset_index()      # optional
+    df = bars.df
+    df = df.reset_index()
+    
+    # Ensure timestamp is UTC timezone-aware
+    if df['timestamp'].dt.tz is None:
+        df['timestamp'] = pd.to_datetime(df['timestamp']).dt.tz_localize('UTC')
+    else:
+        df['timestamp'] = pd.to_datetime(df['timestamp']).dt.tz_convert('UTC')
+    
+    # Filter to match yfinance extended hours (4 AM - 8 PM EST = 09:00 - 01:00 UTC next day)
+    # This excludes overnight session data from previous day
+    df = df[df['timestamp'].dt.hour >= 9].copy()
 
     return df
 
@@ -142,14 +159,14 @@ if __name__ == "__main__":
     eq_data.to_csv(data_path + f"{symbol}_{timeframe}.csv", index=False)
 
     # ccxt - coinbase
-    crpyto_data = get_ccxt_ohlcv(
-        exchange_id=coinbase_exchange_id,
-        symbol="BTC/USD",
-        timeframe="1m",
-        start=st,
-        end=et
-    )
-    crpyto_data.to_csv(data_path + "BTCUSD_1m.csv", index=False)
+    # crpyto_data = get_ccxt_ohlcv(
+    #     exchange_id=coinbase_exchange_id,
+    #     symbol="BTC/USD",
+    #     timeframe="1m",
+    #     start=st,
+    #     end=et
+    # )
+    # crpyto_data.to_csv(data_path + "BTCUSD_1m.csv", index=False)
 
     # alpaca
     al_eq_data = get_data_from_alpaca(symbol, st, et, timeframe)
@@ -158,8 +175,8 @@ if __name__ == "__main__":
     #process data
     eq_data_processed = preprocess_data(eq_data, window=12)
     print(eq_data_processed.head())
-    crpyto_data_processed = preprocess_data(crpyto_data, window=12)
-    print(crpyto_data_processed.head())
+    # crpyto_data_processed = preprocess_data(crpyto_data, window=12)
+    # print(crpyto_data_processed.head())
     al_eq_data_processed = preprocess_data(al_eq_data, window=12)
     print(al_eq_data_processed.head())
 
