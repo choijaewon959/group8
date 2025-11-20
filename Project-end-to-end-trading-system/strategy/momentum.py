@@ -1,7 +1,7 @@
 from collections import deque
 import numpy as np
 from strategy.signal import Signal
-from strategy.base import StrategyBase
+from strategy.strategybase import StrategyBase
 
 class MomentumStrategy(StrategyBase):
     def __init__(self, lookback=30, threshold=0.001, position_size=1):
