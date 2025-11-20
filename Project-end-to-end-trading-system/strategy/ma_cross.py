@@ -1,7 +1,7 @@
 from collections import deque
 import numpy as np
 from strategy.signal import Signal
-from strategy.base import StrategyBase
+from strategy.strategybase import StrategyBase
 
 class MACrossStrategy(StrategyBase):
     def __init__(self, short_window=20, long_window=60, position_size=1):
