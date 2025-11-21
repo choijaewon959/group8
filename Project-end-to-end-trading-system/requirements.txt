@@ -1,1 +1,3 @@
 ccxt
+alpaca-py
+python-dotenv
