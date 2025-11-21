@@ -137,7 +137,7 @@ def preprocess_data(df: pd.DataFrame, window: int = 12) -> pd.DataFrame:
     df.dropna(inplace=True)
     df.set_index('timestamp', inplace=True)
     df.sort_index(inplace=True)
-
+    
     df['returns'] = df['close'].pct_change().fillna(0)
     df['ma'] = df['close'].rolling(window=window).mean().bfill()
     
