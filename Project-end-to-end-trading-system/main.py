@@ -1,12 +1,15 @@
 from config import *
-from alpaca.data.historical import StockHistoricalDataClient
-from alpaca.data.requests import StockBarsRequest
-from alpaca.data.timeframe import TimeFrame, TimeFrameUnit
+from alpaca.trading.client import TradingClient
+from alpaca.trading.requests import MarketOrderRequest
+from alpaca.trading.enums import OrderSide, TimeInForce
+
+from alpaca.data.live import CryptoDataStream
 from strategy.ma_cross import MACrossStrategy
 from alpaca.data.live import StockDataStream
 from alpaca.trading.client import TradingClient
 from alpaca.data.historical import CryptoHistoricalDataClient
 from data_loader import *
+import ccxt.pro as ccxtpro 
 import asyncio
 import os
 
@@ -18,60 +21,110 @@ SECRET_KEY = os.getenv("ALPACA_SECRET_KEY")
 # get data from alpaca
 symbol = "BTC/USD"
 
-# put into strategy
+# clients
+trading_client = TradingClient(API_KEY, SECRET_KEY, paper=True)
+stream = CryptoDataStream(API_KEY, SECRET_KEY)
+
+# strategy
 strategy = MACrossStrategy()
-stream = StockDataStream(API_KEY, SECRET_KEY)
+
 
 # callback function
 async def handle_trade(data):
     print(f"TRADE: {data}")
-    row = {
-        "Close": data.price,
-    }
-    ts = data.timestamp
+
+    # depending on raw_data flag, this might be data.price or data.p
+    price = getattr(data, "price", None) or getattr(data, "p", None)
+    ts = getattr(data, "timestamp", None) or getattr(data, "t", None)
+
+    if price is None or ts is None:
+        return  # safety
+
+    row = {"close": float(price)}
     strategy.update_live_bar(row, ts)
     signal = strategy.generate_live_signal()
+
     if signal.action != "HOLD":
         print(f"Generated Signal: {signal}")
+
+        side = OrderSide.BUY if signal.action == "BUY" else OrderSide.SELL
+
+        # very dumb fixed size; change to your sizing logic
+        order = MarketOrderRequest(
+            symbol=symbol,
+            qty=0.001,
+            side=side,
+            time_in_force=TimeInForce.GTC,
+        )
+        try:
+            resp = trading_client.submit_order(order)
+            print("Submitted order:", resp)
+        except Exception as e:
+            print("Order error:", e)
 
 
 async def handle_quote(data):
     print(f"QUOTE: {data}")
 
 
-async def main():
+def main():
     print(f"Subscribing to {symbol} trades and quotes...")
+
+    # subscribe async handlers
     stream.subscribe_trades(handle_trade, symbol)
-    stream.subscribe_quotes(handle_quote, symbol)
-    
-    print("Starting stream...")
-    await stream.run_fo()
+    # stream.subscribe_quotes(handle_quote, symbol)
 
-        # Trading client (paper)
-    trading_client = TradingClient(
-        API_KEY,
-        SECRET_KEY,
-        paper=True    # <= VERY IMPORTANT
-    )
-
-    # Data client (crypto)
-    data_client = CryptoHistoricalDataClient()
-
+    print("Starting crypto stream...")
+    # CryptoDataStream.run() manages its own event loop – no await here
+    stream.run()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
 
-# def run():
-#     data = get_data_from_alpaca("AAPL", "2023-01-01", "2023-06-01", "1m")
-    
-#     strategy = MACrossStrategy()
-#     for index, row in data.iterrows():
-#         strategy.update_live_bar(row)
-#         signal = strategy.generate_live_signal()
-#         if signal.action != "HOLD":
-#             print(f"Generated Signal: {signal}")
+# async def main():
+#     # Public market data only
+#     exchange = ccxtpro.coinbaseexchange()  # Coinbase Exchange
+
+#     await exchange.load_markets()
+
+#     symbol = "BTC/USD"
+
+#     while True:
+#         # watch_trades returns most recent trades (streaming)
+#         trades = await exchange.watch_trades(symbol)
+#         for t in trades:
+#             print(
+#                 f"{symbol} {t['datetime']} "
+#                 f"price={t['price']} size={t['amount']} side={t['side']}"
+#             )
+#             p = t['price']
+#             ts = t['timestamp']
+#             row = {"close": float(p)}
+#             strategy.update_live_bar(row, ts)
+#             signal = strategy.generate_live_signal()
+#             if signal.action != "HOLD":
+#                 print(f"Generated Signal: {signal}")
+
+#                 side = OrderSide.BUY if signal.action == "BUY" else OrderSide.SELL
+
+#                 order = MarketOrderRequest(
+#                     symbol=symbol,
+#                     qty=0.001,
+#                     side=side,
+#                     time_in_force=TimeInForce.GTC,
+#                 )
+#                 try:
+#                     resp = trading_client.submit_order(order)
+#                     print("Submitted order:", resp)
+#                 except Exception as e:
+#                     print("Order error:", e)
+            
 
 
 # if __name__ == "__main__":
-#     run()
+#     asyncio.run(main())
+
+
+
+
 

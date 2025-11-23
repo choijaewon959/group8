@@ -173,8 +173,8 @@ if __name__ == "__main__":
     al_eq_data.to_csv(data_path + f"AL_{symbol}_{timeframe}.csv", index=False)
 
     #process data
-    eq_data_processed = preprocess_data(eq_data, window=12)
-    print(eq_data_processed.head())
+    # eq_data_processed = preprocess_data(eq_data, window=12)
+    # print(eq_data_processed.head())
     # crpyto_data_processed = preprocess_data(crpyto_data, window=12)
     # print(crpyto_data_processed.head())
     al_eq_data_processed = preprocess_data(al_eq_data, window=12)
