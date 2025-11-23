@@ -98,7 +98,7 @@ class OrderBook:
 
                 if ask_order.qty == 0:
                     heapq.heappop(self.asks)
-                    del self.order_map[ask_order.oder_id]
+                    del self.order_map[ask_order.order_id]
 
         return trades
 
