@@ -9,31 +9,35 @@ class MACrossStrategy(StrategyBase):
         self.short_window = short_window
         self.long_window  = long_window
 
-        # rolling window deque
         self.short_q = deque(maxlen=short_window)
         self.long_q  = deque(maxlen=long_window)
 
         self.current_ts = None
+        self.current_price = None   
 
     def update_live_bar(self, row, ts=None):
         self.current_ts = ts
-        price = row["close"]
+        self.current_price = row["close"]
 
-        self.short_q.append(price)
-        self.long_q.append(price)
+        self.short_q.append(self.current_price)
+        self.long_q.append(self.current_price)
 
     def generate_live_signal(self):
-        # not enough data
         if len(self.short_q) < self.short_window or len(self.long_q) < self.long_window:
-            return Signal("HOLD", 0, timestamp=self.current_ts, strategy_name=self.strategy_name)
+            return Signal("HOLD", 0, price=self.current_price,
+                        timestamp=self.current_ts, strategy_name=self.strategy_name)
 
         ma_s = np.mean(self.short_q)
         ma_l = np.mean(self.long_q)
 
         if ma_s > ma_l:
-            return Signal("BUY", self.position_size, timestamp=self.current_ts, strategy_name=self.strategy_name)
+            return Signal("BUY", self.position_size, price=self.current_price,
+                        timestamp=self.current_ts, strategy_name=self.strategy_name)
 
         if ma_s < ma_l:
-            return Signal("SELL", self.position_size, timestamp=self.current_ts, strategy_name=self.strategy_name)
+            return Signal("SELL", self.position_size, price=self.current_price,
+                        timestamp=self.current_ts, strategy_name=self.strategy_name)
 
-        return Signal("HOLD", 0, timestamp=self.current_ts, strategy_name=self.strategy_name)
+        return Signal("HOLD", 0, price=self.current_price,
+                    timestamp=self.current_ts, strategy_name=self.strategy_name)
+
