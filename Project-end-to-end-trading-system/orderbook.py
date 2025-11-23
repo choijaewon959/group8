@@ -21,12 +21,11 @@ class OrderBook:
         order_id = str(timestamp) + strategy_name
 
         self.order_map[order_id] = Order(order_id, side, price, qty, timestamp)
-        order = self.order_map[order_id]
 
         if side == "BUY":
-            heapq.heappush(self.bids, (-price, timestamp, order))
+            heapq.heappush(self.bids, (-price, timestamp, self.order_map[order_id]))
         else:
-            heapq.heappush(self.asks, (price, timestamp, order))
+            heapq.heappush(self.asks, (price, timestamp, self.order_map[order_id]))
 
         self.match()
         return order_id
@@ -37,14 +36,14 @@ class OrderBook:
             self.order_map[id].qty = 0
             del self.order_map[id]
 
-    def modify_order(self, id, price, qty):
+    def modify_order(self, id, price, qty, strategy_name):
         if id not in self.order_map:
             return
 
         order = self.order_map[id]
         order.qty = 0
 
-        new_id = self.add_order(order.side, price, qty)
+        new_id = self.add_order(order.side, price, qty, strategy_name)
         return new_id
 
 
@@ -73,13 +72,14 @@ class OrderBook:
                 ask = ask[0]
 
                 if bid < ask:
+                    #bid dont get past cutoff
                     break
 
                 bid_order = bid[2]
                 ask_order = ask[2]
 
                 traded_qty = min(bid_order.qty, ask_order.qty)
-                trade_price = ask
+                trade_price = ask[0]
 
                 bid_order.qty -= traded_qty
                 ask_order.qty -= traded_qty
@@ -101,3 +101,6 @@ class OrderBook:
                     del self.order_map[ask_order.oder_id]
 
         return trades
+
+
+
