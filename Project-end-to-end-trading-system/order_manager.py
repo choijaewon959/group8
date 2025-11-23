@@ -35,7 +35,7 @@ class OrderManager:
         if required > self.capital:
             return False, "Not enough capital"
 
-        return True
+        return True, "Ok"
 
     def register_order(self, order_id, side, price, qty):
         self.order_timestamps.append(time.time())
@@ -47,7 +47,7 @@ class OrderManager:
         }
 
     def send_order(self, order_book, side, price, qty):
-        allowed = self.can_place_order(side, price, qty)
+        allowed, msg = self.can_place_order(side, price, qty)
         if not allowed:
             return None
 

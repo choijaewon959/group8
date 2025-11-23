@@ -1,7 +1,7 @@
 import json
 import time
 from order_manager import OrderManager
-from order_book2 import OrderBook
+from orderbook import OrderBook
 
 class Gateway:
     def __init__(self, log_file="./logs/orders.log"):
