@@ -1,5 +1,6 @@
 import heapq
 import time
+import uuid
 
 class Order:
     def __init__(self, order_id:str, side:str, price:float, qty:float, timestamp:str):
@@ -15,20 +16,22 @@ class OrderBook:
         self.bids = []
         self.asks = []
         self.order_map = {}
+        self.counter = 0
 
 
     def add_order(self, side, price, qty):
         timestamp = time.time()
-        order_id = str(timestamp)
+        order_id = str(uuid.uuid4())
 
         self.order_map[order_id] = Order(order_id, side, price, qty, timestamp)
-
+        self.counter +=1 
+        
         if side == "BUY":
             heapq.heappush(self.bids, (-price, timestamp, self.order_map[order_id]))
         else:
             heapq.heappush(self.asks, (price, timestamp, self.order_map[order_id]))
 
-        self.match()
+        # self.match() : match will be happend in Gateway or Engine
         return order_id
 
     def match(self):
