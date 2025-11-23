@@ -17,7 +17,7 @@ class MomentumStrategy(StrategyBase):
 
     def update_live_bar(self, row, ts=None):
         self.current_ts = ts
-        price = row["Close"]
+        price = row["close"]
 
         self.window.append(price)
 
