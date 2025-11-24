@@ -69,6 +69,7 @@ class MomentumStrategy(StrategyBase):
         # HOLD
         # ------------------------------
         return Signal(
+            
             "HOLD", 
             0,
             price=current,                   

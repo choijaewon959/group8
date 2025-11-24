@@ -43,8 +43,9 @@ python main.py
 ```
 
 **Note**: 
-1. Live trading uses CCXT for real-time crypto market data (BTC/USD) and Alpaca for order execution.
-2. All the backtesting data intervals are based on 1 min interval. To leverage the same interval trading strategy, bar_builder class has been introduced to simulate minute interval ticker.
+1. Live trading uses CCXT for real-time crypto market data (BTC/USD) and Alpaca for order execution. This is because the liquidity in alpaca exchange is not enough to make real-time traindg decision.
+2. To run the alpaca data streaming nonetheless, you can run python main.py alpaca.
+3. All the backtesting data intervals are based on 1 min interval. To leverage the same interval trading strategy, bar_builder class has been introduced to simulate minute interval ticker.
 
 
 ## Project Structure
