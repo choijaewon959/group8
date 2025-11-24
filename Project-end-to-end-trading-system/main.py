@@ -62,7 +62,6 @@ def build_order(price, ts):
     if signal.action != "HOLD":
         side = OrderSide.BUY if signal.action == "BUY" else OrderSide.SELL
 
-        # very dumb fixed size; change to your sizing logic
         order = MarketOrderRequest(
             symbol=symbol,
             qty=signal.qty,
