@@ -24,14 +24,13 @@ class OrderBook:
         order_id = str(uuid.uuid4())
 
         self.order_map[order_id] = Order(order_id, side, price, qty, timestamp)
-        self.counter +=1 
-        
-        if side == "BUY":
-            heapq.heappush(self.bids, (-price, timestamp, self.order_map[order_id]))
-        else:
-            heapq.heappush(self.asks, (price, timestamp, self.order_map[order_id]))
+        self.counter += 1
 
-        # self.match() : match will be happend in Gateway or Engine
+        if side == "BUY":
+            heapq.heappush(self.bids, (-price, self.counter, self.order_map[order_id]))
+        else:
+            heapq.heappush(self.asks, (price, self.counter, self.order_map[order_id]))
+
         return order_id
 
     def match(self):
