@@ -69,6 +69,7 @@ class MACrossStrategy(StrategyBase):
 
         # Compute dynamic qty
         qty = self.compute_dynamic_size()
+        print("@@@@@@@@@@@@@@@@@@@@", ma_s, ma_l, qty)
 
         if ma_s > ma_l:
             return Signal("BUY", qty, price=self.current_price,

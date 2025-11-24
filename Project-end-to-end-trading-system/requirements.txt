@@ -1,3 +1,4 @@
 ccxt
+ccxtpro
 alpaca-py
 python-dotenv
