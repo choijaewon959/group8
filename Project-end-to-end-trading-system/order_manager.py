@@ -1,5 +1,5 @@
 import time
-from orderbook import OrderBook
+from orderbook import OrderBook, MatchingEngine
 
 class OrderManager:
     def __init__(
@@ -81,12 +81,13 @@ class OrderManager:
 
 ob = OrderBook()
 om = OrderManager()
+me = MatchingEngine(ob)
 
 order_id, status = om.send_order(ob, "BUY", 100, 10)
 order_id, status = om.send_order(ob, "SELL", 90, 10)
 print(order_id, status)
 
-trades = ob.match()
+trades = me.match()
 
 om.handle_fills(trades)
 

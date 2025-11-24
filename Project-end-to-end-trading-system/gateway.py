@@ -1,9 +1,10 @@
 from order_manager import OrderManager
-from orderbook import OrderBook
+from orderbook import OrderBook, MatchingEngine
 class Gateway:
     def __init__(self):
         self.order_book = OrderBook()
         self.order_manager = OrderManager()
+        self.matching_engine = MatchingEngine(self.order_book)
         # in order to remain log
         self.all_trades = []
         self.all_orders = []
@@ -52,7 +53,7 @@ class Gateway:
                     })
 
                     # match trade
-                    trades = self.order_book.match()
+                    trades = self.matching_engine.match()
 
                     if trades:
                         # trade(filled) record for OrderManager

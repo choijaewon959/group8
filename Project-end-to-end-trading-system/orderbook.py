@@ -17,6 +17,7 @@ class OrderBook:
         self.asks = []
         self.order_map = {}
         self.counter = 0
+#        self.matching_engine = MatchingEngine()
 
 
     def add_order(self, side, price, qty):
@@ -31,51 +32,8 @@ class OrderBook:
         else:
             heapq.heappush(self.asks, (price, self.counter, self.order_map[order_id]))
 
+        #self.matching_engine.match()
         return order_id
-
-    def match(self):
-        trades = []
-
-        while True:
-            best_bid = self.best_bid()
-            best_ask = self.best_ask()
-
-            if not best_bid or not best_ask:
-                break
-
-            bid_price = -best_bid[0]
-            ask_price = best_ask[0]
-
-            if bid_price < ask_price:
-                break
-
-            bid_order = best_bid[2]
-            ask_order = best_ask[2]
-
-            traded_qty = min(bid_order.qty, ask_order.qty)
-            trade_price = ask_price
-
-            bid_order.qty -= traded_qty
-            ask_order.qty -= traded_qty
-
-            trades.append({
-            "price": trade_price,
-            "qty": traded_qty,
-            "buy_id" : bid_order.order_id,
-            "sell_id" : ask_order.order_id,
-            "timestamp" : time.time()
-            })
-
-            if bid_order.qty == 0:
-                heapq.heappop(self.bids)
-                del self.order_map[bid_order.order_id]
-
-            if ask_order.qty == 0:
-                heapq.heappop(self.asks)
-                del self.order_map[ask_order.order_id]
-
-        return trades
-
 
     def cancel_order(self, id):
         if id in self.order_map:
@@ -104,12 +62,50 @@ class OrderBook:
             heapq.heappop(self.asks)
         return self.asks[0] if self.asks else None
 
+class MatchingEngine:
+    def __init__(self, order_book:OrderBook):
+        self.order_book = order_book
 
-"""
-order_book = OrderBook()
-order_book.add_order("BUY", 100,20, "Volatility")
-order_book.add_order("SELL", 80,30, "Volatility")
-print(order_book.bids)
-print(order_book.asks)
-"""
+    def match(self):
+        trades = []
+
+        while True:
+            best_bid = self.order_book.best_bid()
+            best_ask = self.order_book.best_ask()
+
+            if not best_bid or not best_ask:
+                break
+
+            bid_price = -best_bid[0]
+            ask_price = best_ask[0]
+
+            if bid_price < ask_price:
+                break
+
+            bid_order = best_bid[2]
+            ask_order = best_ask[2]
+
+            traded_qty = min(bid_order.qty, ask_order.qty)
+            trade_price = ask_price
+
+            bid_order.qty -= traded_qty
+            ask_order.qty -= traded_qty
+
+            trades.append({
+            "price": trade_price,
+            "qty": traded_qty,
+            "buy_id" : bid_order.order_id,
+            "sell_id" : ask_order.order_id,
+            "timestamp" : time.time()
+            })
+
+            if bid_order.qty == 0:
+                heapq.heappop(self.order_book.bids)
+                del self.order_book.order_map[bid_order.order_id]
+
+            if ask_order.qty == 0:
+                heapq.heappop(self.order_book.asks)
+                del self.order_book.order_map[ask_order.order_id]
+
+        return trades
 
