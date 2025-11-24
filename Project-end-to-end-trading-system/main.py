@@ -65,7 +65,7 @@ async def handle_trade(data):
         # very dumb fixed size; change to your sizing logic
         order = MarketOrderRequest(
             symbol=symbol,
-            qty=0.001,
+            qty=signal.qty,
             side=side,
             time_in_force=TimeInForce.GTC,
         )
@@ -133,7 +133,7 @@ async def main():
 
                     order = MarketOrderRequest(
                         symbol=symbol,
-                        qty=0.001,
+                        qty=signal.qty,
                         side=side,
                         time_in_force=TimeInForce.GTC,
                     )
