@@ -40,6 +40,22 @@ class Engine:
         print("\n=== Engine Run Complete ===")
         print(f"Total Trades Executed : {len(self.all_trades)}")
         print(f"Total Events Processed: {len(self.all_events)}")
+        
+        # ----------------------------------------
+        # result save as csv
+        # ----------------------------------------
+        result_dir = "result"
+        os.makedirs(result_dir, exist_ok=True)
+
+        events_path = os.path.join(result_dir, "engine_events.csv")
+        trades_path = os.path.join(result_dir, "engine_trades.csv")
+
+        pd.DataFrame(self.all_events).to_csv(events_path, index=False)
+        pd.DataFrame(self.all_trades).to_csv(trades_path, index=False)
+
+        print(f"\nSaved events to: {events_path}")
+        print(f"Saved trades to: {trades_path}")
+        # ----------------------------------------
 
     def print_event(self, event):
         """
