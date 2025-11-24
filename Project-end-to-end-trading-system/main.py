@@ -4,6 +4,7 @@ from alpaca.trading.requests import MarketOrderRequest
 from alpaca.trading.enums import OrderSide, TimeInForce
 from alpaca.data.live import CryptoDataStream
 from strategy.ma_cross import MACrossStrategy
+from strategy.momentum import MomentumStrategy
 from alpaca.data.live import StockDataStream
 from alpaca.trading.client import TradingClient
 from alpaca.data.historical import CryptoHistoricalDataClient
@@ -28,7 +29,8 @@ stream = CryptoDataStream(API_KEY, SECRET_KEY)
 # stream = StockDataStream(API_KEY, SECRET_KEY)
 
 # strategy
-strategy = MACrossStrategy()
+# strategy = MACrossStrategy()
+strategy = MomentumStrategy()
 
 # builder
 bar_builder = LiveBarBuilder()

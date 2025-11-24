@@ -11,11 +11,23 @@ class LiveBarBuilder:
         self.current_period_start = None
 
     def update(self, price, ts):
-        # Convert timestamp to pandas Timestamp and floor to interval boundary
-        ts = pd.Timestamp(ts).floor(self.interval)
+        # Convert timestamp to pandas Timestamp
+        # Handle both milliseconds (from CCXT) and datetime objects
+        if isinstance(ts, (int, float)):
+            # Assume milliseconds if > year 3000 in seconds (timestamp > 32503680000)
+            if ts > 32503680000:
+                ts = pd.Timestamp(ts, unit='ms')
+            else:
+                ts = pd.Timestamp(ts, unit='s')
+        else:
+            ts = pd.Timestamp(ts)
+        
+        # Floor to interval boundary
+        ts = ts.floor(self.interval)
 
         # First tick -> initialize bar
         if self.current_period_start is None:
+            print(f'First bar started at {ts}')
             self.current_period_start = ts
             self.current_bar = {
                 "timestamp": ts,
@@ -34,6 +46,7 @@ class LiveBarBuilder:
             return None
 
         # New period -> close previous bar, start a new one
+        print(f'Bar completed for period {self.current_period_start}, starting new bar at {ts}')
         completed_bar = self.current_bar
 
         self.current_period_start = ts
