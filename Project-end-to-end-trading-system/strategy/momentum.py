@@ -40,6 +40,7 @@ class MomentumStrategy(StrategyBase):
         # --------------------------------------------------
         raw_size = abs(momentum) * 1000
         dynamic_qty = max(1, int(raw_size))
+        dynamic_qty = dynamic_qty * self.position_size 
 
         # ------------------------------
         # BUY
