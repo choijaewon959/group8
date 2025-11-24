@@ -10,30 +10,68 @@ class MomentumStrategy(StrategyBase):
         self.lookback = lookback
         self.threshold = threshold
 
-        # Momentum rolling window
+        # Rolling window for momentum
         self.window = deque(maxlen=lookback)
 
         self.current_ts = None
+        self.current_price = None   
 
     def update_live_bar(self, row, ts=None):
         self.current_ts = ts
-        price = row["close"]
-
-        self.window.append(price)
+        self.current_price = row["close"]   
+        self.window.append(self.current_price)
 
     def generate_live_signal(self):
         if len(self.window) < self.lookback:
-            return Signal("HOLD", 0, timestamp=self.current_ts, strategy_name=self.strategy_name)
+            return Signal(
+                "HOLD", 
+                0,
+                price=self.current_price,      
+                timestamp=self.current_ts,
+                strategy_name=self.strategy_name
+            )
 
         current = self.window[-1]
-        past    = self.window[0]   # lookback ticks ago
-        momentum = (current / past) - 1
+        past    = self.window[0]
+        momentum = (current / past) - 1   
 
-        # threshold base signal generation
+        # --------------------------------------------------
+        # Dynamic position sizing logic
+        # --------------------------------------------------
+        raw_size = abs(momentum) * 1000
+        dynamic_qty = max(1, int(raw_size))
+
+        # ------------------------------
+        # BUY
+        # ------------------------------
         if momentum > self.threshold:
-            return Signal("BUY", self.position_size, timestamp=self.current_ts, strategy_name=self.strategy_name)
+            return Signal(
+                "BUY", 
+                dynamic_qty,
+                price=current,                
+                timestamp=self.current_ts,
+                strategy_name=self.strategy_name
+            )
 
+        # ------------------------------
+        # SELL
+        # ------------------------------
         if momentum < -self.threshold:
-            return Signal("SELL", self.position_size, timestamp=self.current_ts, strategy_name=self.strategy_name)
+            return Signal(
+                "SELL", 
+                dynamic_qty,
+                price=current,                
+                timestamp=self.current_ts,
+                strategy_name=self.strategy_name
+            )
 
-        return Signal("HOLD", 0, timestamp=self.current_ts, strategy_name=self.strategy_name)
+        # ------------------------------
+        # HOLD
+        # ------------------------------
+        return Signal(
+            "HOLD", 
+            0,
+            price=current,                   
+            timestamp=self.current_ts,
+            strategy_name=self.strategy_name
+        )
