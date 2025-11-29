@@ -36,17 +36,17 @@ def load_parquet_range(dataset, ticker, start, end):
 
     return table.to_pandas()
 
-def compute_rolling_vol(df):
+def compute_rolling_vol_per_symbol(df):
     df = df.sort_values("timestamp")
     df["return"] = df["close"].pct_change()
     df["vol_5d"] = df["return"].rolling(5).std() * np.sqrt(252)
     return df
 
-def compute_rolling_vol_per_symbol(dataset, tickers):
+def compute_rolling_vol(dataset, tickers):
     df_vols = []
     for ticker in tickers:
         df = load_parquet_range(dataset, ticker, "2000-01-01", "2100-01-01")
-        df_vol = compute_rolling_vol(df)
+        df_vol = compute_rolling_vol_per_symbol(df)
         df_vols.append(df_vol)
 
     return pd.concat(df_vols)
@@ -74,7 +74,7 @@ if __name__ == '__main__':
     print("Done")
 
     print(f"Compute rolling 5-day volatility for each ticker...")
-    rolling_vol = compute_rolling_vol_per_symbol(dataset, tickers)
+    rolling_vol = compute_rolling_vol(dataset, tickers)
     print("Done")
 
     print("assessing performance with parquet...")
