@@ -11,6 +11,7 @@ def plot_rolling_metrics(df: pd.DataFrame, window: int = 20, subsample_size: int
     if isinstance(df, pl.DataFrame):
         df = df.to_pandas()
 
+
     # Ensure timestamp is the index
     if "timestamp" in df.columns:
         df = df.sort_values("timestamp").set_index("timestamp")
