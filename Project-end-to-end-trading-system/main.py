@@ -34,7 +34,7 @@ stream = CryptoDataStream(API_KEY, SECRET_KEY)
 # stream = StockDataStream(API_KEY, SECRET_KEY)
 
 # strategy
-strategy = MACrossStrategy()
+strategy = MACrossStrategy(short_window=3, long_window=7, position_size=0.001)
 # strategy = MomentumStrategy(lookback=10, threshold=0.0001)
 
 # builder
@@ -62,7 +62,6 @@ def build_order(price, ts):
     if signal.action != "HOLD":
         side = OrderSide.BUY if signal.action == "BUY" else OrderSide.SELL
 
-        # very dumb fixed size; change to your sizing logic
         order = MarketOrderRequest(
             symbol=symbol,
             qty=signal.qty,

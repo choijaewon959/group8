@@ -1,1 +1,3 @@
 timestamp,symbol,side,qty,price,strategy,order_id,status,error
+2025-11-23T23:07:00.222688,BTC/USD,BUY,350,86991.79,MACross,,failed,"{""code"":40310000,""message"":""order notional 31098876.9 exceeds max notional per order 200000""}"
+2025-11-23T23:08:01.186040,BTC/USD,BUY,630,87123.99,MACross,,failed,"{""code"":40310000,""message"":""order notional 56062281.11 exceeds max notional per order 200000""}"
