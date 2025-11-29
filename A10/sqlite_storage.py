@@ -205,13 +205,13 @@ if __name__ == "__main__":
     # load tickers data and insert into the database
     print("Inserting tickers data...")
     tickers_data = load_ticker_data()
-    #insert_tickers_data(db_path, tickers_data.values.tolist())
+    insert_tickers_data(db_path, tickers_data.values.tolist())
     print("Tickers data inserted successfully.")
 
     # load market data and insert into the database
     print("Inserting market data...")
     market_data = load_market_data(tickers_data['symbol'].unique().tolist())
-    #insert_market_data(db_path, market_data.values.tolist())
+    insert_market_data(db_path, market_data.values.tolist())
     print("Market data inserted successfully.")
 
     # Retrieve sample data

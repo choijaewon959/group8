@@ -1,16 +1,11 @@
 import time
-from tarfile import data_filter
 from data_loader import load_ticker_data, load_market_data
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 import pyarrow.dataset as ds
-from datetime import datetime
 import numpy as np
 from sqlite_storage import retrieve_market_data
-
-
-market_data_path = './market_data/market_data_multi.csv'
 
 def csv_to_parquet(df: pd.DataFrame) -> pa.table:
     return pa.Table.from_pandas(df, preserve_index=False)
@@ -91,7 +86,7 @@ if __name__ == '__main__':
     print("assessing performance with sqlite...")
     db_path = 'market_data.db'
     start = time.time()
-    _ = retrieve_market_data(db_path, 'AAPL', "2024-01-01", "2025-01-01")
+    _ = retrieve_market_data(db_path, 'AAPL', "2025-11-17", "2025-11-21")
     end = time.time()
     print(f"sqlite query time: {end-start}")
 
