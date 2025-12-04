@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import json
 
 
 data_dir_path = './data/'
@@ -25,9 +26,11 @@ def add_zscore(df, col, window=60):
 
 
 def preprocess_data(df: pd.DataFrame, normalize=True, z_window=60) -> pd.DataFrame:
-    feature_cfg = pd.read_json(features_config_path)
+    with open(features_config_path, "r") as f:
+        feature_cfg = json.load(f)
+
     features = feature_cfg['features']
-    label = feature_cfg['label'].iloc[0]
+    label = feature_cfg['label']
     
     df = df[['date', 'ticker', 'close']].copy()
     df = df.sort_values(by='date').reset_index(drop=True)
