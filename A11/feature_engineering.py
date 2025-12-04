@@ -106,4 +106,4 @@ if __name__ == "__main__":
 
     # 3. combine all ticker data
     df_all = pd.concat(data_list, ignore_index=True)
-    print(df_all.head())
+    print(df_all.columns)

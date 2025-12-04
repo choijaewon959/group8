@@ -8,5 +8,15 @@
         "rsi_14",
         "macd"
     ],
+    "features_train": [
+        "date", "ticker", "close", "direction",
+       "return_1d_z", "return_1d_log_z", 
+       "return_3d_z", "return_3d_log_z",
+       "return_5d_z", "return_5d_log_z", 
+       "sma_5_dev", "sma_5_dev_z",
+       "sma_10_dev", "sma_10_dev_z", 
+       "rsi_14", "rsi_14_z", 
+       "macd_norm", "macd_norm_z"
+    ],
     "label": "direction"
 }
