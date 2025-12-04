@@ -12,3 +12,39 @@ timestamp,symbol,side,qty,price,strategy,order_id,status,error
 2025-11-23T23:51:00.871733,BTC/USD,SELL,0.26,87315.07,MACross,11d66bb1-8be7-4583-82cd-6b17daee97c1,submitted,
 2025-11-23T23:52:00.670525,BTC/USD,SELL,0.223,87398.0,MACross,8b6bf6cd-dcd7-434f-8580-980ff4b7238b,submitted,
 2025-11-23T23:53:00.236274,BTC/USD,SELL,0.139,87416.8,MACross,3235603a-5df8-47d3-93ea-8dc2bdef279f,submitted,
+2025-12-02T11:59:00.916842,BTC/USD,SELL,0.498,91510.39,MACross,,failed,"{""available"":""0.091369999"",""balance"":""0.091369999"",""code"":40310000,""message"":""insufficient balance for BTC (requested: 0.498, available: 0.091369999)"",""symbol"":""USD""}"
+2025-12-02T12:00:00.156782,BTC/USD,SELL,0.559,91481.98,MACross,,failed,"{""available"":""0.091369999"",""balance"":""0.091369999"",""code"":40310000,""message"":""insufficient balance for BTC (requested: 0.559, available: 0.091369999)"",""symbol"":""USD""}"
+2025-12-02T12:01:00.178082,BTC/USD,SELL,0.5,91532.02,MACross,,failed,"{""available"":""0.091369999"",""balance"":""0.091369999"",""code"":40310000,""message"":""insufficient balance for BTC (requested: 0.5, available: 0.091369999)"",""symbol"":""USD""}"
+2025-12-02T12:02:00.070866,BTC/USD,SELL,0.317,91571.06,MACross,,failed,"{""available"":""0.091369999"",""balance"":""0.091369999"",""code"":40310000,""message"":""insufficient balance for BTC (requested: 0.317, available: 0.091369999)"",""symbol"":""USD""}"
+2025-12-02T12:28:00.355174,BTC/USD,SELL,0.5670000000000001,91855.99,MACross,,failed,"{""available"":""0.091369999"",""balance"":""0.091369999"",""code"":40310000,""message"":""insufficient balance for BTC (requested: 0.567, available: 0.091369999)"",""symbol"":""USD""}"
+2025-12-02T12:29:00.126831,BTC/USD,SELL,0.52,91923.78,MACross,,failed,"{""available"":""0.091369999"",""balance"":""0.091369999"",""code"":40310000,""message"":""insufficient balance for BTC (requested: 0.52, available: 0.091369999)"",""symbol"":""USD""}"
+2025-12-02T12:30:00.124262,BTC/USD,SELL,0.51,91934.49,MACross,,failed,"{""available"":""0.091369999"",""balance"":""0.091369999"",""code"":40310000,""message"":""insufficient balance for BTC (requested: 0.51, available: 0.091369999)"",""symbol"":""USD""}"
+2025-12-02T12:42:00.618654,BTC/USD,SELL,0.0641,91911.43,MACross,3b2cc5ae-f789-45c3-a2a5-e08aba22777e,submitted,
+2025-12-02T12:43:00.108871,BTC/USD,SELL,0.0489,91992.5,MACross,,failed,"{""available"":""0.027269999"",""balance"":""0.027269999"",""code"":40310000,""message"":""insufficient balance for BTC (requested: 0.0489, available: 0.027269999)"",""symbol"":""USD""}"
+2025-12-02T12:44:00.877801,BTC/USD,SELL,0.022500000000000003,92016.16,MACross,4b7370d1-e839-47c8-a711-16a9e9bbc9f5,submitted,
+2025-12-02T12:45:00.143246,BTC/USD,SELL,0.013800000000000002,91940.0,MACross,,failed,"{""available"":""0.004769999"",""balance"":""0.004769999"",""code"":40310000,""message"":""insufficient balance for BTC (requested: 0.0138, available: 0.004769999)"",""symbol"":""USD""}"
+2025-12-02T12:46:00.393051,BTC/USD,SELL,0.013900000000000001,91928.5,MACross,,failed,"{""available"":""0.004769999"",""balance"":""0.004769999"",""code"":40310000,""message"":""insufficient balance for BTC (requested: 0.0139, available: 0.004769999)"",""symbol"":""USD""}"
+2025-12-02T12:47:00.300860,BTC/USD,SELL,0.0089,91980.03,MACross,,failed,"{""available"":""0.004769999"",""balance"":""0.004769999"",""code"":40310000,""message"":""insufficient balance for BTC (requested: 0.0089, available: 0.004769999)"",""symbol"":""USD""}"
+2025-12-02T12:48:00.371801,BTC/USD,BUY,0.0081,92025.98,MACross,10e348fd-f87f-4db2-8664-de83979ece1a,submitted,
+2025-12-02T12:49:00.180902,BTC/USD,BUY,0.027100000000000003,92054.03,MACross,a7df2cf8-dbf6-413f-a6bf-6e88e60cea3a,submitted,
+2025-12-02T12:50:00.329403,BTC/USD,BUY,0.030600000000000002,92028.01,MACross,f3b821b9-2ac2-485d-bbd4-bf94b94f07e3,submitted,
+2025-12-02T12:51:00.261645,BTC/USD,BUY,0.01,91915.88,MACross,817cd10a-07be-40fb-abe9-21c9101919aa,submitted,
+2025-12-02T12:52:00.253573,BTC/USD,SELL,0.0148,91902.05,MACross,9d8a4cff-3399-47ba-8e27-f01a75ccf67f,submitted,
+2025-12-02T12:53:00.447027,BTC/USD,SELL,0.029300000000000003,91918.57,MACross,94f66529-43d1-4c27-af28-d443d790a21b,submitted,
+2025-12-02T12:54:00.546277,BTC/USD,SELL,0.0292,91873.99,MACross,8db5c935-aeda-4ffa-abae-c90da2730a6a,submitted,
+2025-12-02T12:55:00.101276,BTC/USD,SELL,0.0173,91988.05,MACross,,failed,"{""available"":""0.007103239"",""balance"":""0.007103239"",""code"":40310000,""message"":""insufficient balance for BTC (requested: 0.0173, available: 0.007103239)"",""symbol"":""USD""}"
+2025-12-02T12:56:01.201931,BTC/USD,SELL,0.0131,91950.11,MACross,,failed,"{""available"":""0.007103239"",""balance"":""0.007103239"",""code"":40310000,""message"":""insufficient balance for BTC (requested: 0.0131, available: 0.007103239)"",""symbol"":""USD""}"
+2025-12-02T12:57:00.415247,BTC/USD,SELL,0.0078000000000000005,91873.52,MACross,,failed,"{""available"":""0.007103239"",""balance"":""0.007103239"",""code"":40310000,""message"":""insufficient balance for BTC (requested: 0.0078, available: 0.007103239)"",""symbol"":""USD""}"
+2025-12-02T12:58:00.193854,BTC/USD,SELL,0.0258,91817.71,MACross,,failed,"{""available"":""0.007103239"",""balance"":""0.007103239"",""code"":40310000,""message"":""insufficient balance for BTC (requested: 0.0258, available: 0.007103239)"",""symbol"":""USD""}"
+2025-12-02T12:59:00.174949,BTC/USD,SELL,0.0258,91906.01,MACross,,failed,"{""available"":""0.007103239"",""balance"":""0.007103239"",""code"":40310000,""message"":""insufficient balance for BTC (requested: 0.0258, available: 0.007103239)"",""symbol"":""USD""}"
+2025-12-02T13:00:01.819556,BTC/USD,SELL,0.0064,91973.01,MACross,9117a367-efe2-465b-9f93-df10d87108e9,submitted,
+2025-12-02T13:01:00.146542,BTC/USD,BUY,0.0194,91997.76,MACross,5d35a87f-cb0e-47e1-9c5d-0171fcf05f65,submitted,
+2025-12-02T13:02:00.160520,BTC/USD,BUY,0.035500000000000004,92046.0,MACross,dc10943a-5167-4a8b-a68d-b140ed9890ef,submitted,
+2025-12-02T13:03:00.112640,BTC/USD,BUY,0.047400000000000005,92098.01,MACross,3622467d-f5d0-4229-abce-8d8a2045e26d,submitted,
+2025-12-02T13:04:00.422455,BTC/USD,BUY,0.061700000000000005,92174.01,MACross,3761458f-b57a-493c-8f3a-2df2a169cd9c,submitted,
+2025-12-02T13:05:00.863666,BTC/USD,BUY,0.07730000000000001,92204.59,MACross,fdf675e7-b4a2-45ea-ba5c-bfb9468c2d61,submitted,
+2025-12-02T13:06:00.251178,BTC/USD,BUY,0.0724,92118.66,MACross,c79e3a9a-da5d-44e2-ae73-75cd901a4e51,submitted,
+2025-12-02T13:10:39.891259,BTC/USD,BUY,0.052000000000000005,92128.01,MACross,,failed,"('Connection aborted.', ConnectionResetError(54, 'Connection reset by peer'))"
+2025-12-02T13:10:40.525089,BTC/USD,BUY,0.0189,92086.65,MACross,99f71c5c-fcfb-4ba4-ae06-5a556e991d43,submitted,
+2025-12-02T13:10:40.943187,BTC/USD,BUY,0.0014,92060.01,MACross,16ed07db-45e2-4e44-9938-ceaac33c44bc,submitted,
+2025-12-02T13:10:41.029171,BTC/USD,SELL,0.0021000000000000003,92163.49,MACross,dbe1b89d-7e75-42c7-a3d4-34d50ff8309f,submitted,
