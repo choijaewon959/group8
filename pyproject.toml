@@ -17,8 +17,8 @@ dependencies = [
 
 [tool.pytest.ini_options]
 # Tell pytest where to find tests and code
-testpaths = ["A8/tests"]
-pythonpath = [".", "A9"]
+testpaths = ["A11/tests"]
+pythonpath = [".", "A11"]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
@@ -29,4 +29,4 @@ addopts = [
 ]
 
 [tool.setuptools.packages.find]
-include = ["A9*"]
+include = ["A11*"]
