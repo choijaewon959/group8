@@ -67,7 +67,7 @@ def train_models(models, X_train, y_train, X_test, y_test):
         model.fit(X_train, y_train)
         acc, report = evaluate(model, X_test, y_test)
 
-        print(f"{name} Accuracy: {acc:.4f}")
+        print(f"{name} Accuracy: {acc}")
         print(report)
 
         results[name] = {
@@ -103,7 +103,7 @@ def main(
     results = train_models(models, X_train, y_train, X_test, y_test)
 
     best = max(results, key=lambda m: results[m]["accuracy"])
-    print(f"BEST MODEL: {best} (acc={results[best]['accuracy']:.4f})")
+    print(f"BEST MODEL: {best} (acc={results[best]['accuracy']})")
 
     return results
 
