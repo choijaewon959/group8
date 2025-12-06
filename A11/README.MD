@@ -1,4 +1,4 @@
-# Assignment 11: Signal Generation and Backtesting
+# Assignment 11: Machine Learning in Financial Forecasting and Strategy
 
 This assignment implements a signal generation and backtesting pipeline for financial time series analysis and Machine Learning.
 
